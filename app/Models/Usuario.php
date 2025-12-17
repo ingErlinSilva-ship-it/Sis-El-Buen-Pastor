@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne; // Importar la clase para la relación uno a uno
 
 /**
  * Class Usuario
@@ -44,6 +45,17 @@ class Usuario extends Model
     public function role()
     {
         return $this->belongsTo(\App\Models\Role::class, 'rol_id', 'id');
+    }
+
+    // NUEVA RELACIÓN: Un Usuario puede ser un Médico
+    /**
+     * Define la relación uno-a-uno con el modelo Medico.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function medico(): HasOne
+    {
+        // La clave foránea en la tabla 'medicos' es 'usuario_id'
+        return $this->hasOne(Medico::class, 'usuario_id', 'id');
     }
     
 }

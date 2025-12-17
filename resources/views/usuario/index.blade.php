@@ -90,46 +90,46 @@
                                         </td>
                                         
                                         {{-- Para que muestre el nombre del rol con un color y no el numero--}}
-<td>
-    @php
-        // 1. Obtener el nombre del rol (asegurando minúsculas para la comparación)
-        $roleName = $usuario->role->nombre; 
-        $roleKey = strtolower($roleName);
-
-        // 2. Asignar color según los 3 roles definidos (usando la función match de PHP 8.0+)
-        $badgeClass = match ($roleKey) {
-            'administrador' => 'bg-primary', // Azul para la gestión principal
-            'doctor'        => 'bg-info',    // Celeste para profesionales de la salud
-            'paciente'      => 'bg-warning', // Verde para el usuario final o cliente
-            default         => 'bg-secondary', // Gris para roles desconocidos
-        };
-    @endphp
-
-    <span class="badge {{ $badgeClass }}">
-        {{ $roleName }}
-    </span>
-</td>
-
-                                            <td>
-                                                <form action="{{ route('usuario.destroy', $usuario->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('usuario.show', $usuario->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('usuario.edit', $usuario->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar a este usuario?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                        <td>
+                                        @php
+                                        
+                                        // 1. Obtener el nombre del rol (asegurando minúsculas para la comparación)
+                                        $roleName = $usuario->role->nombre; 
+                                        $roleKey = strtolower($roleName);
+                                        
+                                        // 2. Asignar color según los 3 roles definidos (usando la función match de PHP 8.0+)
+                                        $badgeClass = match ($roleKey) {
+                                        'administrador' => 'bg-primary', // Azul para la gestión principal
+                                        'doctor'        => 'bg-info',    // Celeste para profesionales de la salud
+                                        'paciente'      => 'bg-warning', // Verde para el usuario final o cliente
+                                        default         => 'bg-secondary', // Gris para roles desconocidos
+                                        };
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }}">
+                                        {{ $roleName }}
+                                    </span>
+                                </td>
+                                
+                                <td>
+                                    <form action="{{ route('usuario.destroy', $usuario->id) }}" method="POST">
+                                        <a class="btn btn-sm btn-primary " href="{{ route('usuario.show', $usuario->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
+                                        <a class="btn btn-sm btn-success" href="{{ route('usuario.edit', $usuario->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar este usuario?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-                {!! $usuarios->withQueryString()->links() !!}
             </div>
         </div>
+        {!! $usuarios->withQueryString()->links() !!}
     </div>
+</div>
+</div>
 @stop
 
 {{-- Create a common footer --}}

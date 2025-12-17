@@ -72,7 +72,7 @@ class RoleController extends Controller
         $role->update($request->validated());
 
         return Redirect::route('role.index')
-            ->with('success', '¡Listo! El rol se ha actualizado con éxito.');
+            ->with('success', '¡Listo! Los datos del rol se han actualizado con éxito.');
     }
 
     public function destroy($id): RedirectResponse

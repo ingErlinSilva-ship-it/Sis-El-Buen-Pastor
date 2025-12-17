@@ -1,12 +1,1 @@
 *.sqlite*
-/node_modules
-/vendor
-.env
-.env.backup
-/storage/*.log
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/views/*
-/bootstrap/cache/*
-.idea
-.vscode

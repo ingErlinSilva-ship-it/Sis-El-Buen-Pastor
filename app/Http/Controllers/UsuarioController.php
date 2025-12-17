@@ -52,7 +52,7 @@ class UsuarioController extends Controller
     Usuario::create($data); // Aquí se intenta insertar
 
     return Redirect::route('usuario.index')
-        ->with('success', '¡Listo! El nuevo usuario ha sido creado con éxito.');
+        ->with('success', '¡Listo! La nueva cuenta del usuario ha sido creada con éxito.');
 }
 
     /**
@@ -95,7 +95,7 @@ class UsuarioController extends Controller
     $usuario->update($data); // Se actualizan todos los campos, EXCEPTO 'password' si fue eliminado
 
     return Redirect::route('usuario.index')
-        ->with('success', '¡Listo! El usuario se ha actualizado con éxito.');
+        ->with('success', '¡Listo! Los datos del usuario se han actualizado con éxito.');
 }
 
     public function destroy($id): RedirectResponse
@@ -103,6 +103,6 @@ class UsuarioController extends Controller
         Usuario::find($id)->delete();
 
         return Redirect::route('usuario.index')
-            ->with('success', '¡Listo! El usuario se ha eliminado con éxito.');
+            ->with('success', '¡Listo! La cuenta del usuario se ha eliminado con éxito.');
     }
 }

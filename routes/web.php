@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EspecialidadeController;
+use App\Http\Controllers\MedicoController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -32,7 +34,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('role', RoleController::class);
-
 Route::resource('usuario', UsuarioController::class);
+Route::resource('especialidade', EspecialidadeController::class);
+Route::resource('medico', MedicoController::class);
 
 require __DIR__.'/auth.php';

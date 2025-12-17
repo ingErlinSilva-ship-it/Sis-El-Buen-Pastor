@@ -27,16 +27,17 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
+    @section('content')
     <section class="content container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Role</span>
+                            <span class="card-title">{{ __('Show') }} Especialidad</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('role.index') }}"> {{ __('Retroceder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('especialidade.index') }}"> {{ __('Retroceder') }}</a>
                         </div>
                     </div>
 
@@ -44,7 +45,11 @@
                         
                                 <div class="form-group mb-2 mb20">
                                     <strong>Nombre:</strong>
-                                    {{ $role->nombre }}
+                                    {{ $especialidade->nombre }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Descripcion:</strong>
+                                    {{ $especialidade->descripcion }}
                                 </div>
 
                     </div>

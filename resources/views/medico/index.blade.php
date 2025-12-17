@@ -27,7 +27,7 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    <div class="container-fluid">
+        <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
@@ -35,12 +35,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Roles') }}
+                                {{ __('Medicos') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('role.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear Nuevo Rol') }}
+                                <a href="{{ route('medico.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nueva Cuenta de Médico') }}
                                 </a>
                               </div>
                         </div>
@@ -58,25 +58,31 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Nombre</th>
+									<th >Usuario</th>
+									<th >Especialidad</th>
+									<th >Codigo Minsa</th>
+									<th >Descripción</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($roles as $role)
+                                    @foreach ($medicos as $medico)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $role->nombre }}</td>
+										<td >{{ $medico->usuario_id }}</td>
+										<td >{{ $medico->especialidad_id }}</td>
+										<td >{{ $medico->codigo_minsa }}</td>
+										<td >{{ $medico->descripcion }}</td>
 
                                             <td>
-                                                <form action="{{ route('role.destroy', $role->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('role.show', $role->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('role.edit', $role->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('medico.destroy', $medico->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('medico.show', $medico->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('medico.edit', $medico->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar este Rol?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar esta cuenta de Médico?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -86,7 +92,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $roles->withQueryString()->links() !!}
+                {!! $medicos->withQueryString()->links() !!}
             </div>
         </div>
     </div>

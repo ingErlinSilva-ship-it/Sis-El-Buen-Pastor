@@ -27,26 +27,22 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="row">
+        <section class="content container-fluid">
+        <div class="">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Role</span>
-                        </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('role.index') }}"> {{ __('Retroceder') }}</a>
-                        </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        <span class="card-title">{{ __('Update') }} Datos del Médico</span>
                     </div>
-
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nombre:</strong>
-                                    {{ $role->nombre }}
-                                </div>
+                        <form method="POST" action="{{ route('medico.update', $medico->id) }}"  role="form" enctype="multipart/form-data">
+                            {{ method_field('PATCH') }}
+                            @csrf
 
+                            @include('medico.form')
+
+                        </form>
                     </div>
                 </div>
             </div>
