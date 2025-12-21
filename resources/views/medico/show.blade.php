@@ -35,8 +35,8 @@
                         <div class="float-left">
                             <span class="card-title">{{ __('Show') }} Medico</span>
                         </div>
-                        <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medicos.index') }}"> {{ __('Back') }}</a>
+                        <div class="ml-auto">
+                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}"> {{ __('Retroceder') }}</a>
                         </div>
                     </div>
 
