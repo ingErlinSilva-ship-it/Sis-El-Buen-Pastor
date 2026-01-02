@@ -340,9 +340,15 @@ return [
         ],
 
         [
-            'text' => 'Médicsos',
+            'text' => 'Médicos',
             'route' => 'medico.index',
             'icon' => 'fas fa-fw fa-stethoscope',
+        ],
+
+        [
+            'text' => 'Alergias',
+            'route' => 'alergia.index',
+            'icon' => 'fas fa-fw fa-virus',
         ],
     ],
 

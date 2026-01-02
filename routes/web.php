@@ -5,6 +5,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EspecialidadeController;
 use App\Http\Controllers\MedicoController;
+use App\Http\Controllers\AlergiaController;
+
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -37,5 +39,6 @@ Route::resource('role', RoleController::class);
 Route::resource('usuario', UsuarioController::class);
 Route::resource('especialidade', EspecialidadeController::class);
 Route::resource('medico', MedicoController::class);
+Route::resource('alergia', AlergiaController::class);
 
 require __DIR__.'/auth.php';
