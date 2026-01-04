@@ -23,7 +23,7 @@ class AlergiaRequest extends FormRequest
     {
         return [
 			'nombre' => 'required|string',
-			'descripcion' => 'string',
+			'descripcion' => 'nullable|string',
         ];
     }
 }

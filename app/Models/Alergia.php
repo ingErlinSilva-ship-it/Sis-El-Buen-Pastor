@@ -26,7 +26,7 @@ class Alergia extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'descripcion'];
+    protected $fillable = ['nombre','descripcion'];
 
 
 }

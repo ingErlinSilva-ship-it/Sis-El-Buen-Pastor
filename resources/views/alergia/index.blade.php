@@ -70,12 +70,13 @@
                                             <td>{{ ++$i }}</td>
                                             
 										<td >{{ $alergia->nombre }}</td>
-										<td >{{ $alergia->descripcion }}</td>
+										<td style="width: 250px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ $alergia->descripcion }}</td>
 
                                             <td>
                                                 <form action="{{ route('alergia.destroy', $alergia->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary " href="{{ route('alergia.show', $alergia->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('alergias.edit', $alergia->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('alergia.edit', $alergia->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar esta Alergia?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>

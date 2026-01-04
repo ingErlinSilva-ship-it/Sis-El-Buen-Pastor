@@ -40,7 +40,7 @@ class AlergiaController extends Controller
         Alergia::create($request->validated());
 
         return Redirect::route('alergia.index')
-            ->with('success', 'Alergia created successfully.');
+            ->with('success', '¡Listo! Se ha agreado otraalergia con éxito.');
     }
 
     /**
@@ -66,12 +66,21 @@ class AlergiaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AlergiaRequest $request, Alergia $alergia): RedirectResponse
+    
+    public function update(AlergiaRequest $request, $id): RedirectResponse
     {
-        $alergia->update($request->validated());
+        // Validamos primero
+        $datos = $request->validated();
+        
+        // Buscamos el registro real
+        $alergia = Alergia::findOrFail($id);
+
+        // Forzamos la actualización
+        $alergia->fill($datos);
+        $alergia->save();
 
         return Redirect::route('alergia.index')
-            ->with('success', 'Alergia updated successfully');
+        ->with('success', '¡Listo! La alergia se ha actualizado con éxito.');
     }
 
     public function destroy($id): RedirectResponse
@@ -79,6 +88,6 @@ class AlergiaController extends Controller
         Alergia::find($id)->delete();
 
         return Redirect::route('alergia.index')
-            ->with('success', 'Alergia deleted successfully');
+            ->with('success', '¡Listo! La alergia se ha eliminado con éxito.');
     }
 }
