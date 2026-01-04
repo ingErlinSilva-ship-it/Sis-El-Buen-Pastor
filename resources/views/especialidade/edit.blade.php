@@ -27,7 +27,6 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    @section('content')
     <section class="content container-fluid">
         <div class="">
             <div class="col-md-12">

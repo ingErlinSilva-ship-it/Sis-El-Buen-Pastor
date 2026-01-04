@@ -30,35 +30,18 @@
     <section class="content container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Medico</span>
-                        </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medicos.index') }}"> {{ __('Retroceder') }}</a>
-                        </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        <span class="card-title">{{ __('Create') }} Alergia</span>
                     </div>
-
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Usuario Id:</strong>
-                                    {{ $medico->usuario_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad Id:</strong>
-                                    {{ $medico->especialidad_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Codigo Minsa:</strong>
-                                    {{ $medico->codigo_minsa }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $medico->descripcion }}
-                                </div>
+                        <form method="POST" action="{{ route('alergia.store') }}"  role="form" enctype="multipart/form-data">
+                            @csrf
 
+                            @include('alergia.form')
+
+                        </form>
                     </div>
                 </div>
             </div>

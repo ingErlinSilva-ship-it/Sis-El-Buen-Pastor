@@ -27,8 +27,7 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    @section('content')
-    <div class="container-fluid">
+        <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
@@ -36,12 +35,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Especialidades') }}
+                                {{ __('Alergias') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('especialidade.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear nueva Especialidad') }}
+                                <a href="{{ route('alergia.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear nueva alergia') }}
                                 </a>
                               </div>
                         </div>
@@ -66,21 +65,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($especialidades as $especialidade)
+                                    @foreach ($alergias as $alergia)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $especialidade->nombre }}</td>
+										<td >{{ $alergia->nombre }}</td>
 										<td style="width: 250px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        {{ $especialidade->descripcion }}</td>
+                                        {{ $alergia->descripcion }}</td>
 
                                             <td>
-                                                <form action="{{ route('especialidade.destroy', $especialidade->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('especialidade.show', $especialidade->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('especialidade.edit', $especialidade->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('alergia.destroy', $alergia->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('alergia.show', $alergia->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('alergia.edit', $alergia->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar esta Especialidad?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar esta Alergia?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -90,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $especialidades->withQueryString()->links() !!}
+                {!! $alergias->withQueryString()->links() !!}
             </div>
         </div>
     </div>
