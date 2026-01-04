@@ -58,12 +58,12 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Nombres</th>
-									<th >Apellidos</th>
+									<th >Nombre</th>
+									<th >Apellido</th>
 									<th >Celular</th>
 									<th >Foto</th>{{-- CRevisar para poder subir foto --}}
 									<th >Email</th>
-									<th >Estado de la Cueta</th>
+									<th >Estado de la Cuenta</th>
 									<th >Rol de Acceso</th>
 
                                         <th></th>
