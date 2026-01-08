@@ -40,7 +40,7 @@ class AlergiaController extends Controller
         Alergia::create($request->validated());
 
         return Redirect::route('alergia.index')
-            ->with('success', '¡Listo! Se ha agreado otraalergia con éxito.');
+            ->with('success', '¡Listo! Se ha agreado Una Alergia con éxito.');
     }
 
     /**
@@ -80,7 +80,7 @@ class AlergiaController extends Controller
         $alergia->save();
 
         return Redirect::route('alergia.index')
-        ->with('success', '¡Listo! La alergia se ha actualizado con éxito.');
+        ->with('success', '¡Listo! Alergia Actualizada con éxito.');
     }
 
     public function destroy($id): RedirectResponse
@@ -88,6 +88,6 @@ class AlergiaController extends Controller
         Alergia::find($id)->delete();
 
         return Redirect::route('alergia.index')
-            ->with('success', '¡Listo! La alergia se ha eliminado con éxito.');
+            ->with('success', '¡Listo! La Alergia se ha eliminado con éxito.');
     }
 }

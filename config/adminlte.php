@@ -332,6 +332,12 @@ return [
             'route' => 'usuario.index',
             'icon' => 'fas fa-fw fa-users',
         ],
+        
+        [
+            'text' => 'Pacientes',
+            'route' => 'paciente.index',
+            'icon' => 'fas fa-user-injured',
+        ],
 
         [
             'text' => 'Especialidades Médicas',
@@ -350,6 +356,14 @@ return [
             'route' => 'alergia.index',
             'icon' => 'fas fa-fw fa-virus',
         ],
+
+        [
+            'text' => 'Enfermedades',
+            'route' => 'enfermedade.index',
+            'icon' => 'fas fa-head-side-virus',
+        ],
+
+
     ],
 
     /*

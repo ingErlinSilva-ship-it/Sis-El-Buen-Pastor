@@ -27,36 +27,40 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    <section class="content container-fluid">
+        <section class="content container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Medico</span>
+                            <span class="card-title">{{ __('Show') }} Pacientes</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}"> {{ __('Retroceder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('paciente.index') }}"> {{ __('Regresar') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
                         
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Usuario Id:</strong>
-                                    {{ $medico->usuario_id }}
+                                    <strong>Usuario:</strong>
+                                    {{ $paciente->usuario->nombre }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad Id:</strong>
-                                    {{ $medico->especialidad_id }}
+                                    <strong>Fecha de Nacimiento:</strong>
+                                    {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Codigo Minsa:</strong>
-                                    {{ $medico->codigo_minsa }}
+                                    <strong>Cédula:</strong>
+                                    {{ $paciente->cedula }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $medico->descripcion }}
+                                    <strong>Dirección:</strong>
+                                    {{ $paciente->direccion ?? 'No especificada' }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Tipo Sangre:</strong>
+                                    {{ $paciente->tipo_sangre }}
                                 </div>
 
                     </div>
@@ -109,3 +113,4 @@
 
 </style>
 @endpush
+
