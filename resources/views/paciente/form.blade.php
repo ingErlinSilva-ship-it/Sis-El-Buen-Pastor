@@ -3,7 +3,7 @@
         
     {{-- USUARIO --}}
     <div class="form-group mb-2 mb20">
-            <label for="usuario_id">Usuario</label>
+            <label for="usuario_id">Usuario</label>git 
             <select name="usuario_id"
                 class="form-control @error('usuario_id') is-invalid @enderror">
                 <option value="">Seleccione un usuario</option>
