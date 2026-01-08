@@ -2,10 +2,8 @@
     <div class="col-md-12">
         
     {{-- USUARIO --}}
-    <div class="col-md-6">
-        <div class="form-group mb-2">
+    <div class="form-group mb-2 mb20">
             <label for="usuario_id">Usuario</label>
-
             <select name="usuario_id"
                 class="form-control @error('usuario_id') is-invalid @enderror">
                 <option value="">Seleccione un usuario</option>
@@ -20,7 +18,6 @@
 
             {!! $errors->first('usuario_id',
             '<div class="invalid-feedback"><strong>:message</strong></div>') !!}
-        </div>
     </div>
 
         <div class="form-group mb-2 mb20">
@@ -48,7 +45,7 @@
             {!! $errors->first('direccion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
         {{-- TIPO DE SANGRE --}}
-        <div class="col-md-6">
+        <div class="form-group mb-2 mb20">
             <div class="form-group">
                 <label for="tipo_sangre">Tipo de sangre</label>
                 <select name="tipo_sangre" class="form-control">

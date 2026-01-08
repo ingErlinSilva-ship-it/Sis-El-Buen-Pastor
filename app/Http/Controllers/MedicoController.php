@@ -69,8 +69,18 @@ class MedicoController extends Controller
     public function edit($id): View
     {
         $medico = Medico::find($id);
+        $ID_ROL_DOCTOR = 2;
 
-        return view('medico.edit', compact('medico'));
+        $usuarios = Usuario::where('rol_id', $ID_ROL_DOCTOR)
+            ->where(function($query) use ($medico) {
+                $query->whereDoesntHave('medico')
+                    ->orWhere('id', $medico->usuario_id);
+            })
+            ->pluck('nombre', 'id');
+        $especialidades = \App\Models\Especialidade::pluck('nombre', 'id');
+
+        return view('medico.edit', compact('medico', 'usuarios', 'especialidades'));
+
     }
 
     /**
