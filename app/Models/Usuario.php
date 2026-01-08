@@ -57,5 +57,10 @@ class Usuario extends Model
         // La clave foránea en la tabla 'medicos' es 'usuario_id'
         return $this->hasOne(Medico::class, 'usuario_id', 'id');
     }
+
+    public function paciente()
+    {
+        return $this->hasOne(Paciente::class, 'usuario_id', 'id');
+    }
     
 }

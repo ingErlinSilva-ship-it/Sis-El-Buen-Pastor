@@ -27,38 +27,21 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    <section class="content container-fluid">
+        <section class="content container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Medico</span>
-                        </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}"> {{ __('Retroceder') }}</a>
-                        </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        <span class="card-title">{{ __('Create') }} Pacientes</span>
                     </div>
-
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Usuario Id:</strong>
-                                    {{ $medico->usuario_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad Id:</strong>
-                                    {{ $medico->especialidad_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Codigo Minsa:</strong>
-                                    {{ $medico->codigo_minsa }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $medico->descripcion }}
-                                </div>
+                        <form method="POST" action="{{ route('paciente.store') }}"  role="form" enctype="multipart/form-data">
+                            @csrf
 
+                            @include('paciente.form')
+
+                        </form>
                     </div>
                 </div>
             </div>
@@ -87,6 +70,28 @@
 
     $(document).ready(function() {
         // Add your common script logic here...
+    });
+
+    // Seleccionamos el campo de cédula por su ID 
+    const cedulaInput = document.getElementById('cedula');
+
+    cedulaInput.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/[^0-9a-zA-Z]/g, ''); // Quitamos todo lo que no sea número o letra
+        let formattedValue = '';
+
+        if (value.length > 0) {
+            formattedValue += value.substring(0, 3);
+            if (value.length > 3) {
+                formattedValue += '-' + value.substring(3, 9);
+            }
+            if (value.length > 9) {
+                formattedValue += '-' + value.substring(9, 13);
+            }
+            if (value.length > 13) {
+                formattedValue += value.substring(13, 14).toUpperCase(); // La última es la letra
+            }
+        }
+        e.target.value = formattedValue.substring(0, 16); // Límite de caracteres de la cédula
     });
 
 </script>

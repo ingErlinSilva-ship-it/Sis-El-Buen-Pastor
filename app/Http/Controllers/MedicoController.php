@@ -29,7 +29,7 @@ class MedicoController extends Controller
      */
     public function create(): View
     {
-        $ID_ROL_DOCTOR = 2; // aca esta el Id del rol de doctor opara que solo los que tienen ese rol se puedan seleccionar
+        $ID_ROL_DOCTOR = 2; // aca esta el Id del rol de doctor para que solo los que tienen ese rol se puedan seleccionar
         $medico = new Medico();
         
         // Obtener la lista de Usuarios que son Doctores Y NO son médicos

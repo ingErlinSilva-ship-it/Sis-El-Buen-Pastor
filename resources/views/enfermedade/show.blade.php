@@ -31,32 +31,24 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 10px">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Medico</span>
+                            <span class="card-title">{{ __('Show') }} Enfermedades</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}"> {{ __('Retroceder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('enfermedade.index') }}"> {{ __('Retrocerder') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
                         
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Usuario Id:</strong>
-                                    {{ $medico->usuario_id }}
+                                    <strong>Nombre:</strong>
+                                    {{ $enfermedade->nombre }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad Id:</strong>
-                                    {{ $medico->especialidad_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Codigo Minsa:</strong>
-                                    {{ $medico->codigo_minsa }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $medico->descripcion }}
+                                    <strong>Descripción:</strong>
+                                    {{ $enfermedade->descripcion }}
                                 </div>
 
                     </div>
@@ -109,3 +101,4 @@
 
 </style>
 @endpush
+
