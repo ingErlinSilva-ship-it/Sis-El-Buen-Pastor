@@ -43,12 +43,12 @@
                     <div class="card-body bg-white">
                         
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Usuario Id:</strong>
-                                    {{ $medico->usuario_id }}
+                                    <strong>Usuario:</strong>
+                                    {{ $medico->usuario->nombre }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad Id:</strong>
-                                    {{ $medico->especialidad_id }}
+                                    <strong>Especialidad:</strong>
+                                    {{ $medico->especialidade->nombre }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
                                     <strong>Codigo Minsa:</strong>

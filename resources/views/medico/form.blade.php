@@ -22,7 +22,7 @@
             
             <select name="especialidad_id" class="form-control @error('especialidad_id') is-invalid @enderror" id="especialidad_id">
                 <option value="">Selecciona una Especialidad</option>
-                 
+
                 {{-- Genera las opciones usando los datos pasados desde el controlador --}}
                 @foreach ($especialidades as $id => $nombre)
                     <option value="{{ $id }}" {{ old('especialidad_id', $medico?->especialidad_id) == $id ? 'selected' : '' }}>

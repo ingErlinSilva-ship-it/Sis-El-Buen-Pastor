@@ -65,9 +65,15 @@ class PacienteController extends Controller
     public function edit($id): View
     {
         $paciente = Paciente::find($id);
+        $ID_ROL_PACIENTE = 3;
 
-        //Traemos los usuarios (Pluck crea un array de [id => nombre])
-        $usuarios = \App\Models\Usuario::pluck('nombre', 'id'); 
+        $usuarios = Usuario::where('rol_id', $ID_ROL_PACIENTE)
+            ->where(function($query) use ($paciente) {
+                $query->whereDoesntHave('paciente')
+                    ->orWhere('id', $paciente->usuario_id);
+            })
+            ->pluck('nombre', 'id');
+
         return view('paciente.edit', compact('paciente', 'usuarios'));
     }
 

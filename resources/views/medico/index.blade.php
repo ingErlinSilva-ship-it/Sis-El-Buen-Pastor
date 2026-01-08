@@ -71,8 +71,8 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $medico->usuario_id }}</td>
-										<td >{{ $medico->especialidad_id }}</td>
+										<td >{{ $medico->usuario->nombre ?? 'N/A' }}</td>
+										<td >{{ $medico->especialidade->nombre ?? 'N/A' }}</td>
 										<td >{{ $medico->codigo_minsa }}</td>
 										<td >{{ $medico->descripcion }}</td>
 
