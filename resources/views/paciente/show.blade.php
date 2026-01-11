@@ -42,27 +42,50 @@
 
                     <div class="card-body bg-white">
                         
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Usuario:</strong>
-                                    {{ $paciente->usuario->nombre }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Fecha de Nacimiento:</strong>
-                                    {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Cédula:</strong>
-                                    {{ $paciente->cedula }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Dirección:</strong>
-                                    {{ $paciente->direccion ?? 'No especificada' }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Tipo Sangre:</strong>
-                                    {{ $paciente->tipo_sangre }}
-                                </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Usuario:</strong>
+                            {{ $paciente->usuario->nombre }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Fecha de Nacimiento:</strong>
+                            {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Cédula:</strong>
+                            {{ $paciente->cedula }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Dirección:</strong>
+                            {{ $paciente->direccion ?? 'No especificada' }}
+                        </div>
+                         <div class="form-group mb-2 mb20">
+                            <strong>Tipo Sangre:</strong>
+                            {{ $paciente->tipo_sangre }}
+                        </div>
 
+                        <div class="form-group mb-2 mb20">
+                            <strong>Alergias:</strong>
+                               @if ($paciente->alergias->count())
+                                    <ul>
+                                        @foreach ($paciente->alergias as $alergia)
+                                            <li>{{ $alergia->nombre }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-muted">No registra alergias</p>
+                                @endif
+
+                                <strong>Enfermedades:</strong>
+                                @if ($paciente->enfermedades->count())
+                                    <ul>
+                                        @foreach ($paciente->enfermedades as $enfermedad)
+                                            <li>{{ $enfermedad->nombre }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-muted">No registra enfermedades</p>
+                                @endif
+                        </div>
                     </div>
                 </div>
             </div>

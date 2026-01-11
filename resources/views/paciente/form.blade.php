@@ -1,24 +1,24 @@
-    <div class="row padding-1 p-1">
+<div class="row padding-1 p-1">
     <div class="col-md-12">
         
-    {{-- USUARIO --}}
-    <div class="form-group mb-2 mb20">
-            <label for="usuario_id">Usuario</label>git 
-            <select name="usuario_id"
-                class="form-control @error('usuario_id') is-invalid @enderror">
-                <option value="">Seleccione un usuario</option>
+        {{-- USUARIO --}}
+        <div class="form-group mb-2 mb20">
+                <label for="usuario_id">Usuario</label> 
+                <select name="usuario_id"
+                    class="form-control @error('usuario_id') is-invalid @enderror">
+                    <option value="">Seleccione un usuario</option>
 
-                @foreach ($usuarios as $id => $nombre)
-                    <option value="{{ $id }}"
-                        {{ old('usuario_id', $paciente?->usuario_id) == $id ? 'selected' : '' }}>
-                        {{ $nombre }}
-                    </option>
-                @endforeach
-            </select>
+                    @foreach ($usuarios as $id => $nombre)
+                        <option value="{{ $id }}"
+                            {{ old('usuario_id', $paciente?->usuario_id) == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
+                        </option>
+                    @endforeach
+                </select>
 
-            {!! $errors->first('usuario_id',
-            '<div class="invalid-feedback"><strong>:message</strong></div>') !!}
-    </div>
+                {!! $errors->first('usuario_id',
+                '<div class="invalid-feedback"><strong>:message</strong></div>') !!}
+        </div>
 
         <div class="form-group mb-2 mb20">
             <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
@@ -26,7 +26,8 @@
             class="form-control @error('fecha_nacimiento') is-invalid @enderror" 
             value="{{ old('fecha_nacimiento', $paciente->fecha_nacimiento ? \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('Y-m-d') : '') }}" 
             id="fecha_nacimiento" max="{{ date('Y-m-d') }}">
-            {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            {!! $errors->first('fecha_nacimiento', 
+            '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
         <div class="form-group mb-2 mb20">
@@ -59,6 +60,34 @@
                 </select>
             </div>
         </div>
+        <hr>
+        <div class="form-group mb-2 mb20">
+            <h5><i class="fas fa-allergies"></i> Alergias</h5>
+
+            @foreach ($alergias as $id => $nombre)
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="alergias[]" value="{{ $id }}"
+                {{ in_array($id,old('alergias', $paciente->alergias?->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}>
+                        {{ $nombre }}
+                    </label>
+                </div>
+            @endforeach     
+        </div>
+        
+        <div class="form-group mb-2 mb20">
+            <h5><i class="fas fa-notes-medical"></i> Enfermedades</h5>
+
+            @foreach ($enfermedades as $id => $nombre)
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enfermedades[]" value="{{ $id }}"
+                        {{ in_array($id, old('enfermedades', $paciente->enfermedades?->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}>
+                    <label class="form-check-label">
+                        {{ $nombre }}
+                    </label>
+                </div>
+            @endforeach   
+        </div>
+        
 
     </div>
     <div class="col-md-12 mt20 mt-2">

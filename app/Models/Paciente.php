@@ -50,4 +50,15 @@ class Paciente extends Model
         return $date->format('d-m-Y');
     }
     
+    public function alergias()
+    {
+        return $this->belongsToMany(Alergia::class, 'pacientes_alergia','paciente_id',
+        'alergias_id');
+    }
+
+    public function enfermedades()
+    {
+        return $this->belongsToMany(Enfermedade::class, 'pacientes_enfermedad','paciente_id',
+        'enfermedades_id');
+    }
 }
