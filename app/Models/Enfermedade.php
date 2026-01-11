@@ -28,5 +28,10 @@ class Enfermedade extends Model
      */
     protected $fillable = ['nombre', 'descripcion'];
 
+    public function pacientes()
+    {
+        return $this->belongsToMany(Paciente::class, 'pacientes_enfermedad');
+    }
+
 
 }

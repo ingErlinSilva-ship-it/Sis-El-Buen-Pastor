@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Models\Usuario;
+use App\Models\Alergia;
+use App\Models\Enfermedade;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\PacienteRequest;
@@ -35,7 +37,10 @@ class PacienteController extends Controller
         ->whereDoesntHave('paciente')
         ->pluck('nombre', 'id');
 
-        return view('paciente.create', compact('paciente', 'usuarios'));
+        $alergias = Alergia::pluck('nombre', 'id');
+        $enfermedades = Enfermedade::pluck('nombre', 'id');
+
+        return view('paciente.create', compact('paciente','usuarios','alergias','enfermedades'));
     }
 
     /**
@@ -43,10 +48,25 @@ class PacienteController extends Controller
      */
     public function store(PacienteRequest $request): RedirectResponse
     {
-        Paciente::create($request->validated());
 
-        return Redirect::route('paciente.index')
-            ->with('success', '¡Listo! La nueva cuenta de Paciente ha sido creada con éxito.');
+        $paciente = Paciente::create($request->only([
+        'usuario_id',
+        'fecha_nacimiento',
+        'cedula',
+        'direccion',
+        'tipo_sangre',]));
+
+        // 🔗 GUARDAR PIVOT
+        if ($request->has('alergias')) {
+            $paciente->alergias()->sync($request->alergias);
+        }
+
+        if ($request->has('enfermedades')) {
+            $paciente->enfermedades()->sync($request->enfermedades);
+        }
+
+        return redirect()->route('paciente.index')
+            ->with('success', 'Paciente creado correctamente');
     }
 
     /**
@@ -54,9 +74,11 @@ class PacienteController extends Controller
      */
     public function show($id): View
     {
-        $paciente = Paciente::find($id);
+        $paciente = Paciente::with(['usuario','alergias','enfermedades'])->findOrFail($id);
+
 
         return view('paciente.show', compact('paciente'));
+
     }
 
     /**
@@ -64,7 +86,7 @@ class PacienteController extends Controller
      */
     public function edit($id): View
     {
-        $paciente = Paciente::find($id);
+        $paciente = Paciente::with(['alergias','enfermedades'])->findOrFail($id);
         $ID_ROL_PACIENTE = 3;
 
         $usuarios = Usuario::where('rol_id', $ID_ROL_PACIENTE)
@@ -74,7 +96,10 @@ class PacienteController extends Controller
             })
             ->pluck('nombre', 'id');
 
-        return view('paciente.edit', compact('paciente', 'usuarios'));
+        $alergias = Alergia::pluck('nombre', 'id');
+        $enfermedades = Enfermedade::pluck('nombre', 'id');
+
+        return view('paciente.edit', compact('paciente','usuarios','alergias','enfermedades'));
     }
 
     /**
@@ -82,7 +107,11 @@ class PacienteController extends Controller
      */
     public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
     {
-        $paciente->update($request->validated());
+        $paciente->update($request->only(['usuario_id','fecha_nacimiento','cedula','direccion','tipo_sangre']));
+
+        // 🔄 sync pivot
+        $paciente->alergias()->sync($request->alergias ?? []);
+        $paciente->enfermedades()->sync($request->enfermedades ?? []);
 
         return Redirect::route('paciente.index')
             ->with('success', '¡Listo! Los datos del Paciente se han Actualizado con éxito.');
