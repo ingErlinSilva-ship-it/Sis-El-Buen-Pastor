@@ -68,9 +68,10 @@
                                     @foreach ($enfermedades as $enfermedade)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $enfermedade->nombre }}</td>
-										<td >{{ $enfermedade->descripcion }}</td>
+
+                                        <td >{{ $enfermedade->nombre }}</td>
+										<td style="width: 250px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ $enfermedade->descripcion }}</td>
 
                                             <td>
                                                 <form action="{{ route('enfermedade.destroy', $enfermedade->id) }}" method="POST">

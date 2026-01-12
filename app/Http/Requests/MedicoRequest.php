@@ -25,7 +25,7 @@ class MedicoRequest extends FormRequest
 			'usuario_id' => 'required',
 			'especialidad_id' => 'required',
 			'codigo_minsa' => 'string',
-            'descripcion' => 'string',
+            'descripcion' => 'nullable|string',
         ];
     }
 }
