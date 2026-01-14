@@ -1,0 +1,140 @@
+@extends('adminlte::page')
+
+{{-- Extend and customize the browser title --}}
+
+@section('title')
+    {{ config('adminlte.title') }}
+    @hasSection('subtitle') | @yield('subtitle') @endif
+@stop
+
+{{-- Extend and customize the page content header --}}
+
+@section('content_header')
+    @hasSection('content_header_title')
+        <h1 class="text-muted">
+            @yield('content_header_title')
+
+            @hasSection('content_header_subtitle')
+                <small class="text-dark">
+                    <i class="fas fa-xs fa-angle-right text-muted"></i>
+                    @yield('content_header_subtitle')
+                </small>
+            @endif
+        </h1>
+    @endif
+@stop
+
+{{-- Rename section content to content_body --}}
+
+@section('content')
+    
+    <section class="content container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="float-left">
+                            <span class="card-title">{{ __('Show') }} Cita</span>
+                        </div>
+                        <div class="ml-auto">
+                            <a class="btn btn-primary btn-sm" href="{{ route('cita.index') }}"> {{ __('Regresar') }}</a>
+                        </div>
+                    </div>
+
+                    <div class="card-body bg-white">
+                        
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Paciente:</strong>
+                                    {{ $cita->paciente->usuario->nombre }} {{ $cita->paciente->usuario->apellido }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Médico:</strong>
+                                    {{ $cita->medico->usuario->nombre }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Especialidad:</strong>
+                                    {{ $cita->medico->especialidade->nombre}}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Fecha:</strong>
+                                    {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Hora:</strong>
+                                    {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Duración (Minutos):</strong>
+                                    {{ $cita->duracion_minutos }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Motivo:</strong>
+                                    {{ $cita->motivo }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Estado:</strong>
+                                    {{ $cita->estado }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Origen:</strong>
+                                    {{ $cita->origen }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Chat Session Id:</strong>
+                                    {{ $cita->chat_session_id }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Token Confirmacion:</strong>
+                                    {{ $cita->token_confirmacion }}
+                                </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@stop
+
+{{-- Create a common footer --}}
+
+@section('footer')
+    <div class="float-right">
+        Version: {{ config('app.version', '1.0.0') }}
+    </div>
+
+    <strong>
+        <a href="{{ config('app.company_url', '#') }}">
+            {{ config('app.company_name', '© 2025 - Sistema web con asistente virtual para gestión de consultas médicas. Desarrollado por Levi Ruiz y Erlin Silva.') }}
+        </a>
+    </strong>
+@stop
+
+{{-- Add common Javascript/Jquery code --}}
+
+@push('js')
+<script>
+
+    $(document).ready(function() {
+        // Add your common script logic here...
+    });
+
+</script>
+@endpush
+
+{{-- Add common CSS customizations --}}
+
+@push('css')
+<style type="text/css">
+
+    /*
+    {{-- You can add AdminLTE customizations here --}}
+    .card-header {
+        border-bottom: none;
+    }
+    .card-title {
+        font-weight: 600;
+    }
+    */
+
+</style>
+@endpush

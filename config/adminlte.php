@@ -320,6 +320,12 @@ return [
             'url' => 'admin/blog',
             'can' => 'manage-blog',
         ],
+
+        [
+            'text' => 'HOME',
+            'route' => 'dashboard',
+            'icon' => 'fas fa-tachometer-alt ',
+        ],
         
         [
             'text' => 'Roles',
@@ -363,6 +369,11 @@ return [
             'icon' => 'fas fa-head-side-virus',
         ],
 
+        [
+            'text' => 'Agendar Citas',
+            'route' => 'cita.index',
+            'icon' => 'fas fa-calendar-check',
+        ],
 
     ],
 

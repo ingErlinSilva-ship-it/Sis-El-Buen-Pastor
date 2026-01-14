@@ -8,8 +8,8 @@ use App\Http\Controllers\MedicoController;
 use App\Http\Controllers\AlergiaController;
 use App\Http\Controllers\EnfermedadeController;
 use App\Http\Controllers\PacienteController;
-use App\Http\Controllers\PacientesAlergiumController;
-use App\Http\Controllers\PacientesEnfermedadController;
+use App\Http\Controllers\CitaController;
+
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -46,7 +46,8 @@ Route::resource('medico', MedicoController::class);
 Route::resource('alergia', AlergiaController::class);
 Route::resource('enfermedade', EnfermedadeController::class);
 Route::resource('paciente', PacienteController::class);
-Route::resource('pacientes-alergium', PacientesAlergiumController::class);
-Route::resource('pacientes-enfermedad', PacientesEnfermedadController::class);
+Route::resource('cita', CitaController::class);
+
+Route::get('/paciente/buscar-por-cedula/{cedula}', [CitaController::class, 'buscarPorCedula']);
 
 require __DIR__.'/auth.php';
