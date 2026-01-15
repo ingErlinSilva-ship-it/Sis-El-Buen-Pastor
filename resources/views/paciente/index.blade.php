@@ -58,11 +58,12 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Usuario</th>
-                                    <th >Fecha Nacimiento</th>
-									<th >Cédula</th>
-									<th >Dirección</th>
-									<th >Tipo Sangre</th>
+									<th class="text-center">Usuario</th>
+                                    <th class="text-center">Fecha Nacimiento</th>
+                                    <th class="text-center">Edad</th>
+									<th class="text-center">Cédula</th>
+									<th class="text-center">Dirección</th>
+									<th class="text-center">Tipo Sangre</th>
 									
 
                                         <th></th>
@@ -72,12 +73,13 @@
                                     @foreach ($pacientes as $paciente)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            <td>{{ $paciente->usuario?->nombre ?? 'N/A' }}</td>   
+                                            <td class="text-center">{{ $paciente->usuario?->nombre ?? 'N/A' }}</td>   
                                             {{-- Formateamos la fecha directamente aquí por seguridad --}}
-                                            <td>{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</td>
-                                            <td >{{ $paciente->cedula }}</td>
+                                            <td class="text-center">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</td>
+                                            <td class="text-center">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</td>
+                                            <td class="text-center">{{ $paciente->cedula }}</td>
                                             <td >{{ $paciente->direccion }}</td>
-                                            <td >{{ $paciente->tipo_sangre }}</td>
+                                            <td class="text-center">{{ $paciente->tipo_sangre }}</td>
 
                                         <td>
 

@@ -58,13 +58,13 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Nombre</th>
-									<th >Apellido</th>
-									<th >Celular</th>
-									<th >Foto</th>{{-- CRevisar para poder subir foto --}}
-									<th >Email</th>
-									<th >Estado de la Cuenta</th>
-									<th >Rol de Acceso</th>
+									<th class="text-center">Nombre</th>
+									<th class="text-center">Apellido</th>
+									<th class="text-center">Celular</th>
+									<th class="text-center">Foto</th>{{-- CRevisar para poder subir foto --}}
+									<th class="text-center">Email</th>
+									<th class="text-center">Estado de la Cuenta</th>
+									<th class="text-center">Rol de Acceso</th>
 
                                         <th></th>
                                     </tr>
@@ -74,14 +74,14 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $usuario->nombre }}</td>
-										<td >{{ $usuario->apellido }}</td>
-										<td >{{ $usuario->celular }}</td>
-										<td >{{ $usuario->foto }}</td>
-										<td >{{ $usuario->email }}</td>
+										<td class="text-center">{{ $usuario->nombre }}</td>
+										<td class="text-center">{{ $usuario->apellido }}</td>
+										<td class="text-center">{{ $usuario->celular }}</td>
+										<td class="text-center">{{ $usuario->foto }}</td>
+										<td class="text-center">{{ $usuario->email }}</td>
 
                                         {{-- Compara directamente el valor, si estado es =1 esta activo, si es =0 esta inactivo--}}
-										<td >
+										<td class="text-center">
                                             @if ($usuario->estado== 1)
                                             <span class="badge bg-success" style="background-color: #008a00ff !important;">Activo</span>
                                             @else
@@ -90,7 +90,7 @@
                                         </td>
                                         
                                         {{-- Para que muestre el nombre del rol con un color y no el numero--}}
-                                        <td>
+                                        <td class="text-center">
                                         @php
                                         
                                         // 1. Obtener el nombre del rol (asegurando minúsculas para la comparación)

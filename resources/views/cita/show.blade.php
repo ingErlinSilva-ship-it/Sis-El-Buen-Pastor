@@ -27,72 +27,104 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    
-    <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Cita</span>
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Información de la Cita Médica</h3>
+                    <div class="ml-auto">
+                        <a class="btn btn-primary btn-sm" href="{{ route('cita.index') }}">
+                            <i class="fas fa-arrow-left"></i> Regresar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body bg-white">
+                    {{-- SECCIÓN: DATOS DEL PACIENTE --}}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Nombre</strong></label>
+                                <input type="text" class="form-control" value="{{ $cita->paciente->usuario->nombre }}" readonly style="background-color: #bcdffb;">
+                            </div>
                         </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('cita.index') }}"> {{ __('Regresar') }}</a>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Apellido</strong></label>
+                                <input type="text" class="form-control" value="{{ $cita->paciente->usuario->apellido }}" readonly style="background-color: #bcdffb">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Paciente:</strong>
-                                    {{ $cita->paciente->usuario->nombre }} {{ $cita->paciente->usuario->apellido }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Médico:</strong>
-                                    {{ $cita->medico->usuario->nombre }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad:</strong>
-                                    {{ $cita->medico->especialidade->nombre}}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Fecha:</strong>
-                                    {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Hora:</strong>
-                                    {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Duración (Minutos):</strong>
-                                    {{ $cita->duracion_minutos }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Motivo:</strong>
-                                    {{ $cita->motivo }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Estado:</strong>
-                                    {{ $cita->estado }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Origen:</strong>
-                                    {{ $cita->origen }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Chat Session Id:</strong>
-                                    {{ $cita->chat_session_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Token Confirmacion:</strong>
-                                    {{ $cita->token_confirmacion }}
-                                </div>
+                    {{-- SECCIÓN: MÉDICO Y ESPECIALIDAD --}}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Médico</strong></label>
+                                <input type="text" class="form-control" value="{{ $cita->medico->usuario->nombre }} {{ $cita->medico->usuario->apellido }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Especialidad</strong></label>
+                                <input type="text" class="form-control" value="{{ $cita->medico->especialidade->nombre }}" readonly >
+                            </div>
+                        </div>
+                    </div>
 
+                    {{-- SECCIÓN: FECHA, HORA Y ESTADO --}}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label><strong>Fecha</strong></label>
+                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label><strong>Hora</strong></label>
+                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label><strong>Estado</strong></label>
+                                {{-- Aquí usamos el mismo badge que en el index para consistencia visual --}}
+                                <div>
+                                    @if($cita->estado == 'pendiente')
+                                        <span class="badge badge-warning text-dark p-2 w-100">PENDIENTE</span>
+                                    @elseif($cita->estado == 'confirmada')
+                                        <span class="badge badge-success p-2 w-100">CONFIRMADA</span>
+                                    @else
+                                        <span class="badge badge-danger p-2 w-100">CANCELADA</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- SECCIÓN: MOTIVO --}}
+                    <div class="form-group">
+                        <label><strong>Motivo de la Cita</strong></label>
+                        <textarea class="form-control" rows="3" readonly>{{ $cita->motivo }}</textarea>
+                    </div>
+
+                    {{-- SECCIÓN TÉCNICA (Opcional, con estilo sutil) --}}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small class="text-muted"><strong>Origen:</strong> {{ ucfirst($cita->origen) }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted"><strong>Duración:</strong> {{ $cita->duracion_minutos }} min</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @stop
 
 {{-- Create a common footer --}}
