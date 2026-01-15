@@ -27,7 +27,18 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-    @yield('content_body')
+    <div class="container-fluid pt-4">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-8 text-center">
+            {{-- Mensaje de Bienvenida --}}
+            <h1 class="display-4 mb-4" style="color: #3da9f3; font-weight: bold;">Bienvenido</h1>
+            <h1 class="display-4 mb-4" style="color: #0b4c81; font-weight: bold;">Consultorio El Buen Pastor</h1>
+            <p class="lead text-muted mb-5">Sistema Integral de Gestión de Consultas Médicas</p>
+
+
+        </div>
+    </div>
+</div>
 @stop
 
 {{-- Create a common footer --}}

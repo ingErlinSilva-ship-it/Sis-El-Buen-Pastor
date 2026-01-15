@@ -33,32 +33,49 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Medico</span>
+                            <span class="card-title">Información del Médico</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}"> {{ __('Retroceder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('medico.index') }}">
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Usuario:</strong>
-                                    {{ $medico->usuario->nombre }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Especialidad:</strong>
-                                    {{ $medico->especialidade->nombre }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Codigo Minsa:</strong>
-                                    {{ $medico->codigo_minsa }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $medico->descripcion }}
-                                </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Nombre</strong></label>
+                                    <input type="text" class="form-control" value="{{ $medico->usuario->nombre }} " readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Apellido</strong></label>
+                                    <input type="text" class="form-control" value="{{ $medico->usuario->apellido }} " readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Especialidad</strong></label>
+                                    <input type="text" class="form-control" value="{{ $medico->especialidade->nombre }}" readonly >
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Codigo Minsa</strong></label>
+                                    <input type="text" class="form-control" value="{{ $medico->codigo_minsa }}" readonly >
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Descripción</strong></label>
+                                    <input type="text" class="form-control" value="{{ $medico->descripcion }}" readonly >
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

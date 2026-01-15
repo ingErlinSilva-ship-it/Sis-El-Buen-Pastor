@@ -33,36 +33,65 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Pacientes</span>
+                            <span class="card-title">Información del Paciente</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('paciente.index') }}"> {{ __('Regresar') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('paciente.index') }}">
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                        <div class="form-group mb-2 mb20">
-                            <strong>Usuario:</strong>
-                            {{ $paciente->usuario->nombre }}
-                        </div>
-                        <div class="form-group mb-2 mb20">
-                            <strong>Fecha de Nacimiento:</strong>
-                            {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}
-                        </div>
-                        <div class="form-group mb-2 mb20">
-                            <strong>Cédula:</strong>
-                            {{ $paciente->cedula }}
-                        </div>
-                        <div class="form-group mb-2 mb20">
-                            <strong>Dirección:</strong>
-                            {{ $paciente->direccion ?? 'No especificada' }}
-                        </div>
-                         <div class="form-group mb-2 mb20">
-                            <strong>Tipo Sangre:</strong>
-                            {{ $paciente->tipo_sangre }}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Nombre</strong></label>
+                                    <input type="text" class="form-control" value="{{ $paciente->usuario->nombre }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Apellido</strong></label>
+                                    <input type="text" class="form-control" value="{{ $paciente->usuario->apellido }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label><strong>Fecha de Nacimiento</strong></label>
+                                    <input type="text" class="form-control" value="{{  \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label><strong>Edad Actual</strong></label>
+                                    <input type="text" class="form-control" 
+                                        value="{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label><strong>Cédula</strong></label>
+                                    <input type="text" class="form-control" value="{{ $paciente->cedula }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label><strong>Tipo Sangre</strong></label>
+                                    <input type="text" class="form-control" value="{{ $paciente->tipo_sangre  }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Dirección</strong></label>
+                                    <input type="text" class="form-control" value="{{ $paciente->direccion ?? 'No especificada'}}" readonly>
+                                </div>
+                            </div>
+
                         </div>
 
+                        <hr/>
                         <div class="form-group mb-2 mb20">
                             <strong>Alergias:</strong>
                                @if ($paciente->alergias->count())

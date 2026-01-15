@@ -64,7 +64,7 @@ return [
     */
 
     'logo' => '<span style="color: white; font-weight: bold;">El Buen</span><span style="color: #00e1ffff; font-weight: bold;"> Pastor</span>',
-    'logo_img' => 'vendor/adminlte/dist/img/logosiss.png',
+    'logo_img' => 'vendor/adminlte/dist/img/logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -86,7 +86,7 @@ return [
     'auth_logo' => [
         'enabled' => false,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/logosis.png',
+            'path' => 'vendor/adminlte/dist/img/4.png',
             'alt' => 'Auth Logo',
             'class' => '',
             'width' => 50,
@@ -113,11 +113,11 @@ return [
         'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/logosiss.png',
+            'path' => 'vendor/adminlte/dist/img/logo.png',
             'alt' => 'AdminLTE Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 60,
-            'height' => 60,
+            'width' => 250,
+            'height' => 250,
         ],
     ],
 
@@ -257,7 +257,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'home',
+    'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -320,6 +320,12 @@ return [
             'url' => 'admin/blog',
             'can' => 'manage-blog',
         ],
+
+        [
+            'text' => 'HOME',
+            'route' => 'dashboard',
+            'icon' => 'fas fa-tachometer-alt ',
+        ],
         
         [
             'text' => 'Roles',
@@ -363,6 +369,11 @@ return [
             'icon' => 'fas fa-head-side-virus',
         ],
 
+        [
+            'text' => 'Agendar Citas',
+            'route' => 'cita.index',
+            'icon' => 'fas fa-calendar-check',
+        ],
 
     ],
 

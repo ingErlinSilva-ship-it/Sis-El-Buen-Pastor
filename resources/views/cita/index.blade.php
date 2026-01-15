@@ -27,7 +27,7 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-     <div class="container-fluid">
+        <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
@@ -35,12 +35,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Pacientes') }}
+                                {{ __('Citas') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('paciente.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear Nuevo Paciente') }}
+                                <a href="{{ route('cita.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nueva Cita') }}
                                 </a>
                               </div>
                         </div>
@@ -58,37 +58,57 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th class="text-center">Usuario</th>
-                                    <th class="text-center">Fecha Nacimiento</th>
-                                    <th class="text-center">Edad</th>
-									<th class="text-center">Cédula</th>
-									<th class="text-center">Dirección</th>
-									<th class="text-center">Tipo Sangre</th>
-									
+									<th >Paciente</th>
+									<th >Médico</th>
+									<th >Fecha</th>
+									<th >Hora</th>
+									<th >Duración</th>
+									<th >Motivo</th>
+									<th >Estado</th>
+									<th >Origen</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pacientes as $paciente)
+                                    @foreach ($citas as $cita)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            <td class="text-center">{{ $paciente->usuario?->nombre ?? 'N/A' }}</td>   
-                                            {{-- Formateamos la fecha directamente aquí por seguridad --}}
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</td>
-                                            <td class="text-center">{{ $paciente->cedula }}</td>
-                                            <td >{{ $paciente->direccion }}</td>
-                                            <td class="text-center">{{ $paciente->tipo_sangre }}</td>
+                                            
+										<td >{{ $cita->paciente->usuario->nombre }} {{ $cita->paciente->usuario->apellido }}</td>
+										<td >{{ $cita->medico->usuario->nombre }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</td>
+										<td >{{ $cita->duracion_minutos }}</td>
+										<td >{{ $cita->motivo }}</td>
+										<td>@if($cita->estado == 'pendiente')
+                                            <span class="badge badge-warning text-dark" style="font-size: 0.9em; padding: 5px 10px;">
+                                                <i class="fas fa-clock"></i> Pendiente
+                                            </span>
+                                        @elseif($cita->estado == 'confirmada')
+                                            <span class="badge badge-success" style="font-size: 0.9em; padding: 5px 10px;">
+                                                <i class="fas fa-check-circle"></i> Confirmada
+                                            </span>
+                                        @elseif($cita->estado == 'cancelada')
+                                            <span class="badge badge-danger" style="font-size: 0.9em; padding: 5px 10px;">
+                                                <i class="fas fa-times-circle"></i> Cancelada
+                                            </span>
+                                        @else
+                                            <span class="badge badge-secondary">{{ $cita->estado }}</span>
+                                        @endif
+                                    </td>
+										<td >{{ $cita->origen }}</td>
+										<td >{{ $cita->chat_session_id }}</td>
+										<td >{{ $cita->token_confirmacion }}</td>
 
-                                        <td>
-
-                                                <form action="{{ route('paciente.destroy', $paciente->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('paciente.show', $paciente->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('paciente.edit', $paciente->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                            <td>
+                                                <form action="{{ route('cita.destroy', $cita->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('cita.show', $cita->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('cita.edit', $cita->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Deseas Eliminar esta Cuenta de paciente?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Deseas Eliminar esta Cita?') ? 
+                                                    this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -98,7 +118,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $pacientes->withQueryString()->links() !!}
+                {!! $citas->withQueryString()->links() !!}
             </div>
         </div>
     </div>
