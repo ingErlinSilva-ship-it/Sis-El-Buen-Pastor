@@ -68,47 +68,47 @@ class CitaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
-{
-return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
-        $pacienteId = $request->paciente_id;
+    public function store(Request $request)
+    {
+    return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $pacienteId = $request->paciente_id;
 
-        // Registro Rápido: Si no hay paciente_id, se crea el Usuario y el Paciente
-        if (!$pacienteId) {
-            $usuario = Usuario::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'email' => $request->email ?? $request->cedula_buscada . '@clinica.com',
-                'celular' => $request->celular,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->celular),
-                'rol_id' => 3, 
-                'estado' => 1
+            // Registro Rápido: Si no hay paciente_id, se crea el Usuario y el Paciente
+            if (!$pacienteId) {
+                $usuario = Usuario::create([
+                    'nombre' => $request->nombre,
+                    'apellido' => $request->apellido,
+                    'email' => $request->email ?? $request->cedula_buscada . '@clinica.com',
+                    'celular' => $request->celular,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->celular),
+                    'rol_id' => 3, 
+                    'estado' => 1
+                ]);
+
+                $nuevoPaciente = Paciente::create([
+                    'usuario_id' => $usuario->id,
+                    'cedula' => $request->cedula_buscada,
+                    'tipo_sangre' => 'No definido', 
+                ]);
+
+                $pacienteId = $nuevoPaciente->id;
+            }
+
+            // Crear la Cita vinculando al paciente (nuevo o existente) y al médico
+            Cita::create([
+                'paciente_id' => $pacienteId,
+                'medico_id' => $request->medico_id,
+                'fecha' => $request->fecha,
+                'hora' => $request->hora,
+                'duracion_minutos' => $request->duracion_minutos,
+                'motivo' => $request->motivo,
+                'estado' => $request->estado,
+                'origen' => $request->origen,
             ]);
 
-            $nuevoPaciente = Paciente::create([
-                'usuario_id' => $usuario->id,
-                'cedula' => $request->cedula_buscada,
-                'tipo_sangre' => 'No definido', 
-            ]);
-
-            $pacienteId = $nuevoPaciente->id;
-        }
-
-        // Crear la Cita vinculando al paciente (nuevo o existente) y al médico
-        Cita::create([
-            'paciente_id' => $pacienteId,
-            'medico_id' => $request->medico_id,
-            'fecha' => $request->fecha,
-            'hora' => $request->hora,
-            'duracion_minutos' => $request->duracion_minutos,
-            'motivo' => $request->motivo,
-            'estado' => $request->estado,
-            'origen' => $request->origen,
-        ]);
-
-        return redirect()->route('cita.index')->with('success', 'Cita Agendada Exitosamente.');
-    });
-}
+            return redirect()->route('cita.index')->with('success', 'Cita Agendada Exitosamente.');
+        });
+    }
 
     /**
      * Display the specified resource.

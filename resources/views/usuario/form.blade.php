@@ -15,7 +15,8 @@
 
         <div class="form-group mb-2 mb20">
             <label for="celular" class="form-label">{{ __('Celular') }}</label>
-            <input type="text" name="celular" class="form-control @error('celular') is-invalid @enderror" value="{{ old('celular', $usuario?->celular) }}" id="celular" placeholder="Celular">
+            <input type="text" name="celular" class="form-control @error('celular') is-invalid @enderror" value="{{ old('celular', $usuario?->celular) }}"
+            maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '');" id="celular" placeholder="Ej: 8888-8888">
             {!! $errors->first('celular', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
@@ -106,7 +107,7 @@
 
     </div>
     <div class="col-md-12 mt20 mt-2">
-        <button type="submit" class="btn btn-primary">{{ __('Submit') }}</button>
+        <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
     </div>
 </div>
 

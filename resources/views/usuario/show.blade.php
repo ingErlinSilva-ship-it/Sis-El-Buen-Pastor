@@ -36,7 +36,9 @@
                             <span class="card-title">{{ __('Show') }} Usuario</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('usuario.index') }}"> {{ __('Retroceder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('usuario.index') }}">
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </a>
                         </div>
                     </div>
 
@@ -67,8 +69,8 @@
                                     {{ $usuario->estado }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Rol Id:</strong>
-                                    {{ $usuario->rol_id }}
+                                    <strong>Tipo de Rol:</strong>
+                                    {{ $usuario->role->nombre }}
                                 </div>
 
                     </div>

@@ -273,7 +273,7 @@
                     <div class="col-md-5">
                         <hr>
                         <p><strong>Dirección:</strong></p>
-                        <p>Calle Principal, de la Iglesia El Buen Pastor 2 cuadras al norte.<br>
+                        <p>Del Laboratorio Divino Niño, media cuadra al Oeste.<br>
                         Diriá-Granada, Nicaragua.</p>
                         <br>
                         <p><strong>Horarios:</strong></p>

@@ -36,7 +36,9 @@
                             <span class="card-title">{{ __('Show') }} Enfermedades</span>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('enfermedade.index') }}"> {{ __('Retrocerder') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('enfermedade.index') }}"> 
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </a>
                         </div>
                     </div>
 
