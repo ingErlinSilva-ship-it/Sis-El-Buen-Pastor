@@ -17,7 +17,7 @@
         </div>
         <input type="hidden" name="cedula_buscada" id="cedula_buscada">
 
-        {{-- SECCIÓN MODIFICADA: Pacientes Existentes con campos separados --}}
+        {{-- Pacientes Existentes --}}
         <div id="seccion_paciente_existente" style="display: none; background: #f0fff0; border: 1px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <label class="text-success"><strong><i class="fas fa-check-circle"></i> Paciente Seleccionado</strong></label>
             <div class="row">
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        {{-- Mantén tu campo oculto justo debajo --}}
+        {{-- campo oculto justo debajo --}}
         <input type="hidden" name="paciente_id" id="paciente_id_hidden" value="{{ $cita->paciente_id ?? '' }}">
 
         {{-- Sección de Datos del Paciente (Se expande si es nuevo) --}}

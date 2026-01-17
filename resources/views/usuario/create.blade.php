@@ -66,12 +66,11 @@
 {{-- Add common Javascript/Jquery code --}}
 
 @push('js')
+
 <script>
-
     $(document).ready(function() {
-        // Add your common script logic here...
-    });
 
+    });
 </script>
 @endpush
 
