@@ -30,7 +30,13 @@ class Paciente extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['fecha_nacimiento', 'cedula', 'direccion', 'tipo_sangre', 'usuario_id'];
+    protected $fillable = ['fecha_nacimiento', 'cedula', 'direccion', 'tipo_sangre', 'usuario_id','es_menor',
+    'tutor_nombre',
+    'tutor_apellido',
+    'tutor_cedula',
+    'tutor_telefono',
+    'tutor_parentesco',
+    ];
 
     protected $casts = [    'fecha_nacimiento' => 'date:d-m-Y',
     ];

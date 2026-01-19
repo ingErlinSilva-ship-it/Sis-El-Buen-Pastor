@@ -66,34 +66,64 @@
 {{-- Add common Javascript/Jquery code --}}
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxMenor = document.getElementById('es_menor');
+        const seccionTutor = document.getElementById('seccion_tutor');
+        const cedulaPaciente = document.getElementById('cedula'); // Tu campo de cédula actual
 
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
-
-    // Seleccionamos el campo de cédula por su ID 
-    const cedulaInput = document.getElementById('cedula');
-
-    cedulaInput.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/[^0-9a-zA-Z]/g, ''); // Quitamos todo lo que no sea número o letra
-        let formattedValue = '';
-
-        if (value.length > 0) {
-            formattedValue += value.substring(0, 3);
-            if (value.length > 3) {
-                formattedValue += '-' + value.substring(3, 9);
+        // Máscara para la cédula del Paciente
+        $('#cedula').inputmask("999-999999-9999A", {
+            placeholder: "000-000000-0000X",
+            definitions: {
+                'A': {
+                    validator: "[A-Za-z]",
+                    casing: "upper"
+                }
             }
-            if (value.length > 9) {
-                formattedValue += '-' + value.substring(9, 13);
+        });
+
+        // Máscara para la cédula del Tutor
+        $('#tutor_cedula').inputmask("999-999999-9999A", {
+            placeholder: "000-000000-0000X",
+            definitions: {
+                'A': {
+                    validator: "[A-Za-z]",
+                    casing: "upper"
+                }
             }
-            if (value.length > 13) {
-                formattedValue += value.substring(13, 14).toUpperCase(); // La última es la letra
+        });
+
+        // Función para mostrar/ocultar y BLOQUEAR cédula del paciente
+        function toggleTutorSection() {
+            if (checkboxMenor.checked) {
+                // Caso: ES MENOR
+                seccionTutor.style.display = 'block';
+                
+                // Bloqueamos la cédula del paciente y la limpiamos
+                cedulaPaciente.value = ''; 
+                cedulaPaciente.readOnly = true;
+                cedulaPaciente.style.backgroundColor = '#e9ecef'; // Color gris (deshabilitado)
+            } else {
+                // Caso: ES MAYOR
+                seccionTutor.style.display = 'none';
+                
+                // Desbloqueamos la cédula del paciente
+                cedulaPaciente.readOnly = false;
+                cedulaPaciente.style.backgroundColor = '#ffffff'; // Color blanco (activo)
+                
+                // Limpiar los campos del tutor si se desmarca
+                seccionTutor.querySelectorAll('input, select').forEach(el => el.value = '');
             }
         }
-        e.target.value = formattedValue.substring(0, 16); // Límite de caracteres de la cédula
-    });
 
+        // Ejecutar al cargar la página (para Edit o errores de validación)
+        toggleTutorSection();
+
+        // Ejecutar cada vez que el usuario haga clic en el checkbox
+        checkboxMenor.addEventListener('change', toggleTutorSection);
+    });
 </script>
 @endpush
 
