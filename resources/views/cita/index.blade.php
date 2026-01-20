@@ -118,7 +118,6 @@
                         </div>
                     </div>
                 </div>
-                {!! $citas->withQueryString()->links() !!}
             </div>
         </div>
     </div>

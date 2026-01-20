@@ -52,7 +52,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function Role()
+    public function role()
     {
         // Asegúrate que el modelo Rol exista en App\Models\Rol
         return $this->belongsTo(Role::class, 'rol_id'); 

@@ -12,7 +12,7 @@
         <nav class="pt-2">
             <ul class="nav nav-pills nav-sidebar flex-column {{ config('adminlte.classes_sidebar_nav', '') }}"
                 data-widget="treeview" role="menu"
-                @if(config('adminlte.sidebar_nav_animation_speed') != 300)
+                @if(config('adminlte.sidebar_nav_animation_speed')) != 300)
                     data-animation-speed="{{ config('adminlte.sidebar_nav_animation_speed') }}"
                 @endif
                 @if(!config('adminlte.sidebar_nav_accordion'))
@@ -37,8 +37,11 @@
                 </p>
                 <p class="mt-1 mb-0" style="font-size: 0.9rem; color: #38bdf8; text-transform: capitalize;">
                 @php 
-                    $userRole = Auth::user()->Role; 
-                    $rolNombre = $userRole ? strtolower($userRole->nombre) : 'sin rol';
+                    $user = Auth::user();
+                        // Usamos el ayudante optional() o el operador ??
+                        // Esto evita que el fantasmita aparezca si el rol no existe
+                        $rolNombreRaw = optional($user->role)->nombre ?? 'Sin Rol';
+                        $rolNombre = strtolower($rolNombreRaw);
                 @endphp
 
                 @if(str_contains($rolNombre, 'admin')) 

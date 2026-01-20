@@ -18,7 +18,8 @@ class UsuarioController extends Controller
      */
     public function index(Request $request): View
     {
-        $usuarios = Usuario::paginate();
+        
+        $usuarios = Usuario::with('role')->paginate();
 
         return view('usuario.index', compact('usuarios'))
             ->with('i', ($request->input('page', 1) - 1) * $usuarios->perPage());
