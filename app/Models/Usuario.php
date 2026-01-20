@@ -44,7 +44,7 @@ class Usuario extends Model
      */
     public function role()
     {
-        return $this->belongsTo(\App\Models\Role::class, 'rol_id', 'id');
+        return $this->belongsTo(\App\Models\Role::class, 'rol_id');
     }
 
     // NUEVA RELACIÓN: Un Usuario puede ser un Médico

@@ -12,7 +12,7 @@
         <nav class="pt-2">
             <ul class="nav nav-pills nav-sidebar flex-column {{ config('adminlte.classes_sidebar_nav', '') }}"
                 data-widget="treeview" role="menu"
-                @if(config('adminlte.sidebar_nav_animation_speed') != 300)
+                @if(config('adminlte.sidebar_nav_animation_speed')) != 300)
                     data-animation-speed="{{ config('adminlte.sidebar_nav_animation_speed') }}"
                 @endif
                 @if(!config('adminlte.sidebar_nav_accordion'))
@@ -33,21 +33,25 @@
                     Usuario
                 </p>
                 <p class="font-weight-bold text-white text-truncate mb-1">
-                   {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}
+                    {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}
                 </p>
                 <p class="mt-1 mb-0" style="font-size: 0.9rem; color: #38bdf8; text-transform: capitalize;">
-                    @php
-                        $rolNombre = strtolower(Auth::user()->role->first()->nombre ??'');
-                    @endphp
+                @php 
+                    $user = Auth::user();
+                        // Usamos el ayudante optional() o el operador ??
+                        // Esto evita que el fantasmita aparezca si el rol no existe
+                        $rolNombreRaw = optional($user->role)->nombre ?? 'Sin Rol';
+                        $rolNombre = strtolower($rolNombreRaw);
+                @endphp
 
-                    @if($rolNombre == 'admin' || $rolNombre == 'administrador') 
+                @if(str_contains($rolNombre, 'admin')) 
                         Administrador
-                    @elseif($rolNombre == 'doctor' || $rolNombre == 'medico') 
+                    @elseif(str_contains($rolNombre, 'doctor') || str_contains($rolNombre, 'medic')) 
                         Doctor
-                    @elseif($rolNombre == 'paciente') 
+                    @elseif(str_contains($rolNombre, 'paciente')) 
                         Paciente
                     @else 
-                        {{ Auth::user()->role->first()->nombre ?? 'Sin Rol' }}
+                        {{ $userRole->nombre ?? 'Sin Rol' }}
                     @endif
                 </p>
             </div>

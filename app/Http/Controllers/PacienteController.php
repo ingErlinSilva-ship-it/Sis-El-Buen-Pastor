@@ -107,7 +107,7 @@ class PacienteController extends Controller
      */
     public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
     {
-        $paciente->update($request->only(['usuario_id','fecha_nacimiento','cedula','direccion','tipo_sangre']));
+        $paciente->update($request->validated());
 
         // 🔄 sync pivot
         $paciente->alergias()->sync($request->alergias ?? []);

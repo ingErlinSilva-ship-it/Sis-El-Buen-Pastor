@@ -1,3 +1,4 @@
+
 @extends('adminlte::page')
 
 {{-- Extend and customize the browser title --}}
@@ -91,24 +92,25 @@
                                         
                                         {{-- Para que muestre el nombre del rol con un color y no el numero--}}
                                         <td class="text-center">
-                                        @php
-                                        
-                                        // 1. Obtener el nombre del rol (asegurando minúsculas para la comparación)
-                                        $roleName = $usuario->role->nombre; 
-                                        $roleKey = strtolower($roleName);
-                                        
-                                        // 2. Asignar color según los 3 roles definidos (usando la función match de PHP 8.0+)
-                                        $badgeClass = match ($roleKey) {
-                                        'administrador' => 'bg-primary', // Azul para la gestión principal
-                                        'doctor'        => 'bg-info',    // Celeste para profesionales de la salud
-                                        'paciente'      => 'bg-warning', // Verde para el usuario final o cliente
-                                        default         => 'bg-secondary', // Gris para roles desconocidos
-                                        };
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }}">
-                                        {{ $roleName }}
-                                    </span>
-                                </td>
+                                            @php
+                                                // 1. Obtener el nombre del rol usando el operador de seguridad ?->
+                                                // Si el rol es nulo por cualquier razón, devolverá 'Sin Rol' en lugar de dar error.
+                                                $roleName = $usuario->role?->nombre ?? 'Sin Rol'; 
+                                                $roleKey = strtolower($roleName);
+                                                
+                                                // 2. Asignar color de forma segura
+                                                $badgeClass = match (true) {
+                                                    str_contains($roleKey, 'administrador') => 'bg-primary', // Azul para la gestión principal
+                                                    str_contains($roleKey, 'doctor')        => 'bg-info',    // Celeste para profesionales de la salud
+                                                    str_contains($roleKey, 'paciente')      => 'bg-warning',  // Verde para el usuario final o cliente
+                                                    default                                 => 'bg-secondary', // Gris para roles desconocidos
+                                                };
+                                            @endphp
+
+                                            <span class="badge {{ $badgeClass }}">
+                                                {{ $roleName }}
+                                            </span>
+                                        </td>
                                 
                                 <td>
                                     <form action="{{ route('usuario.destroy', $usuario->id) }}" method="POST">

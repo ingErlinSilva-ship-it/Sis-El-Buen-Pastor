@@ -49,5 +49,6 @@ Route::resource('paciente', PacienteController::class);
 Route::resource('cita', CitaController::class);
 
 Route::get('/paciente/buscar-por-cedula/{cedula}', [CitaController::class, 'buscarPorCedula']);
+Route::get('/citas/verificar-disponibilidad', [CitaController::class, 'verificarDisponibilidad']);
 
 require __DIR__.'/auth.php';
