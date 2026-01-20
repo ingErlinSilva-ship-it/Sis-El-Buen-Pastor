@@ -29,6 +29,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Guardamos el momento exacto del inicio de sesión
+        session(['login_time' => now()]);
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
