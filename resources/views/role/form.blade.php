@@ -6,21 +6,21 @@
 
                 {{-- Header dinámico: Cambia el color del borde y el icono según la acción --}}
                 {{-- Header dinámico: Mantiene el escudo fijo pero cambia el color según la acción --}}
-<div class="card-header bg-white border-bottom py-3 px-4"
-    style="border-top: 4px solid {{ isset($role->id) ? '#28a745' : '#007bff' }}; border-radius: 12px 12px 0 0;">
-    <div class="d-flex align-items-center">
-        <div class="rounded-circle p-2 mr-3"
-            style="background-color: {{ isset($role->id) ? '#e8f5e9' : '#e7f1ff' }};">
-            {{-- Icono fijo fa-user-shield, el color cambia dinámicamente --}}
-            <i class="fas fa-user-shield {{ isset($role->id) ? 'text-success' : 'text-primary' }}"></i>
-        </div>
-        <div>
-            <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
-                {{ isset($role->id) ? __('Actualizar Rol') : __('Configuración de Rol') }}
-            </h3>
-        </div>
-    </div>
-</div>
+                <div class="card-header bg-white border-bottom py-3 px-4"
+                    style="border-top: 4px solid {{ isset($role->id) ? '#28a745' : '#007bff' }}; border-radius: 12px 12px 0 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle p-2 mr-3"
+                            style="background-color: {{ isset($role->id) ? '#e8f5e9' : '#e7f1ff' }};">
+                            {{-- Icono fijo fa-user-shield, el color cambia dinámicamente --}}
+                            <i class="fas fa-user-shield {{ isset($role->id) ? 'text-success' : 'text-primary' }}"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
+                                {{ isset($role->id) ? __('Actualizar Rol') : __('Configuración de Rol') }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card-body p-4">
                     <div class="form-group mb-0">
