@@ -154,9 +154,9 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => null,
-    'layout_fixed_footer' => null,
+    'layout_fixed_sidebar' => true,
+    'layout_fixed_navbar' => true,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => null,
 
     /*
@@ -299,84 +299,65 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        
-        //[
-        //    'type' => 'navbar-search',
-        //    'text' => 'search',
-        //    'topnav_right' => true,
-        //],
-        //[
-        //    'type' => 'fullscreen-widget',
-        //  'topnav_right' => true,
-        //],
-
-        // Sidebar items:
-        [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
-        ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-
-        [
-            'text' => 'HOME',
-            'route' => 'dashboard',
-            'icon' => 'fas fa-tachometer-alt ',
-        ],
-        
-        [
-            'text' => 'Roles',
-            'route' => 'role.index',
-            'icon' => 'fas fa-fw fa-key',
-        ],
-
-        [
-            'text' => 'Usuarios',
-            'route' => 'usuario.index',
-            'icon' => 'fas fa-fw fa-users',
-        ],
-        
-        [
-            'text' => 'Pacientes',
-            'route' => 'paciente.index',
-            'icon' => 'fas fa-user-injured',
-        ],
-
-        [
-            'text' => 'Especialidades Médicas',
-            'route' => 'especialidade.index',
-            'icon' => 'fas fa-fw fa-clipboard-list',
-        ],
-
-        [
-            'text' => 'Médicos',
-            'route' => 'medico.index',
-            'icon' => 'fas fa-fw fa-stethoscope',
-        ],
-
-        [
-            'text' => 'Alergias',
-            'route' => 'alergia.index',
-            'icon' => 'fas fa-fw fa-virus',
-        ],
-
-        [
-            'text' => 'Enfermedades',
-            'route' => 'enfermedade.index',
-            'icon' => 'fas fa-head-side-virus',
-        ],
-
-        [
-            'text' => 'Agendar Citas',
-            'route' => 'cita.index',
-            'icon' => 'fas fa-calendar-check',
-        ],
-
+    // Sidebar items:
+    [
+        'type' => 'sidebar-menu-search',
+        'text' => 'search',
     ],
+    [
+        'text' => 'HOME',
+        'route' => 'dashboard',
+        'icon' => 'fas fa-tachometer-alt',
+    ],
+    
+    [
+        'text' => 'Roles',
+        'route' => 'role.index',
+        'icon' => 'fas fa-fw fa-user-tag',
+    ],
+
+    [
+        'text' => 'Usuarios',
+        'route' => 'usuario.index',
+        'icon' => 'fas fa-fw fa-users-cog',
+    ],
+    
+    [
+        'text' => 'Pacientes',
+        'route' => 'paciente.index',
+        'icon' => 'fas fa-fw fa-user-injured',
+    ],
+
+    [
+        'text' => 'Especialidades Médicas',
+        'route' => 'especialidade.index',
+        'icon' => 'fas fa-fw fa-microscope',
+    ],
+
+    [
+        'text' => 'Médicos',
+        'route' => 'medico.index',
+        'icon' => 'fas fa-fw fa-stethoscope',
+    ],
+
+    [
+        'text' => 'Alergias',
+        'route' => 'alergia.index',
+        'icon' => 'fas fa-fw fa-allergies',
+    ],
+
+    [
+        'text' => 'Enfermedades',
+        'route' => 'enfermedade.index',
+        'icon' => 'fas fa-fw fa-virus',
+    ],
+
+    [
+        'text' => 'Agendar Citas',
+        'route' => 'cita.index',
+        'icon' => 'fas fa-fw fa-calendar-alt',
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------

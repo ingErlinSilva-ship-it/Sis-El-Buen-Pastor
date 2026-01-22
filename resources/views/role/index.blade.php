@@ -1,82 +1,72 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
     {{ config('adminlte.title') }}
     @hasSection('subtitle') | @yield('subtitle') @endif
 @stop
 
-{{-- Extend and customize the page content header --}}
-
+{{-- Encabezado --}}
 @section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
+    <div class="container-fluid pt-4">
+        <div class="row align-items-center">
+            <div class="col-6 text-left">
+                <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
+                    <i class="fas fa-user-tag text-primary mr-2"></i> {{ __('Roles') }}
+                </h1>
+            </div>
+            <div class="col-6 text-right">
+                <a href="{{ route('role.create') }}" class="btn btn-primary shadow-sm px-3" style="border-radius: 50px; font-weight: bold;">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nuevo Rol') }}
+                </a>
+            </div>
+        </div>
+    </div>
 @stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    
+                    {{-- Eliminamos el Alert de Bootstrap antiguo ya que usaremos SweetAlert2 --}}
 
-                            <span id="card_title">
-                                {{ __('Roles') }}
-                            </span>
-
-                             <div class="float-right">
-                                <a href="{{ route('role.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear Nuevo Rol') }}
-                                </a>
-                              </div>
-                        </div>
-                    </div>
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success m-4">
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
-                    <div class="card-body bg-white">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="thead">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th>No</th>
-                                        
-									<th >Nombre</th>
-
-                                        <th></th>
+                                        <th class="border-0 px-4 py-3 text-muted" style="width: 100px;"># ID</th>
+                                        <th class="border-0 py-3 text-muted">{{ __('Nombre del Rol') }}</th>
+                                        <th class="border-0 py-3 text-right px-4 text-muted">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($roles as $role)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $role->nombre }}</td>
-
-                                            <td>
-                                                <form action="{{ route('role.destroy', $role->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('role.show', $role->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('role.edit', $role->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar este Rol?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                            <td class="align-middle px-4 text-muted">{{ $loop->iteration }}</td>
+                                            <td class="align-middle">
+                                                <span class="font-weight-bold text-dark">{{ $role->nombre }}</span>
+                                            </td>
+                                            <td class="text-right align-middle px-4">
+                                                {{-- Se añade la clase form-eliminar --}}
+                                                <form action="{{ route('role.destroy', $role->id) }}" method="POST" class="mb-0 form-eliminar">
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-sm btn-light text-primary shadow-sm mr-1" 
+                                                           href="{{ route('role.show', $role->id) }}" style="border-radius: 8px;">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        <a class="btn btn-sm btn-light text-success shadow-sm mr-1" 
+                                                           href="{{ route('role.edit', $role->id) }}" style="border-radius: 8px;">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        {{-- Quitamos el onclick antiguo --}}
+                                                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </form>
                                             </td>
                                         </tr>
@@ -86,52 +76,64 @@
                         </div>
                     </div>
                 </div>
-                {!! $roles->withQueryString()->links() !!}
+                
+                <div class="mt-4 d-flex justify-content-center">
+                    {!! $roles->withQueryString()->links('pagination::bootstrap-4') !!}
+                </div>
             </div>
         </div>
     </div>
 @stop
 
-{{-- Create a common footer --}}
-
 @section('footer')
-    <div class="float-right">
-        Version: {{ config('app.version', '1.0.0') }}
-    </div>
-
-    <strong>
-        <a href="{{ config('app.company_url', '#') }}">
-            {{ config('app.company_name', '© 2025 - Sistema web con asistente virtual para gestión de consultas médicas. Desarrollado por Levi Ruiz y Erlin Silva.') }}
-        </a>
-    </strong>
+<div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
+<strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
     $(document).ready(function() {
-        // Add your common script logic here...
+        // 1. Manejo del borrado con SweetAlert2
+        $('.form-eliminar').submit(function(e) {
+            e.preventDefault();
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "El rol se eliminará permanentemente del sistema.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-secondary px-4 mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+        // 2. Notificación de éxito dinámica
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'rounded-lg'
+                }
+            });
+        @endif
     });
-
 </script>
-@endpush
-
-{{-- Add common CSS customizations --}}
-
-@push('css')
-<style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
-
-</style>
 @endpush

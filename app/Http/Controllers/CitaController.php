@@ -17,12 +17,40 @@ class CitaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index()
     {
-        $citas = Cita::paginate();
+        $user = auth()->user();
 
-        return view('cita.index', compact('citas'))
-            ->with('i', ($request->input('page', 1) - 1) * $citas->perPage());
+        // 1. LÓGICA PARA EL ADMINISTRADOR (Ve todo)
+        if ($user->rol_id == 1) {
+            $citas = Cita::all();
+        }
+
+        // 2. LÓGICA PARA EL DOCTOR (Ve solo sus citas)
+        elseif ($user->rol_id == 2) {
+            // Primero buscamos el ID de médico asociado a este usuario
+            $medico = Medico::where('usuario_id', $user->id)->first();
+
+            if ($medico) {
+                // Filtramos las citas por su ID de médico
+                $citas = Cita::where('medico_id', $medico->id)->get();
+            } else {
+                $citas = collect(); // Si no tiene perfil médico creado
+            }
+        }
+
+        // 3. LÓGICA PARA EL PACIENTE (Ya la tienes funcionando)
+        elseif ($user->rol_id == 3) {
+            $paciente = Paciente::where('usuario_id', $user->id)->first();
+
+            if ($paciente) {
+                $citas = Cita::where('paciente_id', $paciente->id)->get();
+            } else {
+                $citas = collect();
+            }
+        }
+
+        return view('cita.index', compact('citas'));
     }
 
     /**
@@ -30,12 +58,12 @@ class CitaController extends Controller
      */
     public function create(): View
     {
-        $ID_ROL_MEDICO = 2; 
+        $ID_ROL_MEDICO = 2;
         $cita = new Cita();
 
         // IMPORTANTE: Usamos get() y luego map() para estructurar los datos
         // IMPORTANTE: Buscamos en la tabla 'medicos' directamente para obtener SU ID real
-        $medicos = \App\Models\Medico::with('usuario', 'especialidade')
+        $medicos = Medico::with('usuario', 'especialidade')
             ->get()
             ->map(function ($medico) {
                 return [
@@ -45,30 +73,30 @@ class CitaController extends Controller
                 ];
             })->toArray();
 
-                return view('cita.create', compact('cita', 'medicos'));
-        }
+        return view('cita.create', compact('cita', 'medicos'));
+    }
 
     public function buscarPorCedula($cedula)
     {
         // Buscamos todos los pacientes donde la cédula sea del titular O del tutor
         $paciente = Paciente::where('cedula', $cedula)->orWhere('tutor_cedula', $cedula)
-                ->with('usuario')
-                ->get();
+            ->with('usuario')
+            ->get();
 
         if ($paciente->count() > 0) {
-                return response()->json([
-                    'status' => 'success',
-                    'count' => $paciente->count(),
-                    'data' => $paciente->map(function($p) {
-                        return [
-                            'id' => $p->id,
-                            'nombre' => $p->usuario->nombre,
-                            'apellido' => $p->usuario->apellido,
-                            'tipo' => $p->tutor_cedula ? 'Menor' : 'Adulto'
-                        ];
-                    })
-                ]);
-            }
+            return response()->json([
+                'status' => 'success',
+                'count' => $paciente->count(),
+                'data' => $paciente->map(function ($p) {
+                    return [
+                        'id' => $p->id,
+                        'nombre' => $p->usuario->nombre,
+                        'apellido' => $p->usuario->apellido,
+                        'tipo' => $p->tutor_cedula ? 'Menor' : 'Adulto'
+                    ];
+                })
+            ]);
+        }
 
         return response()->json(['status' => 'not_found']);
     }
@@ -106,7 +134,7 @@ class CitaController extends Controller
         // Regla: Lunes a Viernes (Solo tarde: 2:00 PM a 6:00 PM por ejemplo)
         if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
             // Si la hora es menor a las 2pm O mayor a las 6pm, da error.
-            if ($hora < "13:30" || $hora > "17:30") { 
+            if ($hora < "13:30" || $hora > "17:30") {
                 return back()->withErrors(['hora' => 'Horario de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
             }
         }
@@ -120,7 +148,7 @@ class CitaController extends Controller
 
         // 2. TRANSACCIÓN DE BASE DE DATOS
         return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $hora) {
-            
+
             // --- VALIDACIÓN DE DISPONIBILIDAD DEL MÉDICO ---
             $citaOcupada = Cita::where('medico_id', $request->medico_id)
                 ->where('fecha', $request->fecha)
@@ -142,14 +170,14 @@ class CitaController extends Controller
                     'email' => $request->email ?? $request->cedula_buscada . '@clinica.com',
                     'celular' => $request->celular,
                     'password' => \Illuminate\Support\Facades\Hash::make($request->celular),
-                    'rol_id' => 3, 
+                    'rol_id' => 3,
                     'estado' => 1
                 ]);
 
                 $nuevoPaciente = Paciente::create([
                     'usuario_id' => $usuario->id,
                     'cedula' => $request->cedula_buscada,
-                    'tipo_sangre' => 'No definido', 
+                    'tipo_sangre' => 'No definido',
                 ]);
 
                 $pacienteId = $nuevoPaciente->id;
@@ -168,7 +196,7 @@ class CitaController extends Controller
             ]);
 
             return redirect()->route('cita.index')->with('success', 'Cita Agendada Exitosamente.');
-            
+
         }, 5); // El 5 indica reintentos en caso de deadlock
     }
 
@@ -225,7 +253,7 @@ class CitaController extends Controller
             return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
         }
         if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
-            if ($hora < "13:29" || $hora > "17:30") { 
+            if ($hora < "13:29" || $hora > "17:30") {
                 return back()->withErrors(['hora' => 'Atención de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
             }
         }
@@ -258,11 +286,16 @@ class CitaController extends Controller
         }
     }
 
-    public function destroy($id): RedirectResponse
-    {
-        Cita::find($id)->delete();
-
-        return Redirect::route('cita.index')
-            ->with('success', 'Cita Eliminada Exitosamente.');
+    public function destroy($id)
+{
+    // Bloqueo de seguridad: Si NO es administrador, no puede borrar
+    if (auth()->user()->rol_id !== 1) {
+        abort(403, 'No tienes permiso para eliminar citas.');
     }
+
+    $cita = \App\Models\Cita::find($id)->delete();
+
+    return redirect()->route('cita.index')
+        ->with('success', 'Cita eliminada exitosamente');
+}
 }

@@ -23,8 +23,14 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $request) {
+        if ($request->is('api/*')) {
+            return response()->json(['message' => 'No tienes permisos.'], 403);
+        }
+
+        // Si intenta entrar a una ruta bloqueada, lo mandamos al dashboard con un mensaje
+        return redirect()->route('dashboard')
+            ->with('error_toast', 'No tienes permisos para acceder a esa sección.');
+    });
     }
 }
