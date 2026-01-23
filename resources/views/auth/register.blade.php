@@ -69,7 +69,9 @@
                     {{-- Celular --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Celular</label>
-                        <input type="text" name="celular" value="{{ old('celular') }}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" placeholder="Ej: 8888-8888">
+                        <input type="text" name="celular" value="{{ old('celular') }}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)" pattern="[0-9]{8}" 
+                        title="El número debe tener exactamente 8 dígitos" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" 
+                        placeholder="Ej: 88888888">
                         <x-input-error :messages="$errors->get('celular')" class="mt-1" />
                     </div>
 
