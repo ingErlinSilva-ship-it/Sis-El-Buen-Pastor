@@ -14,20 +14,16 @@ class UsuarioRequest extends FormRequest
 
     public function rules(): array
     {
-        // 1. Obtener el método de la petición (POST para crear, PUT/PATCH para editar)
         $method = $this->method(); 
 
-        // 2. Obtener el ID del usuario actual si estamos editando. 
-        // Esto es necesario para que la validación 'unique' del email funcione correctamente.
-        // Asumo que tu ruta resource usa {usuario}.
+        // Obtenemos el ID de forma segura para la excepción del email único
         $usuarioId = $this->route('usuario') ? $this->route('usuario')->id : null; 
 
         return [
-            'nombre' => ['required', 'string', 'max:50'],
-            'apellido' => ['nullable', 'string', 'max:50'],
-            'celular' => ['nullable', 'string', 'max:20', 'min:8'],
+            'nombre'   => ['required', 'string', 'max:50'],
+            'apellido' => ['required', 'string', 'max:50'], // Cambiado a required para ficha médica completa
+            'celular'  => ['nullable', 'string', 'max:20', 'min:8'],
             
-            // Validación de Email: Debe ser único, EXCLUYENDO el usuario actual si estamos editando.
             'email' => [
                 'required', 
                 'string', 
@@ -36,14 +32,29 @@ class UsuarioRequest extends FormRequest
                 Rule::unique('usuarios', 'email')->ignore($usuarioId)
             ],
             
-            // CORRECCIÓN CLAVE PARA LA CONTRASEÑA
             'password' => $method == 'POST' 
-                ? 'required|string|min:8'   // REQUERIDO al CREAR (POST)
-                : 'nullable|string|min:8',  // OPCIONAL al EDITAR (PUT/PATCH)
+                ? ['required', 'string', 'min:8'] 
+                : ['nullable', 'string', 'min:8'],
 
-            'foto' => ['nullable', 'string', 'max:255'],
-            'estado' => ['required', 'integer'], // Cambiado a integer ya que es 0 o 1
+            // MODIFICACIÓN PARA FOTOS:
+            // Validamos que sea una imagen, formatos permitidos y tamaño máximo (2MB)
+            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            
+            'estado' => ['required', 'integer', 'in:0,1'], // Aseguramos que solo sea 0 o 1
             'rol_id' => ['required', 'integer', 'exists:roles,id'],
+        ];
+    }
+
+    /**
+     * Mensajes de error personalizados (Opcional pero recomendado)
+     */
+    public function messages(): array
+    {
+        return [
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La foto debe estar en formato: jpeg, png o jpg.',
+            'foto.max'   => 'La foto no debe pesar más de 2MB.',
+            'rol_id.required' => 'Debe asignar un rol de acceso al usuario.',
         ];
     }
 }

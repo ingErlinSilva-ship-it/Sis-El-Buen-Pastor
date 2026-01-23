@@ -34,13 +34,13 @@ class PacienteController extends Controller
         $paciente = new Paciente();
 
         $usuarios = Usuario::where('rol_id', $ID_ROL_PACIENTE)
-        ->whereDoesntHave('paciente')
-        ->pluck('nombre', 'id');
+            ->whereDoesntHave('paciente')
+            ->pluck('nombre', 'id');
 
         $alergias = Alergia::pluck('nombre', 'id');
         $enfermedades = Enfermedade::pluck('nombre', 'id');
 
-        return view('paciente.create', compact('paciente','usuarios','alergias','enfermedades'));
+        return view('paciente.create', compact('paciente', 'usuarios', 'alergias', 'enfermedades'));
     }
 
     /**
@@ -50,11 +50,12 @@ class PacienteController extends Controller
     {
 
         $paciente = Paciente::create($request->only([
-        'usuario_id',
-        'fecha_nacimiento',
-        'cedula',
-        'direccion',
-        'tipo_sangre',]));
+            'usuario_id',
+            'fecha_nacimiento',
+            'cedula',
+            'direccion',
+            'tipo_sangre',
+        ]));
 
         // 🔗 GUARDAR PIVOT
         if ($request->has('alergias')) {
@@ -74,7 +75,7 @@ class PacienteController extends Controller
      */
     public function show($id): View
     {
-        $paciente = Paciente::with(['usuario','alergias','enfermedades'])->findOrFail($id);
+        $paciente = Paciente::with(['usuario', 'alergias', 'enfermedades'])->findOrFail($id);
 
 
         return view('paciente.show', compact('paciente'));
@@ -86,11 +87,11 @@ class PacienteController extends Controller
      */
     public function edit($id): View
     {
-        $paciente = Paciente::with(['alergias','enfermedades'])->findOrFail($id);
+        $paciente = Paciente::with(['alergias', 'enfermedades'])->findOrFail($id);
         $ID_ROL_PACIENTE = 3;
 
         $usuarios = Usuario::where('rol_id', $ID_ROL_PACIENTE)
-            ->where(function($query) use ($paciente) {
+            ->where(function ($query) use ($paciente) {
                 $query->whereDoesntHave('paciente')
                     ->orWhere('id', $paciente->usuario_id);
             })
@@ -99,7 +100,7 @@ class PacienteController extends Controller
         $alergias = Alergia::pluck('nombre', 'id');
         $enfermedades = Enfermedade::pluck('nombre', 'id');
 
-        return view('paciente.edit', compact('paciente','usuarios','alergias','enfermedades'));
+        return view('paciente.edit', compact('paciente', 'usuarios', 'alergias', 'enfermedades'));
     }
 
     /**
@@ -109,7 +110,7 @@ class PacienteController extends Controller
     {
         $paciente->update($request->validated());
 
-        // 🔄 sync pivot
+        // sync pivot
         $paciente->alergias()->sync($request->alergias ?? []);
         $paciente->enfermedades()->sync($request->enfermedades ?? []);
 
@@ -117,11 +118,16 @@ class PacienteController extends Controller
             ->with('success', '¡Listo! Los datos del Paciente se han Actualizado con éxito.');
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy($id)
     {
+        // Solo el rol_id 1 puede borrar
+        if (auth()->user()->rol_id !== 1) {
+            abort(403, 'Acción no autorizada.');
+        }
+
         Paciente::find($id)->delete();
 
-        return Redirect::route('paciente.index')
-            ->with('success', '¡Listo! La Cuenta del Paciente se ha Eliminado con éxito.');
+        return redirect()->route('paciente.index')
+            ->with('success', 'Paciente eliminado con éxito');
     }
 }

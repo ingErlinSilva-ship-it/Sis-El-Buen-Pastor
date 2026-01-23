@@ -130,15 +130,8 @@
 {{-- Create a common footer --}}
 
 @section('footer')
-    <div class="float-right">
-        Version: {{ config('app.version', '1.0.0') }}
-    </div>
-
-    <strong>
-        <a href="{{ config('app.company_url', '#') }}">
-            {{ config('app.company_name', '© 2025 - Sistema web con asistente virtual para gestión de consultas médicas. Desarrollado por Levi Ruiz y Erlin Silva.') }}
-        </a>
-    </strong>
+    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
+    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
 {{-- Add common Javascript/Jquery code --}}

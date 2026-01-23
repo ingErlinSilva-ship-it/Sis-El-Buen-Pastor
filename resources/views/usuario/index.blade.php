@@ -1,179 +1,193 @@
-
 @extends('adminlte::page')
-
-{{-- Extend and customize the browser title --}}
 
 @section('title')
     {{ config('adminlte.title') }}
     @hasSection('subtitle') | @yield('subtitle') @endif
 @stop
 
-{{-- Extend and customize the page content header --}}
-
+{{-- Encabezado con icono unificado fa-user-check --}}
 @section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
+    <div class="container-fluid pt-4">
+        <div class="row align-items-center">
+            <div class="col-6 text-left">
+                <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
+                    <i class="fas fa-user-check text-primary mr-2"></i> {{ __('Usuarios') }}
+                </h1>
+            </div>
+            <div class="col-6 text-right">
+                <a href="{{ route('usuario.create') }}" class="btn btn-primary shadow-sm px-3" style="border-radius: 50px; font-weight: bold;">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Crear Nuevo Usuario') }}
+                </a>
+            </div>
+        </div>
+    </div>
 @stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-
-                            <span id="card_title">
-                                {{ __('Usuarios') }}
-                            </span>
-
-                             <div class="float-right">
-                                <a href="{{ route('usuario.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear Nuevo Usuario') }}
-                                </a>
-                              </div>
-                        </div>
-                    </div>
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success m-4">
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
-                    <div class="card-body bg-white">
+                {{-- Card moderna con bordes redondeados --}}
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="thead">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th>No</th>
-                                        
-									<th class="text-center">Nombre</th>
-									<th class="text-center">Apellido</th>
-									<th class="text-center">Celular</th>
-									<th class="text-center">Foto</th>{{-- CRevisar para poder subir foto --}}
-									<th class="text-center">Email</th>
-									<th class="text-center">Estado de la Cuenta</th>
-									<th class="text-center">Rol de Acceso</th>
-
-                                        <th></th>
+                                        <th class="border-0 px-4 py-3 text-muted" style="width: 50px;">No</th>
+                                        <th class="border-0 py-3 text-muted">Usuario</th>
+                                        <th class="border-0 py-3 text-muted text-center">Contacto</th>
+                                        <th class="border-0 py-3 text-muted text-center">Estado</th>
+                                        <th class="border-0 py-3 text-muted text-center">Rol de Acceso</th>
+                                        <th class="border-0 py-3 text-right px-4 text-muted">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($usuarios as $usuario)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-										<td class="text-center">{{ $usuario->nombre }}</td>
-										<td class="text-center">{{ $usuario->apellido }}</td>
-										<td class="text-center">{{ $usuario->celular }}</td>
-										<td class="text-center">{{ $usuario->foto }}</td>
-										<td class="text-center">{{ $usuario->email }}</td>
-
-                                        {{-- Compara directamente el valor, si estado es =1 esta activo, si es =0 esta inactivo--}}
-										<td class="text-center">
-                                            @if ($usuario->estado== 1)
-                                            <span class="badge bg-success" style="background-color: #008a00ff !important;">Activo</span>
-                                            @else
-                                            <span class="badge bg-danger">Inactivo</span>
-                                            @endif
-                                        </td>
-                                        
-                                        {{-- Para que muestre el nombre del rol con un color y no el numero--}}
-                                        <td class="text-center">
-                                            @php
-                                                // 1. Obtener el nombre del rol usando el operador de seguridad ?->
-                                                // Si el rol es nulo por cualquier razón, devolverá 'Sin Rol' en lugar de dar error.
-                                                $roleName = $usuario->role?->nombre ?? 'Sin Rol'; 
-                                                $roleKey = strtolower($roleName);
-                                                
-                                                // 2. Asignar color de forma segura
-                                                $badgeClass = match (true) {
-                                                    str_contains($roleKey, 'administrador') => 'bg-primary', // Azul para la gestión principal
-                                                    str_contains($roleKey, 'doctor')        => 'bg-info',    // Celeste para profesionales de la salud
-                                                    str_contains($roleKey, 'paciente')      => 'bg-warning',  // Verde para el usuario final o cliente
-                                                    default                                 => 'bg-secondary', // Gris para roles desconocidos
-                                                };
-                                            @endphp
-
-                                            <span class="badge {{ $badgeClass }}">
-                                                {{ $roleName }}
-                                            </span>
-                                        </td>
-                                
-                                <td>
-                                    <form action="{{ route('usuario.destroy', $usuario->id) }}" method="POST">
-                                        <a class="btn btn-sm btn-primary " href="{{ route('usuario.show', $usuario->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                        <a class="btn btn-sm btn-success" href="{{ route('usuario.edit', $usuario->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar este usuario?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                            <td class="align-middle px-4 text-muted">{{ ++$i }}</td>
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    {{-- Foto circular con manejo de almacenamiento --}}
+                                                    <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
+                                                        @if($usuario->foto)
+                                                            <img src="{{ asset('storage/'.$usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        @else
+                                                            <i class="fas fa-user text-muted"></i>
+                                                        @endif
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-weight-bold text-dark d-block text-capitalize">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
+                                                        <small class="text-muted">{{ $usuario->email }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="text-muted small"><i class="fas fa-phone-alt mr-1"></i> {{ $usuario->celular ?? 'N/A' }}</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                @if ($usuario->estado == 1)
+                                                    <span class="badge badge-pill shadow-sm" style="background-color: #e8f5e9; color: #2e7d32; padding: 0.5em 1em; border: 1px solid #c8e6c9;">
+                                                        <i class="fas fa-check-circle mr-1"></i> Activo
+                                                    </span>
+                                                @else
+                                                    <span class="badge badge-pill shadow-sm" style="background-color: #ffebee; color: #c62828; padding: 0.5em 1em; border: 1px solid #ffcdd2;">
+                                                        <i class="fas fa-times-circle mr-1"></i> Inactivo
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                @php
+                                                    $roleName = $usuario->role?->nombre ?? 'Sin Rol'; 
+                                                    $roleKey = strtolower($roleName);
+                                                    $badgeClass = match (true) {
+                                                        str_contains($roleKey, 'administrador') => 'badge-primary',
+                                                        str_contains($roleKey, 'doctor')        => 'badge-info',
+                                                        str_contains($roleKey, 'paciente')      => 'badge-warning',
+                                                        default                                 => 'badge-secondary',
+                                                    };
+                                                @endphp
+                                                <span class="badge {{ $badgeClass }} shadow-sm" style="padding: 0.5em 1em; border-radius: 8px; min-width: 90px;">
+                                                    {{ $roleName }}
+                                                </span>
+                                            </td>
+                                            <td class="text-right align-middle px-4">
+                                                <form action="{{ route('usuario.destroy', $usuario->id) }}" method="POST" class="mb-0 form-eliminar">
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-sm btn-light text-primary shadow-sm mr-1" 
+                                                           href="{{ route('usuario.show', $usuario->id) }}" style="border-radius: 8px;" title="Ver Perfil">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        <a class="btn btn-sm btn-light text-success shadow-sm mr-1" 
+                                                           href="{{ route('usuario.edit', $usuario->id) }}" style="border-radius: 8px;" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;" title="Eliminar Usuario">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-flex justify-content-center">
+                    {!! $usuarios->withQueryString()->links('pagination::bootstrap-4') !!}
                 </div>
             </div>
         </div>
-        {!! $usuarios->withQueryString()->links() !!}
     </div>
-</div>
-</div>
 @stop
-
-{{-- Create a common footer --}}
 
 @section('footer')
-    <div class="float-right">
-        Version: {{ config('app.version', '1.0.0') }}
-    </div>
-
-    <strong>
-        <a href="{{ config('app.company_url', '#') }}">
-            {{ config('app.company_name', '© 2025 - Sistema web con asistente virtual para gestión de consultas médicas. Desarrollado por Levi Ruiz y Erlin Silva.') }}
-        </a>
-    </strong>
+    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
+    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
     $(document).ready(function() {
-        // Add your common script logic here...
-    });
+        // Confirmación de eliminación con icono unificado
+        $('.form-eliminar').submit(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Eliminar usuario?',
+                text: "Esta acción revocará todos los accesos de este usuario al sistema.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-user-minus"></i> Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-secondary px-4 mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
 
+        // Notificación de éxito SweetAlert2
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'rounded-lg'
+                }
+            });
+        @endif
+    });
 </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8fbff;
+        transition: background-color 0.2s ease;
     }
-    .card-title {
+    .badge-pill {
         font-weight: 600;
+        letter-spacing: 0.3px;
     }
-    */
-
 </style>
 @endpush

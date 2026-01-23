@@ -1,101 +1,90 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
     {{ config('adminlte.title') }}
     @hasSection('subtitle') | @yield('subtitle') @endif
 @stop
 
-{{-- Extend and customize the page content header --}}
-
 @section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
 @stop
 
-{{-- Rename section content to content_body --}}
-
 @section('content')
-    <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }}Lista de Roles</span>
+    <div class="container-fluid pt-4">
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg" style="border-radius: 12px;">
+                    
+                    <div class="card-header bg-white border-bottom py-3 px-4" style="border-top: 4px solid #007bff; border-radius: 12px 12px 0 0;">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 mr-3" style="background-color: #e7f1ff;">
+                                <i class="fas fa-user-shield text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
+                                    {{ __('Visualización del Rol') }}
+                                </h3>
+                            </div>
                         </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('role.index') }}">
-                                <i class="fas fa-arrow-left"></i> Regresar
-                            </a>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <label class="text-dark font-weight-bold mb-2">
+                                        <i class="fas fa-edit mr-1 text-muted"></i> {{ __('Nombre del Rol') }}
+                                    </label>
+                                    
+                                    <div class="input-group input-group-lg">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white border-right-0" style="border-radius: 8px 0 0 8px;">
+                                                <i class="fas fa-tag text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <div class="form-control border-left-0 bg-light" style="border-radius: 0 8px 8px 0; font-size: 1rem; height: auto; min-height: 48px; display: flex; align-items: center;">
+                                            {{ $role->nombre }}
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle mr-1"></i> Identificador de funciones para el personal de la clínica.
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card-body bg-white">
+                    <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 12px 12px;">
+                        {{-- Botón de regreso --}}
+                        <a href="{{ route('role.index') }}" class="btn btn-outline-secondary mr-3 px-4 d-flex align-items-center shadow-sm" style="border-radius: 8px; font-weight: 600;">
+                            <i class="fas fa-arrow-left mr-2"></i> {{ __('Regresar') }}
+                        </a>
                         
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nombre:</strong>
-                                    {{ $role->nombre }}
-                                </div>
-
+                        {{-- Botón de edición --}}
+                        <a href="{{ route('role.edit', $role->id) }}" class="btn btn-primary px-5 shadow-sm d-flex align-items-center" style="border-radius: 8px; font-weight: 600; letter-spacing: 0.5px;">
+                            <i class="fas fa-edit mr-2"></i> {{ __('Editar Rol') }}
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 @stop
-
-{{-- Create a common footer --}}
 
 @section('footer')
-    <div class="float-right">
-        Version: {{ config('app.version', '1.0.0') }}
-    </div>
-
-    <strong>
-        <a href="{{ config('app.company_url', '#') }}">
-            {{ config('app.company_name', '© 2025 - Sistema web con asistente virtual para gestión de consultas médicas. Desarrollado por Levi Ruiz y Erlin Silva.') }}
-        </a>
-    </strong>
+    <div class="float-right d-none d-sm-block text-muted small">Version: {{ config('app.version', '1.0.0') }}</div>
+    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
-<script>
-
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
-
-</script>
+    <script>
+        $(document).ready(function () {
+            // Lógica adicional aquí
+        });
+    </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
-
-</style>
+    <style type="text/css">
+        /* Estilos específicos si fueran necesarios */
+    </style>
 @endpush
