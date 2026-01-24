@@ -83,20 +83,18 @@
                                         <td>{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</td>
                                         <td>{{ $cita->duracion_minutos }} min</td>
-                                        <td
-                                            style="width: 150px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <td style="width: 150px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             {{ $cita->motivo }}
                                         </td>
                                         <td>
                                             @if($cita->estado == 'pendiente')
-                                                <span class="badge badge-warning text-dark"><i class="fas fa-clock"></i>
-                                                    Pendiente</span>
+                                                <span class="badge badge-warning text-dark"><i class="fas fa-clock"></i> Pendiente</span>
                                             @elseif($cita->estado == 'confirmada')
-                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i>
-                                                    Confirmada</span>
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Confirmada</span>
                                             @elseif($cita->estado == 'cancelada')
-                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i>
-                                                    Cancelada</span>
+                                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Cancelada</span>
+                                            @elseif($cita->estado == 'asistida')
+                                                <span class="badge badge-info"><i class="fas fa-check-circle"></i> Finalizada</span>
                                             @else
                                                 <span class="badge badge-secondary">{{ $cita->estado }}</span>
                                             @endif
@@ -104,35 +102,34 @@
                                         <td>{{ $cita->origen }}</td>
 
                                         <td>
-                                                {{-- Acción VER: Disponible para todos los que llegan a esta tabla --}}
-                                                <a class="btn btn-sm btn-primary"
-                                                    href="{{ route('cita.show', $cita->id) }}">
+                                            <form action="{{ route('cita.destroy', $cita->id) }}" method="POST">
+                                                {{-- Acción VER: Disponible para todos --}}
+                                                <a class="btn btn-sm btn-primary" href="{{ route('cita.show', $cita->id) }}">
                                                     <i class="fa fa-fw fa-eye"></i> {{ __('Show') }}
                                                 </a>
 
-                                                {{-- Acción EDITAR: Lo ven el Doctor y el Admin (por el superpoder) --}}
+                                                {{-- Acción EDITAR y ATENDER: Solo para Doctor y Admin --}}
                                                 @can('doctor')
-                                                    <a class="btn btn-sm btn-success"
-                                                        href="{{ route('cita.edit', $cita->id) }}">
+                                                    <a class="btn btn-sm btn-success" href="{{ route('cita.edit', $cita->id) }}">
                                                         <i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}
+                                                    </a>
+                                                    
+                                                    {{-- TU BOTÓN DE ATENDER --}}
+                                                    <a class="btn btn-sm" href="{{ route('consultas.atender', $cita->id) }}" style="background-color: #138fa7; border-color: #138fa7; color: white;">
+                                                        <i class="fa fa-fw fa-stethoscope"></i> Atender
                                                     </a>
                                                 @endcan
 
-                                                {{-- Acción ELIMINAR: ÚNICAMENTE la ve el Administrador --}}
+                                                {{-- Acción ELIMINAR: Solo para Administrador --}}
                                                 @can('administrador')
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('¿Deseas Eliminar esta Cita?')">
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas Eliminar esta Cita?')">
                                                         <i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}
                                                     </button>
                                                 @endcan
                                             </form>
                                         </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>

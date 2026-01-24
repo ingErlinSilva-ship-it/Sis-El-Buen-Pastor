@@ -299,6 +299,52 @@ return [
     */
 
     'menu' => [
+        // Navbar items:
+        
+        //[
+        //    'type' => 'navbar-search',
+        //    'text' => 'search',
+        //    'topnav_right' => true,
+        //],
+        //[
+        //    'type' => 'fullscreen-widget',
+        //  'topnav_right' => true,
+        //],
+
+        // Sidebar items:
+        [
+            'type' => 'sidebar-menu-search',
+            'text' => 'search',
+        ],
+        [
+            'text' => 'blog',
+            'url' => 'admin/blog',
+            'can' => 'manage-blog',
+        ],
+
+        [
+            'text' => 'HOME',
+            'route' => 'dashboard',
+            'icon' => 'fas fa-clinic-medical',
+        ],
+        
+        [
+            'text' => 'Roles',
+            'route' => 'role.index',
+            'icon' => 'fas fa-fw fa-key',
+        ],
+
+        [
+            'text' => 'Usuarios',
+            'route' => 'usuario.index',
+            'icon' => 'fas fa-fw fa-users',
+        ],
+        
+        [
+            'text' => 'Pacientes',
+            'route' => 'paciente.index',
+            'icon' => 'fas fa-user-injured',
+        ],
     // Sidebar items:
     [
         'type' => 'sidebar-menu-search',
@@ -351,6 +397,12 @@ return [
         'route' => 'enfermedade.index',
         'icon' => 'fas fa-fw fa-virus',
     ],
+
+        [
+            'text' => 'Historial De Consulta',
+            'route' => 'consulta.index',
+            'icon' => 'fas fa-file-medical-alt',
+        ],
 
     [
         'text' => 'Agendar Citas',

@@ -28,7 +28,7 @@ class CitaRequest extends FormRequest
             'hora'        => 'required',
             'duracion_minutos' => 'required|integer',
             'motivo'      => 'nullable|string', 
-            'estado'      => 'required|in:pendiente,confirmada,cancelada',
+            'estado'      => 'required|in:pendiente,confirmada,asistida,cancelada',
             'origen'      => 'required|string',
             'chat_session_id'    => 'nullable|string', 
             'token_confirmacion' => 'nullable|string', 
