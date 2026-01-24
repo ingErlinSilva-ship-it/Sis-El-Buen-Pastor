@@ -154,9 +154,9 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => null,
-    'layout_fixed_footer' => null,
+    'layout_fixed_sidebar' => true,
+    'layout_fixed_navbar' => true,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => null,
 
     /*
@@ -345,36 +345,58 @@ return [
             'route' => 'paciente.index',
             'icon' => 'fas fa-user-injured',
         ],
+    // Sidebar items:
+    [
+        'type' => 'sidebar-menu-search',
+        'text' => 'search',
+    ],
+    [
+        'text' => 'HOME',
+        'route' => 'dashboard',
+        'icon' => 'fas fa-tachometer-alt',
+    ],
+    
+    [
+        'text' => 'Roles',
+        'route' => 'role.index',
+        'icon' => 'fas fa-fw fa-user-tag',
+    ],
 
-        [
-            'text' => 'Especialidades Médicas',
-            'route' => 'especialidade.index',
-            'icon' => 'fas fa-fw fa-clipboard-list',
-        ],
+    [
+        'text' => 'Usuarios',
+        'route' => 'usuario.index',
+        'icon' => 'fas fa-fw fa-users-cog',
+    ],
+    
+    [
+        'text' => 'Pacientes',
+        'route' => 'paciente.index',
+        'icon' => 'fas fa-fw fa-user-injured',
+    ],
 
-        [
-            'text' => 'Médicos',
-            'route' => 'medico.index',
-            'icon' => 'fas fa-fw fa-stethoscope',
-        ],
+    [
+        'text' => 'Especialidades Médicas',
+        'route' => 'especialidade.index',
+        'icon' => 'fas fa-fw fa-microscope',
+    ],
 
-        [
-            'text' => 'Alergias',
-            'route' => 'alergia.index',
-            'icon' => 'fas fa-fw fa-virus',
-        ],
+    [
+        'text' => 'Médicos',
+        'route' => 'medico.index',
+        'icon' => 'fas fa-fw fa-stethoscope',
+    ],
 
-        [
-            'text' => 'Enfermedades',
-            'route' => 'enfermedade.index',
-            'icon' => 'fas fa-head-side-virus',
-        ],
+    [
+        'text' => 'Alergias',
+        'route' => 'alergia.index',
+        'icon' => 'fas fa-fw fa-allergies',
+    ],
 
-        [
-            'text' => 'Agendar Citas',
-            'route' => 'cita.index',
-            'icon' => 'fas fa-calendar-check',
-        ],
+    [
+        'text' => 'Enfermedades',
+        'route' => 'enfermedade.index',
+        'icon' => 'fas fa-fw fa-virus',
+    ],
 
         [
             'text' => 'Historial De Consulta',
@@ -382,7 +404,12 @@ return [
             'icon' => 'fas fa-file-medical-alt',
         ],
 
+    [
+        'text' => 'Agendar Citas',
+        'route' => 'cita.index',
+        'icon' => 'fas fa-fw fa-calendar-alt',
     ],
+],
 
     /*
     |--------------------------------------------------------------------------

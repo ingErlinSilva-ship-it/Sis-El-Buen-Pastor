@@ -95,8 +95,16 @@ class UsuarioController extends Controller
     // 2. Actualizar el Usuario
     $usuario->update($data); // Se actualizan todos los campos, EXCEPTO 'password' si fue eliminado
 
-    return Redirect::route('usuario.index')
-        ->with('success', '¡Listo! Los datos del usuario se han actualizado con éxito.');
+    // Si el estado es 0 (Inactivo)
+    if ($usuario->estado == 0) { 
+        \Illuminate\Support\Facades\Cache::put('force_logout_user_' . $usuario->id, 'desactivado', now()->addDay());
+    } 
+    // Si cambió el rol pero sigue activo
+    elseif ($usuario->wasChanged('rol_id')) {
+        \Illuminate\Support\Facades\Cache::put('force_logout_user_' . $usuario->id, 'rol_cambiado', now()->addDay());
+    }
+
+    return Redirect::route('usuario.index')->with('success', 'Datos actualizados con éxito.');
 }
 
     public function destroy($id): RedirectResponse
