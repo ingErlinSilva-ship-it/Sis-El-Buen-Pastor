@@ -325,7 +325,7 @@ return [
         [
             'text' => 'HOME',
             'route' => 'dashboard',
-            'icon' => 'fas fa-tachometer-alt ',
+            'icon' => 'fas fa-clinic-medical',
         ],
         
         [
@@ -374,6 +374,12 @@ return [
             'text' => 'Agendar Citas',
             'route' => 'cita.index',
             'icon' => 'fas fa-calendar-check',
+        ],
+
+        [
+            'text' => 'Historial De Consulta',
+            'route' => 'consulta.index',
+            'icon' => 'fas fa-file-medical-alt',
         ],
 
     ],

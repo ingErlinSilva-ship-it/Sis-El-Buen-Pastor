@@ -123,9 +123,10 @@
             <div class="col-md-6">
                 <div class="form-group mb-2 mb20">
                     <label for="estado" class="form-label"><strong>{{ __('Estado') }}</strong></label>
-                    <select name="estado" class="form-control bloqueable @error('estado') is-invalid @enderror" disabled>
+                    <select name="estado" class="form-control bloqueable @error('estado') is-invalid @enderror" >
                         <option value="pendiente" {{ old('estado', $cita?->estado) == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
                         <option value="confirmada" {{ old('estado', $cita?->estado) == 'confirmada' ? 'selected' : '' }}>Confirmada</option>
+                        <option value="asistida" {{ old('estado', $cita?->estado) == 'asistida' ? 'selected' : '' }}>Finalizada</option>
                         <option value="cancelada" {{ old('estado', $cita?->estado) == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
                     </select>
                     {!! $errors->first('estado', '<div class="invalid-feedback"><strong>:message</strong></div>') !!}

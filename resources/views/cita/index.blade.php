@@ -93,6 +93,10 @@
                                             <span class="badge badge-danger" style="font-size: 0.9em; padding: 5px 10px;">
                                                 <i class="fas fa-times-circle"></i> Cancelada
                                             </span>
+                                        @elseif($cita->estado == 'asistida')
+                                            <span class="badge badge-danger" style="font-size: 0.9em; padding: 5px 10px;">
+                                                <i class="fas fa-check-circle"></i> Finalizada
+                                            </span>
                                         @else
                                             <span class="badge badge-secondary">{{ $cita->estado }}</span>
                                         @endif
@@ -109,6 +113,10 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Deseas Eliminar esta Cita?') ? 
                                                     this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <a class="btn btn-sm" href="{{ route('consultas.atender', $cita->id) }}" style="background-color: #138fa7; border-color: #138fa7; color: white;">
+                                                        <i class="fa fa-fw fa-stethoscope"></i> Atender
+                                                    </a>
+                                                    </a>
                                                 </form>
                                             </td>
                                         </tr>

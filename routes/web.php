@@ -9,6 +9,7 @@ use App\Http\Controllers\AlergiaController;
 use App\Http\Controllers\EnfermedadeController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ConsultaController;
 
 
 use Illuminate\Support\Facades\App;
@@ -47,8 +48,11 @@ Route::resource('alergia', AlergiaController::class);
 Route::resource('enfermedade', EnfermedadeController::class);
 Route::resource('paciente', PacienteController::class);
 Route::resource('cita', CitaController::class);
+Route::resource('consulta', ConsultaController::class);
 
 Route::get('/paciente/buscar-por-cedula/{cedula}', [CitaController::class, 'buscarPorCedula']);
 Route::get('/citas/verificar-disponibilidad', [CitaController::class, 'verificarDisponibilidad']);
+Route::get('/consultas/atender/{cita_id}', [ConsultaController::class, 'atender'])->name('consultas.atender');
+
 
 require __DIR__.'/auth.php';
