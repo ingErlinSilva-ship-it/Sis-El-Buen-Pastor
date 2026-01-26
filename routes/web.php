@@ -38,6 +38,7 @@ Route::middleware(['auth', 'can:administrador'])->group(function () {
     Route::resource('usuario', UsuarioController::class);
     Route::resource('especialidade', EspecialidadeController::class);
     Route::resource('medico', MedicoController::class);
+    
 });
 
 // --- 3. SOLO DOCTORES (Aquí integramos tus rutas de Consultas) ---

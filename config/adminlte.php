@@ -299,27 +299,11 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        
-        //[
-        //    'type' => 'navbar-search',
-        //    'text' => 'search',
-        //    'topnav_right' => true,
-        //],
-        //[
-        //    'type' => 'fullscreen-widget',
-        //  'topnav_right' => true,
-        //],
 
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
-        ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
         ],
 
         [
@@ -345,34 +329,6 @@ return [
             'route' => 'paciente.index',
             'icon' => 'fas fa-user-injured',
         ],
-    // Sidebar items:
-    [
-        'type' => 'sidebar-menu-search',
-        'text' => 'search',
-    ],
-    [
-        'text' => 'HOME',
-        'route' => 'dashboard',
-        'icon' => 'fas fa-tachometer-alt',
-    ],
-    
-    [
-        'text' => 'Roles',
-        'route' => 'role.index',
-        'icon' => 'fas fa-fw fa-user-tag',
-    ],
-
-    [
-        'text' => 'Usuarios',
-        'route' => 'usuario.index',
-        'icon' => 'fas fa-fw fa-users-cog',
-    ],
-    
-    [
-        'text' => 'Pacientes',
-        'route' => 'paciente.index',
-        'icon' => 'fas fa-fw fa-user-injured',
-    ],
 
     [
         'text' => 'Especialidades Médicas',
@@ -397,18 +353,19 @@ return [
         'route' => 'enfermedade.index',
         'icon' => 'fas fa-fw fa-virus',
     ],
-
-        [
-            'text' => 'Historial De Consulta',
-            'route' => 'consulta.index',
-            'icon' => 'fas fa-file-medical-alt',
-        ],
-
     [
         'text' => 'Agendar Citas',
         'route' => 'cita.index',
         'icon' => 'fas fa-fw fa-calendar-alt',
     ],
+
+    [
+        'text' => 'Historial De Consulta',
+        'route' => 'consulta.index',
+        'icon' => 'fas fa-file-medical-alt',
+    ],
+
+
 ],
 
     /*
