@@ -27,26 +27,15 @@
 {{-- Rename section content to content_body --}}
 
 @section('content')
-        <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
+    <div class="container-fluid">
+        <form method="POST" action="{{ route('paciente.store') }}"  role="form" enctype="multipart/form-data">
+            @csrf
 
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Pacientes</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('paciente.store') }}"  role="form" enctype="multipart/form-data">
-                            @csrf
+            @include('paciente.form')
 
-                            @include('paciente.form')
+        </form>
+    </div>
 
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 @stop
 
 {{-- Create a common footer --}}

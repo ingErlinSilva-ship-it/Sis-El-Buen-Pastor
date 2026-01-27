@@ -93,7 +93,9 @@
                                     </div>
                                     <div class="col-sm-6 mb-3">
                                         <label class="text-muted small font-weight-bold text-uppercase d-block"><i class="fas fa-calendar-alt mr-1"></i> Miembro desde</label>
-                                        <span class="text-dark">{{ $usuario->created_at->format('d/m/Y') }}</span>
+                                        <span class="text-dark">
+                                            {{ $usuario->created_at ? $usuario->created_at->format('d/m/Y') : 'Sin fecha de registro' }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

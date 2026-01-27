@@ -1,114 +1,104 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
+@section('title', 'Pacientes | ' . config('adminlte.title'))
 
-@section('title')
-{{ config('adminlte.title') }}
-@hasSection('subtitle') | @yield('subtitle') @endif
-@stop
-
-{{-- Extend and customize the page content header --}}
-
+{{-- Encabezado con estilo unificado --}}
 @section('content_header')
-@hasSection('content_header_title')
-    <h1 class="text-muted">
-        @yield('content_header_title')
-
-        @hasSection('content_header_subtitle')
-            <small class="text-dark">
-                <i class="fas fa-xs fa-angle-right text-muted"></i>
-                @yield('content_header_subtitle')
-            </small>
-        @endif
-    </h1>
-@endif
+    <div class="container-fluid pt-4">
+        <div class="row align-items-center">
+            <div class="col-6 text-left">
+                <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
+                    <i class="fas fa-user-injured text-primary mr-2"></i> {{ __('Pacientes') }}
+                </h1>
+            </div>
+            <div class="col-6 text-right">
+                <a href="{{ route('paciente.create') }}" class="btn btn-primary shadow-sm px-3" style="border-radius: 50px; font-weight: bold;">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Crear Nuevo Paciente') }}
+                </a>
+            </div>
+        </div>
+    </div>
 @stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-
-                        <span id="card_title">
-                            {{ __('Pacientes') }}
-                        </span>
-
-                        <div class="float-right">
-                            <a href="{{ route('paciente.create') }}" class="btn btn-primary btn-sm float-right"
-                                data-placement="left">
-                                {{ __('Crear Nuevo Paciente') }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @if ($message = Session::get('success'))
-                    <div class="alert alert-success m-4">
-                        <p>{{ $message }}</p>
-                    </div>
-                @endif
-
-                <div class="card-body bg-white">
+            {{-- Card moderna con bordes redondeados al estilo de Usuarios --}}
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="thead">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>No</th>
-
-                                    <th class="text-center">Usuario</th>
-                                    <th class="text-center">Fecha Nacimiento</th>
-                                    <th class="text-center">Edad</th>
-                                    <th class="text-center">Cédula</th>
-                                    <th class="text-center">Dirección</th>
-                                    <th class="text-center">Tipo Sangre</th>
-
-
-                                    <th></th>
+                                    <th class="border-0 px-4 py-3 text-muted" style="width: 50px;">No</th>
+                                    <th class="border-0 py-3 text-muted">Paciente</th>
+                                    <th class="border-0 py-3 text-muted text-center">Datos Clínicos</th>
+                                    <th class="border-0 py-3 text-muted text-center">Cédula</th>
+                                    <th class="border-0 py-3 text-muted text-center">Dirección</th>
+                                    <th class="border-0 py-3 text-right px-4 text-muted">{{ __('Acciones') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($pacientes as $paciente)
                                     <tr>
-                                        <td>{{ ++$i }}</td>
-                                        <td class="text-center">{{ $paciente->usuario?->nombre ?? 'N/A' }}</td>
-                                        {{-- Formateamos la fecha directamente aquí por seguridad --}}
-                                        <td class="text-center">
-                                            {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</td>
-                                        <td class="text-center">
-                                            {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</td>
-                                        <td class="text-center">{{ $paciente->cedula }}</td>
-                                        <td>{{ $paciente->direccion }}</td>
-                                        <td class="text-center">{{ $paciente->tipo_sangre }}</td>
-
-                                        <td>
-                                            <form action="{{ route('paciente.destroy', $paciente->id) }}" method="POST">
-                                                {{-- Ver: Disponible para Admin y Doctor --}}
-                                                <a class="btn btn-sm btn-primary"
-                                                    href="{{ route('paciente.show', $paciente->id) }}">
-                                                    <i class="fa fa-fw fa-eye"></i> {{ __('Show') }}
-                                                </a>
-
-                                                {{-- Editar: Disponible para Admin y Doctor --}}
-                                                @can('doctor')
-                                                    <a class="btn btn-sm btn-success"
-                                                        href="{{ route('paciente.edit', $paciente->id) }}">
-                                                        <i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}
+                                        <td class="align-middle px-4 text-muted">{{ ++$i }}</td>
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center">
+                                                {{-- Foto circular similar a usuarios --}}
+                                                <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
+                                                    @if($paciente->usuario?->foto)
+                                                        <img src="{{ asset('storage/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    @else
+                                                        <i class="fas fa-user-injured text-muted"></i>
+                                                    @endif
+                                                </div>
+                                                <div>
+                                                    <span class="font-weight-bold text-dark d-block text-capitalize">
+                                                        {{ $paciente->usuario?->nombre }} {{ $paciente->usuario?->apellido }}
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años | {{ $paciente->usuario?->email }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {{-- Badge de Tipo de Sangre --}}
+                                            <span class="badge badge-pill shadow-sm mb-1" style="background-color: #ffebee; color: #c62828; padding: 0.5em 1em; border: 1px solid #ffcdd2;">
+                                                <i class="fas fa-tint mr-1"></i> {{ $paciente->tipo_sangre }}
+                                            </span>
+                                            <br>
+                                            <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</small>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="text-muted small font-weight-bold">{{ $paciente->cedula }}</span>
+                                        </td>
+                                        <td class="align-middle text-muted small" style="max-width: 200px;">
+                                            {{ Str::limit($paciente->direccion, 40) }}
+                                        </td>
+                                        <td class="text-right align-middle px-4">
+                                            <form action="{{ route('paciente.destroy', $paciente->id) }}" method="POST" class="mb-0 form-eliminar">
+                                                <div class="btn-group">
+                                                    {{-- BOTÓN ESPECIAL PARA EL EXPEDIENTE --}}
+                                                    <a class="btn btn-sm btn-light text-primary shadow-sm mr-1"
+                                                       href="{{ route('paciente.show', $paciente->id) }}" style="border-radius: 8px;" title="Ver Expediente Clínico">
+                                                        <i class="fas fa-eye"></i>
                                                     </a>
-                                                @endcan
-
-                                                {{-- Eliminar: ÚNICAMENTE para el Administrador --}}
-                                                @can('administrador')
+                                                    @can('doctor')
+                                                        <a class="btn btn-sm btn-light text-success shadow-sm mr-1" 
+                                                           href="{{ route('paciente.edit', $paciente->id) }}" style="border-radius: 8px;" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                    @endcan
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                        onclick="event.preventDefault(); confirm('¿Deseas Eliminar esta Cuenta de paciente?') ? this.closest('form').submit() : false;">
-                                                        <i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}
-                                                    </button>
-                                                @endcan
+                                                    @can('administrador')
+                                                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;" title="Eliminar Paciente">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
                                             </form>
                                         </td>
                                     </tr>
@@ -118,43 +108,69 @@
                     </div>
                 </div>
             </div>
-            {!! $pacientes->withQueryString()->links() !!}
+            <div class="mt-4 d-flex justify-content-center">
+                {!! $pacientes->withQueryString()->links('pagination::bootstrap-4') !!}
+            </div>
         </div>
     </div>
 </div>
 @stop
 
-{{-- Create a common footer --}}
-
 @section('footer')
-<div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-<strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
+    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
+    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
+{{-- Usamos el mismo JS de Usuarios para las alertas bonitas --}}
 @push('js')
-    <script>
-
-        $(document).ready(function () {
-            // Add your common script logic here...
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        $('.form-eliminar').submit(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Eliminar paciente?',
+                text: "Esta acción es irreversible y afectará el historial clínico.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-secondary px-4 mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
         });
 
-    </script>
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        @endif
+    });
+</script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
-    <style type="text/css">
-        /*
-        {{-- You can add AdminLTE customizations here --}}
-        .card-header {
-            border-bottom: none;
-        }
-        .card-title {
-            font-weight: 600;
-        }
-        */
-    </style>
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8fbff;
+        transition: background-color 0.2s ease;
+    }
+    .badge-pill {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+</style>
 @endpush

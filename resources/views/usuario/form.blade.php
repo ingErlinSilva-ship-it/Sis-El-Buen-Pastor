@@ -43,7 +43,20 @@
                             <input type="file" name="foto" id="foto" class="d-none" accept="image/*">
                             <small class="text-muted d-block mt-2">Formatos permitidos: JPG, PNG. Máx 2MB.</small>
                             @error('foto') <span class="text-danger small">{{ $message }}</span> @enderror
+                            <button type="button" class="btn btn-link btn-sm text-danger mt-1" id="clearPhoto">
+                            <i class="fas fa-trash-alt"></i> Usar foto por defecto
+                            </button>
+                            <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+
+                            <script>
+                            document.getElementById('clearPhoto').addEventListener('click', function() {
+                                document.getElementById('preview').src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                                document.getElementById('foto').value = ""; // Limpia el input
+                                document.getElementById('remove_photo').value = "1"; // Avisa al controlador
+                            });
+                            </script>
                         </div>
+                        
 
                         {{-- Datos Personales --}}
                         <div class="col-md-8 pl-4">
@@ -125,6 +138,25 @@
                     <button type="submit" class="btn {{ $esEdicion ? 'btn-success' : 'btn-primary' }} px-5 shadow-sm" style="border-radius: 8px; font-weight: 600;">
                         <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i> {{ $esEdicion ? 'Actualizar Usuario' : 'Guardar Usuario' }}
                     </button>
+                </div>
+                {{-- Modal para ajustar y centrar la foto --}}
+                <div class="modal fade" id="modalCrop" tabindex="-1" role="dialog" data-backdrop="static">
+                    <div class="modal-dialog modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header bg-dark text-white">
+                                <h5 class="modal-title"><i class="fas fa-crop mr-2"></i>Ajustar Foto de Perfil</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="img-container">
+                                    <img id="imageToCrop" src="" style="max-width: 100%;">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="saveCrop">Cortar y Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

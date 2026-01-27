@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     // Utilidades de citas
     Route::get('/paciente/buscar-por-cedula/{cedula}', [CitaController::class, 'buscarPorCedula']);
     Route::get('/citas/verificar-disponibilidad', [CitaController::class, 'verificarDisponibilidad']);
+    // Ruta para generar el resumen con IA
+    Route::get('/paciente/{paciente}/resumen-ia', [PacienteController::class, 'generarResumenIA'])->name('paciente.resumen.ia');
 });
 
 // --- 2. SOLO ADMINISTRADOR ---
