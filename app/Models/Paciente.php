@@ -67,4 +67,11 @@ class Paciente extends Model
         return $this->belongsToMany(Enfermedade::class, 'pacientes_enfermedad','paciente_id',
         'enfermedades_id');
     }
+
+    
+    public function consultas()
+    {
+        // Relación de uno a muchos: Un paciente tiene muchas consultas
+        return $this->hasMany(\App\Models\Consulta::class, 'paciente_id', 'id');
+    }
 }

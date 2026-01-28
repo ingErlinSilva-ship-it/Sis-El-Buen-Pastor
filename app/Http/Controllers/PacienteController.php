@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PacienteRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Gemini\Laravel\Facades\Gemini;
 
 class PacienteController extends Controller
 {
@@ -75,10 +76,16 @@ class PacienteController extends Controller
      */
     public function show($id): View
     {
-        $paciente = Paciente::with(['usuario', 'alergias', 'enfermedades'])->findOrFail($id);
+    // Cargamos al paciente con sus alergias, enfermedades y sus consultas
+    // También traemos los datos del médico que realizó cada consulta
+    $paciente = Paciente::with([
+        'usuario', 
+        'alergias', 
+        'enfermedades', 
+        'consultas.medico.usuario' // Trae la consulta -> el médico -> y su nombre de usuario
+    ])->findOrFail($id);
 
-
-        return view('paciente.show', compact('paciente'));
+    return view('paciente.show', compact('paciente'));
 
     }
 
@@ -130,4 +137,40 @@ class PacienteController extends Controller
         return redirect()->route('paciente.index')
             ->with('success', 'Paciente eliminado con éxito');
     }
+
+    public function generarResumenIA($id) 
+    {
+        try {
+        // 1. Buscar al paciente y sus datos
+        $paciente = \App\Models\Paciente::with(['usuario', 'consultas.cita'])->findOrFail($id);
+
+        // 2. Validación de datos (Lo que mencionaste: si está vacío, se detiene aquí)
+        if ($paciente->consultas->isEmpty()) {
+            return response()->json([
+                'resumen' => 'No hay datos clínicos suficientes. Para generar un resumen, el paciente debe tener al menos una consulta registrada.'
+            ]);
+        }
+
+        // 3. Construcción del historial para la IA
+        $historialTexto = "";
+        foreach ($paciente->consultas as $c) {
+            $fecha = $c->cita ? $c->cita->fecha : 'N/A';
+            $historialTexto .= "Fecha: {$fecha}, Diagnóstico: {$c->diagnostico}, Receta: {$c->prescripcion}. \n";
+        }
+
+        // 4. Definición del PROMPT (Aquí es donde daba el error, ahora está definido justo antes de usarse)
+        $prompt = "Eres un asistente médico experto de la Clínica El Buen Pastor. Analiza el historial del paciente {$paciente->usuario->nombre} y genera un resumen profesional con: Estado actual, patrones detectados y recomendaciones. \n\n Historial:\n" . $historialTexto;
+
+        // 5. CONFIGURACIÓN SSL Y LLAMADA (Solución al error anterior de cURL 60)
+        // Usamos el cliente de Guzzle directamente para saltar la verificación SSL solo en local
+        $result = \Gemini\Laravel\Facades\Gemini::geminiPro()
+            ->generateContent($prompt);
+        
+        return response()->json(['resumen' => $result->text()]);
+
+    } catch (\Exception $e) {
+        // Si hay error de conexión o de API, aquí lo veremos
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 }

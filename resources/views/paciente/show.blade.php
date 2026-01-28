@@ -1,223 +1,189 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
-@section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
-@stop
-
-{{-- Extend and customize the page content header --}}
-
-@section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
-@stop
-
-{{-- Rename section content to content_body --}}
+@section('title', 'Expediente | ' . $paciente->usuario->nombre)
 
 @section('content')
-<section class="content container-fluid">
+<div class="container-fluid pt-4">
+    {{-- BOTÓN REGRESAR POR ENCIMA DE LA CARD --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-dark font-weight-bold">Expediente Clínico Digital</h3>
+        <a class="btn btn-primary shadow-sm" href="{{ route('paciente.index') }}" style="border-radius: 50px;">
+            <i class="fas fa-arrow-left mr-1"></i> Regresar a la lista
+        </a>
+    </div>
+
     <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm">
-                {{-- CABECERA --}}
-                <div class="card-header bg-white" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="float-left">
-                        <span class="card-title font-weight-bold"></i>Información del Paciente</span>
-                    </div>
-                    <div class="ml-auto">
-                        <a class="btn btn-primary btn-sm" href="{{ route('paciente.index') }}">
-                            <i class="fas fa-arrow-left"></i> Regresar
-                        </a>
-                    </div>
-                </div>
-
-                {{-- CUERPO --}}
-                <div class="card-body bg-white">
-                    {{-- DATOS GENERALES --}}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Nombre</strong></label>
-                                <input type="text" class="form-control" value="{{ $paciente->usuario->nombre }}" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Apellido</strong></label>
-                                <input type="text" class="form-control" value="{{ $paciente->usuario->apellido }}" readonly>
-                            </div>
+        {{-- COLUMNA IZQUIERDA: FICHA DEL PACIENTE --}}
+        <div class="col-md-4">
+            <div class="card card-primary card-outline shadow-sm" style="border-radius: 15px;">
+                <div class="card-body box-profile">
+                    <div class="text-center">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center bg-light mb-3 shadow-sm" 
+                             style="width: 100px; height: 100px; overflow: hidden; border: 3px solid #3c8dbc;">
+                            @if($paciente->usuario->foto)
+                                <img src="{{ asset('storage/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                <i class="fas fa-user-injured fa-3x text-muted"></i>
+                            @endif
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label><strong>Fecha de Nacimiento</strong></label>
-                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label><strong>Edad Actual</strong></label>
-                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label><strong>Cédula</strong></label>
-                                <input type="text" class="form-control" value="{{ $paciente->cedula }}" readonly>
-                            </div>
-                        </div>
+                    <h3 class="profile-username text-center font-weight-bold text-capitalize">
+                        {{ $paciente->usuario->nombre }} {{ $paciente->usuario->apellido }}
+                    </h3>
+                    <p class="text-muted text-center mb-1">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</p>
+                    
+                    <div class="text-center mb-3">
+                        <span class="badge badge-pill badge-danger px-3 shadow-sm">
+                            <i class="fas fa-tint mr-1"></i> Sangre: {{ $paciente->tipo_sangre }}
+                        </span>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label><strong>Tipo Sangre</strong></label>
-                                <input type="text" class="form-control text-danger font-weight-bold" value="{{ $paciente->tipo_sangre }}" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="form-group">
-                                <label><strong>Dirección</strong></label>
-                                <input type="text" class="form-control" value="{{ $paciente->direccion ?? 'No especificada' }}" readonly>
-                            </div>
-                        </div>
-                    </div>
+                    <ul class="list-group list-group-unbordered mb-3">
+                        <li class="list-group-item border-0 px-0">
+                            <b>Cédula:</b> <span class="float-right text-muted">{{ $paciente->cedula ?? 'N/A' }}</span>
+                        </li>
+                        <li class="list-group-item border-0 px-0">
+                            <b>Fecha Nac.:</b> <span class="float-right text-muted">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</span>
+                        </li>
+                        <li class="list-group-item border-0 px-0">
+                            <b>Contacto:</b> <span class="float-right text-muted">{{ $paciente->usuario->celular ?? 'N/A' }}</span>
+                        </li>
+                        <li class="list-group-item border-0 px-0">
+                            <b class="d-block mb-1">Dirección:</b>
+                            <span class="text-muted small">{{ $paciente->direccion ?? 'No especificada' }}</span>
+                        </li>
+                    </ul>
 
-                    {{-- SECCIÓN DEL TUTOR: SOLO SE MUESTRA SI ES MENOR --}}
+                    {{-- SECCIÓN DINÁMICA DEL RESPONSABLE --}}
                     @if($paciente->es_menor)
-                        <hr class="my-4">
-                        <h5 class="text-primary font-weight-bold mb-3"><i class="fas fa-user-shield mr-2"></i>Información del Responsable (Tutor)</h5>
-                        <div class="row p-3 rounded" style="background-color: #f1f5f9; border: 1px solid #e2e8f0;">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label><strong>Nombre Completo</strong></label>
-                                    <input type="text" class="form-control" value="{{ $paciente->tutor_nombre }} {{ $paciente->tutor_apellido }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label><strong>Parentesco</strong></label>
-                                    <input type="text" class="form-control" value="{{ $paciente->tutor_parentesco }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label><strong>Cédula</strong></label>
-                                    <input type="text" class="form-control @error('tutor_cedula') is-invalid @enderror" value="{{ $paciente->tutor_cedula ?? 'N/A' }}" readonly>
-                                    @error('tutor_cedula')
-                                        <span class="invalid-feedback" style="display: block;">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label><strong>Teléfono</strong></label>
-                                    <input type="text" class="form-control" value="{{ $paciente->tutor_telefono }}" readonly>
-                                </div>
-                            </div>
+                        <div class="p-3 mb-3" style="background-color: #f0f7ff; border-radius: 12px; border: 1px solid #d1e9ff;">
+                            <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-user-shield mr-1"></i> DATOS DEL RESPONSABLE
+                            </h6>
+                            <p class="mb-1 small"><b>Nombre:</b> {{ $paciente->tutor_nombre }} {{ $paciente->tutor_apellido }}</p>
+                            <p class="mb-1 small"><b>Parentesco:</b> {{ $paciente->tutor_parentesco }}</p>
+                            <p class="mb-1 small"><b>Cédula:</b> {{ $paciente->tutor_cedula ?? 'N/A' }}</p>
+                            <p class="mb-0 small"><b>Teléfono:</b> {{ $paciente->tutor_telefono }}</p>
                         </div>
                     @endif
 
-                    <hr class="my-4">
-
-                    {{-- SECCIÓN DE ALERGIAS Y ENFERMEDADES --}}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card card-outline card-warning shadow-none border">
-                                <div class="card-header">
-                                    <h3 class="card-title text-warning font-weight-bold"><i class="fas fa-allergies mr-2"></i>Alergias</h3>
-                                </div>
-                                <div class="card-body">
-                                    @if ($paciente->alergias->count())
-                                        <ul class="mb-0">
-                                            @foreach ($paciente->alergias as $alergia)
-                                                <li>{{ $alergia->nombre }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-muted mb-0">No registra alergias.</p>
-                                    @endif
-                                </div>
-                            </div>
+                    {{-- BOTÓN RESUMEN IA (MAQUETA) --}}
+                    <div class="bg-light p-3 rounded mb-2 border border-primary shadow-sm" style="border-style: dashed !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="font-weight-bold text-primary mb-0"><i class="fas fa-robot mr-1"></i> Resumen IA</h6>
+                            <button id="btnGenerarIA" class="btn btn-primary btn-xs font-weight-bold shadow-sm" style="border-radius: 5px;">Generar</button>
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="card card-outline card-danger shadow-none border">
-                                <div class="card-header">
-                                    <h3 class="card-title text-danger font-weight-bold"><i class="fas fa-file-medical mr-2"></i>Enfermedades</h3>
-                                </div>
-                                <div class="card-body">
-                                    @if ($paciente->enfermedades->count())
-                                        <ul class="mb-0">
-                                            @foreach ($paciente->enfermedades as $enfermedade)
-                                                <li>{{ $enfermedade->nombre }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-muted mb-0">No registra enfermedades de base.</p>
-                                    @endif
-                                </div>
-                            </div>
+                        <div id="resumenIAContenido">
+                            <p class="small text-muted mb-0 italic">"Haz clic en generar para obtener un resumen inteligente."</p>
                         </div>
-                    </div> {{-- Cierra row de alergias/enfermedades --}}
+                    </div>
+                </div>
+            </div>
 
-                </div> {{-- Cierra card-body principal --}}
-            </div> {{-- Cierra card principal --}}
-        </div> {{-- Cierra col-md-12 --}}
-    </div> {{-- Cierra row principal --}}
-</section>
+            {{-- ALERGIAS Y ENFERMEDADES (MISMO ESTILO QUE DISEÑAMOS) --}}
+            <div class="card shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-3">
+                    <h6 class="font-weight-bold text-danger mb-2"><i class="fas fa-allergies mr-1"></i> Alergias</h6>
+                    @forelse($paciente->alergias as $alergia)
+                        <span class="badge badge-light border mb-1 shadow-xs">{{ $alergia->nombre }}</span>
+                    @empty
+                        <p class="text-muted small mb-0">No registra alergias.</p>
+                    @endforelse
+
+                    <hr class="my-3">
+
+                    <h6 class="font-weight-bold text-warning mb-2"><i class="fas fa-file-medical mr-1"></i> Enfermedades</h6>
+                    @forelse($paciente->enfermedades as $enfermedad)
+                        <span class="badge badge-light border mb-1 shadow-xs">{{ $enfermedad->nombre }}</span>
+                    @empty
+                        <p class="text-muted small mb-0">No registra enfermedades.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        {{-- COLUMNA DERECHA: LÍNEA DE TIEMPO DINÁMICA --}}
+        <div class="col-md-8">
+            <div class="card shadow-sm" style="border-radius: 15px;">
+                <div class="card-header bg-white border-0">
+                    <h3 class="card-title font-weight-bold text-dark"><i class="fas fa-history mr-2 text-primary"></i>Historial de Atenciones Médicas</h3>
+                </div>
+                <div class="card-body">
+                    {{-- SI TIENE CONSULTAS --}}
+                    @if(isset($paciente->consultas) && $paciente->consultas->count() > 0)
+                        <div class="timeline timeline-inverse">
+                            @foreach($paciente->consultas as $consulta)
+                                <div class="time-label">
+                                    <span class="bg-primary px-3 shadow-sm" style="border-radius: 5px;">
+                                        {{ \Carbon\Carbon::parse($consulta->cita->fecha)->format('d/m/Y') }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-stethoscope bg-info shadow-sm"></i>
+                                    <div class="timeline-item shadow-sm border" style="border-radius: 10px;">
+                                        <span class="time text-muted"><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($consulta->cita->hora)->format('h:i A') }}</span>
+                                        <h3 class="timeline-header font-weight-bold text-primary">Diagnóstico: {{ $consulta->diagnostico }}</h3>
+                                        <div class="timeline-body">
+                                            <p class="mb-1 text-dark"><b>Tratamiento:</b> {{ $consulta->prescripcion }}</p>
+                                            @if($consulta->observaciones)
+                                                <p class="text-muted small mb-0"><i>"{{ $consulta->observaciones }}"</i></p>
+                                            @endif
+                                        </div>
+                                        <div class="timeline-footer p-2 bg-light rounded-bottom text-right">
+                                            <small class="text-muted">Atendido por: 
+                                            <b class="text-uppercase">
+                                                Dr. {{ $consulta->medico->usuario->nombre }} {{ $consulta->medico->usuario->apellido }}
+                                            </b>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                            <div><i class="far fa-clock bg-gray"></i></div>
+                        </div>
+                    @else
+                        {{-- SI NO TIENE CONSULTAS --}}
+                        <div class="text-center py-5">
+                            <i class="fas fa-folder-open fa-4x text-light mb-3"></i>
+                            <h5 class="text-muted font-weight-bold">Historial Vacío</h5>
+                            <p class="text-muted small">Este paciente aún no registra consultas médicas en el sistema.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @stop
-
-{{-- Create a common footer --}}
-
-@section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
 <script>
+    $('#btnGenerarIA').click(function() {
+        const btn = $(this);
+        const contenedor = $('#resumenIAContenido');
+        
+        btn.html('<i class="fas fa-spinner fa-spin"></i> Generando...').prop('disabled', true);
+        contenedor.html('<p class="text-muted italic">Analizando historial clínico...</p>');
 
-    $(document).ready(function() {
-        // Add your common script logic here...
+        $.ajax({
+            url: "{{ route('paciente.resumen.ia', $paciente->id) }}",
+            method: 'GET',
+            success: function(response) {
+                // Formateamos el texto (puedes usar una librería de Markdown si quieres)
+                contenedor.html('<div class="small">' + response.resumen.replace(/\n/g, '<br>') + '</div>');
+                btn.html('Regenerar').prop('disabled', false);
+            },
+            error: function() {
+                contenedor.html('<p class="text-danger small">Error al conectar con Gemini. Intente más tarde.</p>');
+                btn.html('Generar').prop('disabled', false);
+            }
+        });
     });
-
 </script>
 @endpush
-
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
-
+<style>
+    .timeline::before { border-radius: 0.25rem; background-color: #dee2e6; bottom: 0; content: ""; left: 31px; margin: 0; position: absolute; top: 0; width: 4px; }
+    .timeline > div > i { width: 30px; height: 30px; font-size: 15px; line-height: 30px; position: absolute; color: #fff; border-radius: 50%; text-align: center; left: 18px; top: 0; }
+    .timeline-item { margin-left: 60px; margin-right: 15px; margin-top: 0; position: relative; }
 </style>
 @endpush
-
