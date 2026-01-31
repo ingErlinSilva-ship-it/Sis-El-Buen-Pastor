@@ -20,24 +20,13 @@
 @stop
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Cita</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('cita.update', $cita->id) }}" role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
-                            @include('cita.form')
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="container-fluid">
+        <form method="POST" action="{{ route('cita.update', $cita->id) }}" role="form" enctype="multipart/form-data">
+            {{ method_field('PATCH') }}
+                @csrf
+                @include('cita.form')
+        </form>
+    </div>
 
     <div class="modal fade" id="modalSeleccionPaciente" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -67,13 +56,26 @@
 
 @push('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 $(document).ready(function() {
     // 1. CONFIGURACIÓN INICIAL (Máscaras)
     $('#buscar_cedula').inputmask("999-999999-9999A");
     $('#celular_paciente').inputmask("99999999", {placeholder: "", clearMaskOnLostFocus: true});
 
-    // 2. LÓGICA DE AUTO-CARGA (Para que el Edit inicie con los datos actuales)
+    // Función global para Alertas Estilizadas
+    const toast = (icon, title, text) => {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            confirmButtonColor: '#28a745', // Color verde para edición
+            borderRadius: '15px'
+        });
+    };
+
+    // 2. LÓGICA DE AUTO-CARGA (Para Edit)
     let pacienteIdExistente = $('#paciente_id_hidden').val();
 
     if (pacienteIdExistente) {
@@ -91,11 +93,11 @@ $(document).ready(function() {
         }, 300);
     }
 
-    // 3. LÓGICA DE BÚSQUEDA DE CÉDULA (Igual que en Create)
+    // 3. LÓGICA DE BÚSQUEDA DE CÉDULA
     $('#btn_consultar').on('click', function() {
         let cedula = $('#buscar_cedula').val();
         if (!$('#buscar_cedula').inputmask("isComplete")) {
-            alert("Ingrese una cédula completa.");
+            toast('error', 'Dato Incompleto', 'Ingrese una cédula completa.');
             return;
         }
 
@@ -119,18 +121,28 @@ $(document).ready(function() {
                         cargarDatosPaciente(p.id, p.nombre, p.apellido);
                     }
                 } else {
-                    if (confirm("El paciente no existe. ¿Desea registrarlo?")) {
-                        $('#seccion_paciente_existente').slideUp();
-                        $('#seccion_registro_nuevo').slideDown();
-                        $('#paciente_id_hidden').val(''); 
-                        $('#cedula_buscada').val(cedula);
-                        $('.bloqueable').prop('disabled', true);
-                    }
+                    Swal.fire({
+                        title: 'Paciente no encontrado',
+                        text: "El paciente no existe. ¿Desea realizar un registro rápido?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, registrar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#seccion_paciente_existente').slideUp();
+                            $('#seccion_registro_nuevo').slideDown();
+                            $('#paciente_id_hidden').val(''); 
+                            $('#cedula_buscada').val(cedula);
+                            $('.bloqueable').prop('disabled', true);
+                        }
+                    });
                 }
             });
     });
 
-    // Funciones globales para el Modal
     window.seleccionarPacienteManual = function(id, nombre, apellido) {
         $('#modalSeleccionPaciente').modal('hide');
         cargarDatosPaciente(id, nombre, apellido);
@@ -157,71 +169,81 @@ $(document).ready(function() {
         let nombre = $('#nombre_paciente').val();
         let celular = $('#celular_paciente').val();
         if (nombre == "" || celular.length !== 8) {
-            alert("Nombre y Celular (8 dígitos) son obligatorios.");
+            toast('error', 'Campos requeridos', 'Nombre y Celular (8 dígitos) son obligatorios.');
             return;
         }
         $('.bloqueable').prop('disabled', false);
         $('#medico_id_select').prop('disabled', false);
         $('#seccion_registro_nuevo input').prop('readonly', true);
         $(this).html('<i class="fas fa-check"></i> Validado').addClass('btn-success').prop('disabled', true);
+        toast('success', 'Validado', 'Datos del paciente listos.');
     });
 
-    // Validación de dias y horas
-    // A. Validación inmediata de la FECHA (Detectar Sábados)
-    $('#fecha').on('change', function() {
-        let fechaSeleccionada = new Date($(this).val() + 'T00:00:00'); // Forzamos hora local
-        let dia = fechaSeleccionada.getUTCDay(); // 0:Dom, 1:Lun... 6:Sáb
+    // 6. VALIDACIONES DE FECHA Y HORA
+    $('#fecha').on('blur', function() { // Usamos 'blur' para que valide al salir del campo
+        let valor = $(this).val();
+        
+        // Si la fecha no tiene 10 caracteres (YYYY-MM-DD), no validamos aún
+        if (valor.length < 10) return;
+
+        let fechaSeleccionada = new Date(valor + 'T00:00:00');
+        let anio = fechaSeleccionada.getFullYear();
+
+        // Evitamos años absurdos como el año 0002 que mencionabas
+        if (anio < 1900 || anio > 2100) return;
+
+        let dia = fechaSeleccionada.getUTCDay(); 
 
         if (dia === 6) { // Sábado
-            alert("La clínica permanece cerrada los días sábados. Por favor, seleccione otro día.");
-            $(this).val(''); // Limpiamos la fecha
+            toast('warning', 'Clínica Cerrada', 'La clínica permanece cerrada los días sábados. Por favor, seleccione otro día.');
+            $(this).val('');
             return;
         }
     });
-
-    // B. Validación de la HORA (Ajuste de límites exactos)
     $('#hora').on('change', function() {
         let fechaVal = $('#fecha').val();
         if (!fechaVal) {
-            alert("Primero debe seleccionar una fecha.");
+            toast('info', 'Fecha Requerida', 'Primero debe seleccionar una fecha.');
             $(this).val('');
             return;
         }
 
-    let fecha = new Date(fechaVal + 'T00:00:00');
-    let hora = $(this).val();
-    let dia = fecha.getUTCDay();
+        let fecha = new Date(fechaVal + 'T00:00:00');
+        let hora = $(this).val();
+        let dia = fecha.getUTCDay();
 
-        if (dia === 0) { 
+        if (dia === 0) { // Domingo
             if(hora < "08:00" || hora > "11:30") {
-                alert("Los Domingos la atención es solo por la mañana (08:00 - 12:00).");
+                toast('warning', 'Horario Domingo', 'Los Domingos la atención es solo por la mañana (08:00 AM - 12:00 PM).');
                 $(this).val('');
             }
         } else if (dia >= 1 && dia <= 5) { // Lunes a Viernes
-        // 01:30 PM (13:30) a 06:00 PM (18:00)
-        if (hora < "13:29" || hora > "17:30") {
-            alert("De lunes a viernes la atención es de 01:30 PM a 06:00 PM.");
-            $(this).val('');
+            if (hora < "13:29" || hora > "17:30") {
+                toast('warning', 'Horario Vespertino', 'De lunes a viernes la atención es de 01:30 PM a 06:00 PM.');
+                $(this).val('');
+            }
         }
-    }
     });
 
-     // Validación disponibiliadad del medico
+    // 7. DISPONIBILIDAD DEL MÉDICO
     $('#fecha, #hora, #medico_id_select').on('change', function() {
         let fecha = $('#fecha').val();
         let hora = $('#hora').val();
         let medico_id = $('#medico_id_select').val();
 
-        // Solo validamos si los tres campos tienen valor
-        $.get('/citas/verificar-disponibilidad', {
-            fecha: fecha,
-            hora: hora,
-            medico_id: medico_id,
-            cita_id: "{{ $cita->id }}" // Enviamos el ID para que no se bloquee a sí misma
-        })
+        if (fecha && hora && medico_id) {
+            $.get('/citas/verificar-disponibilidad', {
+                fecha, hora, medico_id,
+                cita_id: "{{ $cita->id }}" // Evita auto-bloqueo en Edit
+            }).done(function(response) {
+                if (!response.disponible) {
+                    toast('error', 'Cita Duplicada', 'El médico seleccionado ya tiene una cita a esa hora. Elija otro horario.');
+                    $('#hora').val('');
+                }
+            });
+        }
     });
 
-    // 6. HABILITAR ANTES DE ENVIAR
     $('form').on('submit', function() {
         $('.bloqueable').prop('disabled', false);
         $('#medico_id_select').prop('disabled', false);

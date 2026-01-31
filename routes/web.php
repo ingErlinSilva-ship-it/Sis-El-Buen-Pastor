@@ -10,7 +10,7 @@ use App\Http\Controllers\AlergiaController;
 use App\Http\Controllers\EnfermedadeController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\CitaController;
-use App\Http\Controllers\ConsultaController; // Tu controlador de consultas
+use App\Http\Controllers\ConsultaController; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/citas/verificar-disponibilidad', [CitaController::class, 'verificarDisponibilidad']);
     // Ruta para generar el resumen con IA
     Route::get('/paciente/{paciente}/resumen-ia', [PacienteController::class, 'generarResumenIA'])->name('paciente.resumen.ia');
+    // Rutas para la generación de PDFs
+    Route::post('/consulta/{id}/descargar-receta', [ConsultaController::class, 'descargarReceta'])->name('consulta.descargar_receta');
+    Route::get('/consulta/{id}/pdf-completo', [ConsultaController::class, 'pdfCompleto'])->name('consulta.pdf_completo');
 });
 
 // --- 2. SOLO ADMINISTRADOR ---

@@ -7,8 +7,8 @@
 
 <div class="container-fluid pt-4">
     <div class="col-12">
-        {{-- Card Principal Unificada --}}
-        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        {{-- Card Principal Unificada con resaltado shadow-lg --}}
+        <div class="card border-0 shadow-lg" style="border-radius: 15px;">
             
             {{-- Header Estilo Usuarios --}}
             <div class="card-header bg-white border-bottom py-3 px-4" style="border-top: 5px solid {{ $temaColor }}; border-radius: 15px 15px 0 0;">
@@ -30,7 +30,7 @@
                     <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.75rem; color: #3498db; letter-spacing: 1px;">
                         <i class="fas fa-id-badge mr-1"></i> 1. Cuenta de Acceso
                     </h6>
-                    <div class="form-group mb-0 p-3 bg-light" style="border-radius: 10px; border-left: 4px solid #3498db;">
+                    <div class="form-group mb-0 p-3 bg-light shadow-xs" style="border-radius: 10px; border-left: 4px solid #3498db;">
                         <label for="usuario_id" class="small font-weight-bold">Paciente vinculado al sistema</label> 
                         <select name="usuario_id" id="usuario_id" class="form-control select2 @error('usuario_id') is-invalid @enderror">
                             <option value="">Seleccione un usuario...</option>
@@ -45,7 +45,7 @@
                 </div>
 
                 {{-- Bloque 2: Condición Especial --}}
-                <div class="mb-4 p-3 d-flex align-items-center" style="background-color: #f0f7ff; border-radius: 10px;">
+                <div class="mb-4 p-3 d-flex align-items-center shadow-xs" style="background-color: #f0f7ff; border-radius: 10px;">
                     <div class="custom-control custom-switch">
                         <input type="checkbox" name="es_menor" class="custom-control-input" id="es_menor" value="1" {{ old('es_menor', $paciente->es_menor) == '1' ? 'checked' : ''}}>
                         <label class="custom-control-label font-weight-bold text-primary" for="es_menor" style="cursor: pointer;">
@@ -55,7 +55,7 @@
                 </div>
 
                 {{-- Bloque 3: Datos del Tutor (Dinámico) --}}
-                <div id="seccion_tutor" style="display: none; border-radius: 10px; border-left: 4px solid #6c757d;" class="p-3 mb-4 bg-light border">
+                <div id="seccion_tutor" style="display: none; border-radius: 10px; border-left: 4px solid #6c757d;" class="p-3 mb-4 bg-light border shadow-xs">
                     <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.7rem; color: #64748b;">
                         <i class="fas fa-user-shield mr-1"></i> Datos del Responsable
                     </h6>
@@ -69,10 +69,10 @@
                             <input type="text" name="tutor_apellido" class="form-control @error('tutor_apellido') is-invalid @enderror" value="{{ old('tutor_apellido', $paciente->tutor_apellido) }}" placeholder="Apellidos">
                         </div>
                         <div class="col-md-4 form-group">
-                            <label class="small font-weight-bold">Cédula del Paciente</label>
+                            <label class="small font-weight-bold">Cédula del Responsable</label>
                             <input type="text" name="tutor_cedula" id="tutor_cedula" 
                                 class="form-control @error('tutor_cedula') is-invalid @enderror" 
-                                value="{{ old('tutor_cedula', $paciente->cedula) }}" 
+                                value="{{ old('tutor_cedula', $paciente->tutor_cedula) }}" 
                                 placeholder="001-000000-0000A">
                         </div>
                         <div class="col-md-4 form-group mb-0">
@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-md-12 form-group mb-0">
                             <label class="small font-weight-bold">Dirección de Domicilio</label>
-                            <textarea name="direccion" class="form-control" rows="2" placeholder="Dirección exacta...">{{ old('direccion', $paciente->direccion) }}</textarea>
+                            <textarea name="direccion" class="form-control shadow-xs" rows="2" placeholder="Dirección exacta...">{{ old('direccion', $paciente->direccion) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
                         <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.75rem; color: #e74c3c; letter-spacing: 1px;">
                             <i class="fas fa-allergies mr-1"></i> Alergias
                         </h6>
-                        <div class="p-3 border rounded bg-light shadow-sm" style="max-height: 150px; overflow-y: auto;">
+                        <div class="p-3 border rounded bg-light shadow-xs" style="max-height: 150px; overflow-y: auto;">
                             @foreach ($alergias as $id => $nombre)
                                 <div class="custom-control custom-checkbox mb-1">
                                     <input class="custom-control-input" type="checkbox" name="alergias[]" id="alergia_{{ $id }}" value="{{ $id }}"
@@ -145,7 +145,7 @@
                         <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.75rem; color: #f39c12; letter-spacing: 1px;">
                             <i class="fas fa-notes-medical mr-1"></i> Enfermedades
                         </h6>
-                        <div class="p-3 border rounded bg-light shadow-sm" style="max-height: 150px; overflow-y: auto;">
+                        <div class="p-3 border rounded bg-light shadow-xs" style="max-height: 150px; overflow-y: auto;">
                             @foreach ($enfermedades as $id => $nombre)
                                 <div class="custom-control custom-checkbox mb-1">
                                     <input class="custom-control-input" type="checkbox" name="enfermedades[]" id="enfermedad_{{ $id }}" value="{{ $id }}"
@@ -174,6 +174,14 @@
 
 @push('css')
 <style>
+    /* Resaltado shadow-lg para la card principal */
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    /* Sombras leves para elementos internos */
+    .shadow-xs {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
     .form-control:focus {
         box-shadow: 0 0 0 0.2rem {{ $sombraFocus }} !important;
         border-color: {{ $temaColor }} !important;
@@ -183,7 +191,5 @@
         background-color: {{ $temaColor == '#28a745' ? '#28a745' : '#007bff' }};
         color: #fff !important;
     }
-
-
 </style>
 @endpush

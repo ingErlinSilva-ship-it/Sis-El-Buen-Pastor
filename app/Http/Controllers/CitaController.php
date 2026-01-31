@@ -17,37 +17,47 @@ class CitaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        
+        // Capturamos las fechas del buscador (si existen)
+        $fecha_inicio = $request->get('fecha_inicio');
+        $fecha_fin = $request->get('fecha_fin');
 
-        // 1. LÓGICA PARA EL ADMINISTRADOR (Ve todo)
+        // Iniciamos la consulta base con relaciones para que sea más rápido
+        $query = Cita::with(['paciente.usuario', 'medico.usuario']);
+
+        // Filtro por rango de fechas (Si el usuario las selecciona)
+        if ($fecha_inicio && $fecha_fin) {
+            $query->whereBetween('fecha', [$fecha_inicio, $fecha_fin]);
+        }
+
+        // 1. LÓGICA PARA EL ADMINISTRADOR (Ve todo ordenado)
         if ($user->rol_id == 1) {
-            $citas = Cita::all();
+            $citas = $query->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get();
         }
-
-        // 2. LÓGICA PARA EL DOCTOR (Ve solo sus citas)
+        // 2. LÓGICA PARA EL DOCTOR
         elseif ($user->rol_id == 2) {
-            // Primero buscamos el ID de médico asociado a este usuario
             $medico = Medico::where('usuario_id', $user->id)->first();
-
-            if ($medico) {
-                // Filtramos las citas por su ID de médico
-                $citas = Cita::where('medico_id', $medico->id)->get();
-            } else {
-                $citas = collect(); // Si no tiene perfil médico creado
-            }
+            $citas = $medico 
+                ? $query->where('medico_id', $medico->id)
+                        ->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get() 
+                : collect();
         }
-
-        // 3. LÓGICA PARA EL PACIENTE (Ya la tienes funcionando)
+        // 3. LÓGICA PARA EL PACIENTE
         elseif ($user->rol_id == 3) {
             $paciente = Paciente::where('usuario_id', $user->id)->first();
-
-            if ($paciente) {
-                $citas = Cita::where('paciente_id', $paciente->id)->get();
-            } else {
-                $citas = collect();
-            }
+            $citas = $paciente 
+                ? $query->where('paciente_id', $paciente->id)
+                        ->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get() 
+                : collect();
         }
 
         return view('cita.index', compact('citas'));
@@ -177,6 +187,7 @@ class CitaController extends Controller
                 $nuevoPaciente = Paciente::create([
                     'usuario_id' => $usuario->id,
                     'cedula' => $request->cedula_buscada,
+                    'fecha_nacimiento' => null,
                     'tipo_sangre' => 'No definido',
                 ]);
 
