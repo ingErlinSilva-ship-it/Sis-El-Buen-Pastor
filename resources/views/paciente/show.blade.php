@@ -31,7 +31,9 @@
                     <h3 class="profile-username text-center font-weight-bold text-capitalize">
                         {{ $paciente->usuario->nombre }} {{ $paciente->usuario->apellido }}
                     </h3>
-                    <p class="text-muted text-center mb-1">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</p>
+                    <p class="text-muted text-center mb-1">
+                        {{ $paciente->fecha_nacimiento ? \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age . ' años' : 'N/A' }}
+                    </p>
                     
                     <div class="text-center mb-3">
                         <span class="badge badge-pill badge-danger px-3 shadow-sm">
@@ -44,7 +46,14 @@
                             <b>Cédula:</b> <span class="float-right text-muted">{{ $paciente->cedula ?? 'N/A' }}</span>
                         </li>
                         <li class="list-group-item border-0 px-0">
-                            <b>Fecha Nac.:</b> <span class="float-right text-muted">{{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}</span>
+                            <b>Fecha Nac.:</b> 
+                            <span class="float-right text-muted">
+                                @if($paciente->fecha_nacimiento)
+                                    {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->format('d/m/Y') }}
+                                @else
+                                    <span class="badge badge-warning">Pendiente de completar</span>
+                                @endif
+                            </span>
                         </li>
                         <li class="list-group-item border-0 px-0">
                             <b>Contacto:</b> <span class="float-right text-muted">{{ $paciente->usuario->celular ?? 'N/A' }}</span>

@@ -65,34 +65,33 @@
             }
         });
 
-        // Función para mostrar/ocultar y BLOQUEAR cédula del paciente
-        function toggleTutorSection() {
+        function toggleTutorSection(isInitialLoad = false) { // Añadimos este parámetro
             if (checkboxMenor.checked) {
-                // Caso: ES MENOR
                 seccionTutor.style.display = 'block';
                 
-                // Bloqueamos la cédula del paciente y la limpiamos
-                cedulaPaciente.value = ''; 
+                // SOLO borramos si NO es la carga inicial
+                if (!isInitialLoad) {
+                    cedulaPaciente.value = ''; 
+                }
+                
                 cedulaPaciente.readOnly = true;
-                cedulaPaciente.style.backgroundColor = '#e9ecef'; // Color gris (deshabilitado)
+                cedulaPaciente.style.backgroundColor = '#e9ecef';
             } else {
-                // Caso: ES MAYOR
                 seccionTutor.style.display = 'none';
-                
-                // Desbloqueamos la cédula del paciente
                 cedulaPaciente.readOnly = false;
-                cedulaPaciente.style.backgroundColor = '#ffffff'; // Color blanco (activo)
+                cedulaPaciente.style.backgroundColor = '#ffffff';
                 
-                // Limpiar los campos del tutor si se desmarca
-                seccionTutor.querySelectorAll('input, select').forEach(el => el.value = '');
+                if (!isInitialLoad) {
+                    seccionTutor.querySelectorAll('input, select').forEach(el => el.value = '');
+                }
             }
         }
 
-        // Ejecutar al cargar la página (para Edit o errores de validación)
-        toggleTutorSection();
+        // Al cargar la página, pasamos 'true' para que no borre los datos existentes
+        toggleTutorSection(true); 
 
-        // Ejecutar cada vez que el usuario haga clic en el checkbox
-        checkboxMenor.addEventListener('change', toggleTutorSection);
+        // Al cambiar manualmente, no pasamos nada (borrará si cambia de estado)
+        checkboxMenor.addEventListener('change', () => toggleTutorSection(false));
     });
 </script>
 @endpush

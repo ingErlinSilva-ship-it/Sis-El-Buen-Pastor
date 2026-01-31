@@ -4,7 +4,7 @@
 
 {{-- Encabezado con estilo unificado --}}
 @section('content_header')
-    <div class="container-fluid pt-4">
+    <div class="container-fluid pt-2">
         <div class="row align-items-center">
             <div class="col-6 text-left">
                 <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
@@ -45,21 +45,26 @@
                                         <td class="align-middle px-4 text-muted">{{ ++$i }}</td>
                                         <td class="align-middle">
                                             <div class="d-flex align-items-center">
-                                                {{-- Foto circular similar a usuarios --}}
+                                                {{-- Foto circular--}}
                                                 <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
                                                     @if($paciente->usuario?->foto)
                                                         <img src="{{ asset('storage/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                                     @else
-                                                        <i class="fas fa-user-injured text-muted"></i>
+                                                        <i class="fas fa-user text-muted"></i>
                                                     @endif
                                                 </div>
                                                 <div>
                                                     <span class="font-weight-bold text-dark d-block text-capitalize">
                                                         {{ $paciente->usuario?->nombre }} {{ $paciente->usuario?->apellido }}
                                                     </span>
-                                                    <small class="text-muted">
-                                                        {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años | {{ $paciente->usuario?->email }}
-                                                    </small>
+                                                        <small class="text-muted">
+                                                            @if($paciente->fecha_nacimiento)
+                                                                {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años
+                                                            @else
+                                                                <span class="text-danger font-weight-bold">N/A</span>
+                                                            @endif
+                                                            | {{ $paciente->usuario?->email }}
+                                                        </small>
                                                 </div>
                                             </div>
                                         </td>
@@ -169,6 +174,27 @@
         transition: background-color 0.2s ease;
     }
     .badge-pill {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+        /* Efecto de resaltado al pasar el mouse por la fila */
+    .table-hover tbody tr:hover {
+        background-color: #f1f7ff !important; /* Azul muy suave */
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+    }
+
+    /* Opcional: añade una sombra muy leve a la fila resaltada */
+    .table-hover tbody tr:hover td {
+        box-shadow: inset 0 0 0 9999px rgba(0, 123, 255, 0.02);
+    }
+
+    .shadow-xs {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .badge {
         font-weight: 600;
         letter-spacing: 0.3px;
     }

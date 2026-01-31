@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ConsultaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ConsultaController extends Controller
 {
@@ -142,5 +143,28 @@ class ConsultaController extends Controller
 
         // 4. Retornamos la vista 'create' enviando toda la información
         return view('consulta.create', compact('cita', 'enfermedades', 'alergias','consulta'));
+    }
+
+    public function descargarReceta(Request $request, $id)
+    {
+        $consulta = Consulta::with(['paciente.usuario', 'medico.usuario'])->findOrFail($id);
+        
+        // Capturamos el texto que el médico editó en el modal
+        $prescripcion_final = $request->input('prescripcion_final');
+
+        $pdf = Pdf::loadView('consulta.pdf_receta', compact('consulta', 'prescripcion_final'))
+                ->setPaper('letter');
+
+        return $pdf->download('Receta_'.$consulta->paciente->usuario->apellido.'.pdf');
+    }
+
+    public function pdfCompleto($id)
+    {
+        $consulta = Consulta::with(['paciente.usuario', 'medico.usuario', 'cita'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('consulta.pdf_completo', compact('consulta'))
+                ->setPaper('letter');
+
+        return $pdf->download('Ficha_Medica_'.$consulta->paciente->usuario->apellido.'.pdf');
     }
 }
