@@ -1,98 +1,105 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
-
-{{-- Extend and customize the page content header --}}
-
-@section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
-@stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
-        <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Alergia</span>
-                        </div>
-                        <div class="ml-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('alergia.index') }}"> 
-                                <i class="fas fa-arrow-left"></i> Regresar
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nombre:</strong>
-                                    {{ $alergia->nombre }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Descripcion:</strong>
-                                    {{ $alergia->descripcion }}
-                                </div>
-
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-11 show-mode">
+            @include('alergia.form')
         </div>
-    </section>
+    </div>
+</div>
 @stop
-
-{{-- Create a common footer --}}
-
-@section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
-{{-- Add common Javascript/Jquery code --}}
 
 @push('js')
-<script>
+    <script>
+        $(document).ready(function () {
+            $('.show-mode input, .show-mode textarea').attr('readonly', true);
+            $('.show-mode .card-title').text('{{ __("Visualización de Alergia") }}');
 
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
+            var btnRegresar = $('.show-mode .btn-invert');
+            btnRegresar.attr('href', "{{ route('alergia.index') }}");
+            btnRegresar.html('<i class="fas fa-arrow-left mr-2"></i> {{ __("Regresar") }}');
 
-</script>
+            var btnEditar = $('.show-mode .btn-primary-invert, .show-mode .btn-success-invert');
+            btnEditar.attr('onclick', "window.location.href='{{ route('alergia.edit', $alergia->id) }}'");
+            btnEditar.attr('type', 'button');
+            btnEditar.html('<i class="fas fa-edit mr-2"></i> {{ __("Editar Registro") }}');
+            btnEditar.addClass('btn-purple-invert').removeClass('btn-primary-invert btn-success-invert');
+        });
+    </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
+    <style type="text/css">
+        .show-mode .card-header {
+            border-top: 5px solid #8e44ad !important;
+        }
 
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
+        .show-mode .rounded-circle {
+            background-color: #f3e5f5 !important;
+        }
 
-</style>
+        .show-mode .text-primary,
+        .show-mode .text-success,
+        .show-mode .fa-allergies,
+        .show-mode .fa-tag,
+        .show-mode .label-custom {
+            color: #8e44ad !important;
+        }
+
+        .show-mode input,
+        .show-mode textarea {
+            background-color: #fcfaff !important;
+            border-color: #e9ecef !important;
+            pointer-events: none;
+        }
+
+        .btn.btn-purple-invert,
+        a.btn-purple-invert {
+            background-color: #ffffff !important;
+            border: 2px solid #8e44ad !important;
+            color: #8e44ad !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease-in-out !important;
+            display: inline-flex !important;
+            align-items: center;
+            text-decoration: none !important;
+        }
+
+        .btn-purple-invert i {
+            color: #8e44ad !important;
+        }
+
+        .btn-purple-invert.btn-purple-invert:hover {
+            background-color: #8e44ad !important;
+            color: #ffffff !important;
+            border-color: #8e44ad !important;
+        }
+
+        .btn-purple-invert.btn-purple-invert:hover i {
+            color: #ffffff !important;
+        }
+
+        .btn-invert {
+            background-color: #ffffff !important;
+            border: 2px solid #343a40 !important;
+            color: #343a40 !important;
+            border-radius: 8px !important;
+        }
+
+        .btn-invert:hover {
+            background-color: #343a40 !important;
+            color: #ffffff !important;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.25) !important;
+        }
+    </style>
 @endpush

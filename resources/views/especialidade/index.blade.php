@@ -1,86 +1,73 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
-
-{{-- Extend and customize the page content header --}}
 
 @section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
+    <div class="container-fluid pt-4">
+        <div class="row align-items-center">
+            <div class="col-6 text-left">
+                <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
+                    <i class="fas fa-fw fa-microscope text-primary mr-2"></i> {{ __('Especialidades') }}
+                </h1>
+            </div>
+            <div class="col-6 text-right">
+                <a href="{{ route('especialidade.create') }}" class="btn btn-invert-blue shadow-sm px-4">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nueva Especialidad') }}
+                </a>
+            </div>
+        </div>
+    </div>
 @stop
 
-{{-- Rename section content to content_body --}}
-
 @section('content')
-    @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-
-                            <span id="card_title">
-                                {{ __('Especialidades') }}
-                            </span>
-
-                             <div class="float-right">
-                                <a href="{{ route('especialidade.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear nueva Especialidad') }}
-                                </a>
-                              </div>
-                        </div>
-                    </div>
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success m-4">
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
-                    <div class="card-body bg-white">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="thead">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th>No</th>
-                                        
-									<th >Nombre</th>
-									<th >Descripción</th>
-
-                                        <th></th>
+                                        <th class="border-0 px-4 py-3 text-muted" style="width: 100px;">No</th>
+                                        <th class="border-0 py-3 text-muted">{{ __('Nombre de la Especialidad') }}</th>
+                                        <th class="border-0 py-3 text-muted">{{ __('Descripción') }}</th>
+                                        <th class="border-0 py-3 text-right px-4 text-muted">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($especialidades as $especialidade)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $especialidade->nombre }}</td>
-										<td style="width: 250px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        {{ $especialidade->descripcion }}</td>
-
-                                            <td>
-                                                <form action="{{ route('especialidade.destroy', $especialidade->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('especialidade.show', $especialidade->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('especialidade.edit', $especialidade->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                            <td class="align-middle px-4 text-muted">{{ $loop->iteration }}</td>
+                                            <td class="align-middle">
+                                                <span class="font-weight-bold text-dark">{{ $especialidade->nombre }}</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span class="text-muted small d-inline-block text-truncate" style="max-width: 250px;">
+                                                    {{ $especialidade->descripcion ?: 'Sin descripción' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-right align-middle px-4">
+                                                <form action="{{ route('especialidade.destroy', $especialidade->id) }}" method="POST" class="mb-0 form-eliminar">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar esta Especialidad?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <div class="btn-group">
+                                                        {{-- Botón Ver --}}
+                                                        <a class="btn btn-sm btn-invert-purple mr-1" 
+                                                           href="{{ route('especialidade.show', $especialidade->id) }}" title="Ver">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        {{-- Botones Editar y Eliminar --}}
+                                                        <a class="btn btn-sm btn-invert-success mr-1" 
+                                                           href="{{ route('especialidade.edit', $especialidade->id) }}" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <button type="submit" class="btn btn-sm btn-invert-danger" title="Eliminar">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </form>
                                             </td>
                                         </tr>
@@ -90,45 +77,83 @@
                         </div>
                     </div>
                 </div>
-                {!! $especialidades->withQueryString()->links() !!}
+                
+                <div class="mt-4 d-flex justify-content-center">
+                    {!! $especialidades->withQueryString()->links('pagination::bootstrap-4') !!}
+                </div>
             </div>
         </div>
     </div>
 @stop
 
-{{-- Create a common footer --}}
-
-@section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
-{{-- Add common Javascript/Jquery code --}}
-
-@push('js')
-<script>
-
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
-
-</script>
-@endpush
-
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
+<style>
+    /* Estilos Base de Inversión */
+    .btn-invert-blue, .btn-invert-purple, .btn-invert-success, .btn-invert-danger {
+        background-color: #ffffff !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease-in-out !important;
+        border-width: 2px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
-    .card-title {
-        font-weight: 600;
-    }
-    */
 
+    /* Botón Añadir */
+    .btn-invert-blue { border: 2px solid #007bff !important; color: #007bff !important; border-radius: 50px !important; }
+    .btn-invert-blue:hover { background-color: #007bff !important; color: #ffffff !important; }
+
+    /* BOTÓN ver */
+    .btn-invert-purple { 
+        border: 2px solid #8e44ad !important; 
+        color: #8e44ad !important; 
+    }
+
+    .btn-invert-purple i { 
+        color: #8e44ad !important; 
+    }
+
+    .btn-invert-purple:hover { 
+        background-color: #8e44ad !important; 
+        color: #ffffff !important; 
+    }
+
+    .btn-invert-purple:hover i { 
+        color: #ffffff !important; 
+    }
+
+    /* Botones de Acción */
+    .btn-invert-success { 
+        border: 2px solid #28a745 !important; 
+        color: #28a745 !important; 
+    }
+
+    .btn-invert-success:hover { 
+        background-color: #28a745 !important; 
+        color: #ffffff !important; 
+    }
+
+    .btn-invert-danger { 
+        border: 2px solid #dc3545 !important; 
+        color: #dc3545 !important; 
+    }
+
+    .btn-invert-danger:hover { 
+        background-color: #dc3545 !important; 
+        color: #ffffff !important; 
+    }
+
+    /* Efectos hover */
+    .btn:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important; 
+        text-decoration: none !important; 
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #fcfaff;
+        transition: background-color 0.2s ease;
+    }
 </style>
 @endpush

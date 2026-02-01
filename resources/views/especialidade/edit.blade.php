@@ -1,90 +1,57 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
-
-{{-- Extend and customize the page content header --}}
 
 @section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
 @stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="">
-            <div class="col-md-12">
-
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Especialidad</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('especialidade.update', $especialidade->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
-
-                            @include('especialidade.form')
-
-                        </form>
-                    </div>
-                </div>
+    <div class="container-fluid pt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <form method="POST" action="{{ route('especialidade.update', $especialidade->id) }}" role="form" enctype="multipart/form-data">
+                    {{ method_field('PATCH') }}
+                    @csrf
+                    @include('especialidade.form')
+                </form>
             </div>
         </div>
-    </section>
+    </div>
 @stop
 
-{{-- Create a common footer --}}
-
-{{-- Create a common footer --}}
-
 @section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
+    <div class="float-right d-none d-sm-block text-muted">Version: {{ config('app.version', '1.0.0') }}</div>
     <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
     $(document).ready(function() {
-        // Add your common script logic here...
+        {{-- Unificamos el título a "Operación Exitosa" para que coincida con Roles y Create --}}
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Actualizado!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-lg' }
+            });
+        @endif
     });
-
 </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
 <style type="text/css">
-
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     }
-    .card-title {
-        font-weight: 600;
-    }
-    */
-
 </style>
 @endpush

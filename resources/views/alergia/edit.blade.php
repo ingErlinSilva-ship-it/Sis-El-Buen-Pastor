@@ -1,88 +1,85 @@
 @extends('adminlte::page')
 
-{{-- Extend and customize the browser title --}}
-
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
-
-{{-- Extend and customize the page content header --}}
-
-@section('content_header')
-    @hasSection('content_header_title')
-        <h1 class="text-muted">
-            @yield('content_header_title')
-
-            @hasSection('content_header_subtitle')
-                <small class="text-dark">
-                    <i class="fas fa-xs fa-angle-right text-muted"></i>
-                    @yield('content_header_subtitle')
-                </small>
-            @endif
-        </h1>
-    @endif
-@stop
-
-{{-- Rename section content to content_body --}}
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="">
-            <div class="col-md-12">
-
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Alergia</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('alergia.update', $alergia->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
-
-                            @include('alergia.form')
-
-                        </form>
-                    </div>
-                </div>
-            </div>
+<section class="content container-fluid pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-12 edit-mode">
+            <form method="POST" action="{{ route('alergia.update', $alergia->id) }}" role="form"
+                enctype="multipart/form-data">
+                {{ method_field('PATCH') }}
+                @csrf
+                @include('alergia.form')
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 @stop
-
-{{-- Create a common footer --}}
 
 @section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
+<div class="float-right d-none d-sm-block text-muted">Version: {{ config('app.version', '1.0.0') }}</div>
+<strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
 @stop
 
-{{-- Add common Javascript/Jquery code --}}
-
 @push('js')
-<script>
+    <script>
+        $(document).ready(function () {
+            // Ajuste de textos para el modo edición
+            $('.edit-mode .card-title').text('{{ __("Actualizar Registro de Alergia") }}');
 
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
-
-</script>
+            // Forzamos el botón a Verde (Success)
+            var btnGuardar = $('.edit-mode button[type="submit"]');
+            btnGuardar.addClass('btn-success-invert').removeClass('btn-primary-invert');
+            btnGuardar.html('<i class="fas fa-sync-alt mr-2"></i> {{ __("Actualizar Registro") }}');
+        });
+    </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
-
 @push('css')
-<style type="text/css">
+    <style type="text/css">
+        /* FORZAR IDENTIDAD VERDE (EDITAR) */
+        .edit-mode .card-header {
+            border-top: 4px solid #28a745 !important;
+        }
 
-    /*
-    {{-- You can add AdminLTE customizations here --}}
-    .card-header {
-        border-bottom: none;
-    }
-    .card-title {
-        font-weight: 600;
-    }
-    */
+        .edit-mode .rounded-circle {
+            background-color: #e8f5e9 !important;
+        }
 
-</style>
+        .edit-mode .fa-allergies,
+        .edit-mode .text-primary,
+        .edit-mode .label-custom, {
+            color: #28a745 !important;
+        }
+
+        /* NOMENCLATURA BOTÓN VERDE (Inversión) */
+        .btn-success-invert.btn-success-invert {
+            background-color: #ffffff !important;
+            border: 2px solid #28a745 !important;
+            color: #28a745 !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease-in-out !important;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-success-invert.btn-success-invert:hover {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+            border-color: #28a745 !important;
+        }
+
+        .btn-success-invert.btn-success-invert:hover i {
+            color: #ffffff !important;
+        }
+
+        .edit-mode .form-control:focus {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.2) !important;
+        }
+    </style>
 @endpush
