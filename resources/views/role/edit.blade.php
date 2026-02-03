@@ -1,8 +1,7 @@
 @extends('adminlte::page')
 
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
 
 @section('content_header')
@@ -26,15 +25,25 @@
 @stop
 
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
-        // Lógica adicional para edición aquí
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Actualizado!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-lg' }
+            });
+        @endif
     });
 </script>
 @endpush
 
 @push('css')
 <style type="text/css">
-    /* Estilos específicos si fueran necesarios */
 </style>
 @endpush
