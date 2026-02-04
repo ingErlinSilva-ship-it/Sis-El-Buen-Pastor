@@ -248,48 +248,48 @@ class CitaController extends Controller
      */
     public function update(CitaRequest $request, $id): RedirectResponse
     {
-        // 1. Buscamos la cita existente por ID para evitar duplicados
+        // 1. Buscamos la cita existente
         $cita = Cita::findOrFail($id);
 
-        // 2. Llenamos con los datos del formulario y guardamos
-        // Esto actualizará la fila actual en la base de datos
-        $cita->update($request->all());
+        // 2. Solo validamos horarios si la cita NO se está cancelando
+        if ($request->estado !== 'cancelada') {
+            $fecha = \Carbon\Carbon::parse($request->fecha);
+            $hora = $request->hora;
+            $diaSemana = $fecha->dayOfWeek;
 
-        $fecha = \Carbon\Carbon::parse($request->fecha);
-        $hora = $request->hora;
-        $diaSemana = $fecha->dayOfWeek;
-
-        // VALIDACIONES DE HORARIO SINCRONIZADAS
-        if ($diaSemana == \Carbon\Carbon::SATURDAY) {
-            return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
-        }
-        if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
-            if ($hora < "13:29" || $hora > "17:30") {
-                return back()->withErrors(['hora' => 'Atención de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+            // VALIDACIONES DE HORARIO
+            if ($diaSemana == \Carbon\Carbon::SATURDAY) {
+                return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
+            }
+            if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
+                if ($hora < "13:29" || $hora > "17:30") {
+                    return back()->withErrors(['hora' => 'Atención de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+                }
+            }
+            if ($diaSemana == \Carbon\Carbon::SUNDAY) {
+                if ($hora < "08:00" || $hora > "11:30") {
+                    return back()->withErrors(['hora' => 'Atención de Domingos: 08:00 AM - 12:00 AM.'])->withInput();
+                }
             }
         }
-        if ($diaSemana == \Carbon\Carbon::SUNDAY) {
-            if ($hora < "08:00" || $hora > "11:30") {
-                return back()->withErrors(['hora' => 'Atención de Domingos: 08:00 AM - 12:00 AM.'])->withInput();
-            }
-        }
 
+        // 3. Proceso de Guardado (Ahora fuera del IF para que siempre se ejecute)
         try {
-            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
-                // BUSCAR COLISIÓN IGNORANDO ESTA CITA ($id)
-                $yaExiste = \App\Models\Cita::where('medico_id', $request->medico_id)
-                    ->where('fecha', $request->fecha)
-                    ->where('hora', $request->hora)
-                    ->where('id', '!=', $id) // <--- CRÍTICO: Ignora la cita que estás editando
-                    ->exists();
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $cita) {
+                // Solo buscamos colisiones si la cita sigue activa
+                if ($request->estado !== 'cancelada') {
+                    $yaExiste = \App\Models\Cita::where('medico_id', $request->medico_id)
+                        ->where('fecha', $request->fecha)
+                        ->where('hora', $request->hora)
+                        ->where('id', '!=', $cita->id)
+                        ->exists();
 
-                if ($yaExiste) {
-                    throw new \Exception("El médico ya tiene otra cita programada a esa hora.");
+                    if ($yaExiste) {
+                        throw new \Exception("El médico ya tiene otra cita programada a esa hora.");
+                    }
                 }
 
-                $cita = \App\Models\Cita::findOrFail($id);
                 $cita->update($request->all());
-
                 return redirect()->route('cita.index')->with('success', 'Cita Actualizada Exitosamente.');
             });
         } catch (\Exception $e) {
@@ -298,15 +298,15 @@ class CitaController extends Controller
     }
 
     public function destroy($id)
-{
-    // Bloqueo de seguridad: Si NO es administrador, no puede borrar
-    if (auth()->user()->rol_id !== 1) {
-        abort(403, 'No tienes permiso para eliminar citas.');
+    {
+        // Bloqueo de seguridad: Si NO es administrador, no puede borrar
+        if (auth()->user()->rol_id !== 1) {
+            abort(403, 'No tienes permiso para eliminar citas.');
+        }
+
+        $cita = \App\Models\Cita::find($id)->delete();
+
+        return redirect()->route('cita.index')
+            ->with('success', 'Cita eliminada exitosamente');
     }
-
-    $cita = \App\Models\Cita::find($id)->delete();
-
-    return redirect()->route('cita.index')
-        ->with('success', 'Cita eliminada exitosamente');
-}
 }

@@ -180,26 +180,25 @@ $(document).ready(function() {
     });
 
     // 6. VALIDACIONES DE FECHA Y HORA
-    $('#fecha').on('blur', function() { // Usamos 'blur' para que valide al salir del campo
+    $('#fecha').on('blur', function() {
         let valor = $(this).val();
-        
-        // Si la fecha no tiene 10 caracteres (YYYY-MM-DD), no validamos aún
         if (valor.length < 10) return;
 
-        let fechaSeleccionada = new Date(valor + 'T00:00:00');
-        let anio = fechaSeleccionada.getFullYear();
+        // Solo validamos si es una cita nueva (si el ID de la cita no existe en el contexto)
+        let esEdicion = "{{ isset($cita) ? 'true' : 'false' }}";
+        
+        if (esEdicion === 'false') {
+            let fechaSeleccionada = new Date(valor + 'T00:00:00');
+            let dia = fechaSeleccionada.getUTCDay(); 
 
-        // Evitamos años absurdos como el año 0002 que mencionabas
-        if (anio < 1900 || anio > 2100) return;
-
-        let dia = fechaSeleccionada.getUTCDay(); 
-
-        if (dia === 6) { // Sábado
-            toast('warning', 'Clínica Cerrada', 'La clínica permanece cerrada los días sábados. Por favor, seleccione otro día.');
-            $(this).val('');
-            return;
+            if (dia === 6) { // Sábado
+                toast('warning', 'Clínica Cerrada', 'La clínica permanece cerrada los sábados.');
+                $(this).val('');
+                return;
+            }
         }
     });
+
     $('#hora').on('change', function() {
         let fechaVal = $('#fecha').val();
         if (!fechaVal) {

@@ -128,7 +128,10 @@
                             <div class="col-md-4 form-group mb-4">
                                 <label class="small font-weight-bold text-muted text-uppercase">Fecha de Cita</label>
                                 <input type="date" name="fecha" id="fecha" class="form-control shadow-sm bloqueable @error('fecha') is-invalid @enderror" 
-                                value="{{ old('fecha', $cita?->fecha) }}" disabled min="{{ date('Y-m-d') }}" style="border-radius: 8px;">
+                                value="{{ old('fecha', $cita?->fecha) }}" 
+                                {{-- Solo ponemos 'min' si la cita no existe en la base de datos (Create) --}}
+                                @if(!$cita->exists) min="{{ date('Y-m-d') }}" @endif 
+                                style="border-radius: 8px;">
                             </div>
 
                             <div class="col-md-4 form-group mb-4">
