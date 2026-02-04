@@ -11,19 +11,19 @@
             <div class="card border-0 shadow-lg" style="border-radius: 12px;">
                 
                 {{-- Header Dinámico --}}
-<div class="card-header bg-white border-bottom py-3 px-4" 
-     style="border-top: 4px solid {{ $temaColor }}; border-radius: 12px 12px 0 0;">
-    <div class="d-flex align-items-center">
-        <div class="rounded-circle p-2 mr-3" style="background-color: {{ $temaFondoIcono }};">
-            <i class="fas fa-user-check {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i>
-        </div>
-        <div>
-            <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
-                {{ $esEdicion ? __('Actualizar Datos del Usuario') : __('Registro de Nuevo Usuario') }}
-            </h3>
-        </div>
-    </div>
-</div>
+                <div class="card-header bg-white border-bottom py-3 px-4" 
+                    style="border-top: 4px solid {{ $temaColor }}; border-radius: 12px 12px 0 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle p-2 mr-3" style="background-color: {{ $temaFondoIcono }};">
+                            <i class="fas fa-user-check {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
+                                {{ $esEdicion ? __('Actualizar Datos del Usuario') : __('Registro de Nuevo Usuario') }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="card-body p-4">
                     <div class="row">

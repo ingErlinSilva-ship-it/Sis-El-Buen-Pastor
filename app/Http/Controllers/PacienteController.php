@@ -113,17 +113,18 @@ class PacienteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
-    {
-        $paciente->update($request->validated());
+        public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
+        {
+            $data = $request->validated();
 
-        // sync pivot
-        $paciente->alergias()->sync($request->alergias ?? []);
-        $paciente->enfermedades()->sync($request->enfermedades ?? []);
+            $paciente->update($data);
 
-        return Redirect::route('paciente.index')
-            ->with('success', '¡Listo! Los datos del Paciente se han Actualizado con éxito.');
-    }
+            $paciente->alergias()->sync($request->alergias ?? []);
+            $paciente->enfermedades()->sync($request->enfermedades ?? []);
+
+            return Redirect::route('paciente.index')
+                ->with('success', '¡Listo! Los datos del Paciente se han Actualizado con éxito.');
+        }
 
     public function destroy($id)
     {

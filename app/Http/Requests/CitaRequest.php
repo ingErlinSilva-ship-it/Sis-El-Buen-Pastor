@@ -21,17 +21,26 @@ class CitaRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        // Definimos el array base
+        $rules = [
             'paciente_id' => 'required|exists:pacientes,id',
             'medico_id'   => 'required|exists:medicos,id',
-            'fecha'       => 'required|date',
             'hora'        => 'required',
             'duracion_minutos' => 'required|integer',
             'motivo'      => 'nullable|string', 
             'estado'      => 'required|in:pendiente,confirmada,asistida,cancelada',
             'origen'      => 'required|string',
-            'chat_session_id'    => 'nullable|string', 
-            'token_confirmacion' => 'nullable|string', 
         ];
+
+        // Ahora aplicamos la lógica de la fecha antes de retornar
+        if ($this->isMethod('post')) {
+            // En CREATE: Obligatorio hoy o futuro
+            $rules['fecha'] = 'required|date|after_or_equal:today';
+        } else {
+            // En EDIT: Solo requerido (permite pasado para historial)
+            $rules['fecha'] = 'required|date';
+        }
+
+        return $rules; // Retornamos el array completo al final
     }
 }

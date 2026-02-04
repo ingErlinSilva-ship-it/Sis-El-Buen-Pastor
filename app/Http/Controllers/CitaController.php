@@ -17,37 +17,47 @@ class CitaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        
+        // Capturamos las fechas del buscador (si existen)
+        $fecha_inicio = $request->get('fecha_inicio');
+        $fecha_fin = $request->get('fecha_fin');
 
-        // 1. LÓGICA PARA EL ADMINISTRADOR (Ve todo)
+        // Iniciamos la consulta base con relaciones para que sea más rápido
+        $query = Cita::with(['paciente.usuario', 'medico.usuario']);
+
+        // Filtro por rango de fechas (Si el usuario las selecciona)
+        if ($fecha_inicio && $fecha_fin) {
+            $query->whereBetween('fecha', [$fecha_inicio, $fecha_fin]);
+        }
+
+        // 1. LÓGICA PARA EL ADMINISTRADOR (Ve todo ordenado)
         if ($user->rol_id == 1) {
-            $citas = Cita::all();
+            $citas = $query->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get();
         }
-
-        // 2. LÓGICA PARA EL DOCTOR (Ve solo sus citas)
+        // 2. LÓGICA PARA EL DOCTOR
         elseif ($user->rol_id == 2) {
-            // Primero buscamos el ID de médico asociado a este usuario
             $medico = Medico::where('usuario_id', $user->id)->first();
-
-            if ($medico) {
-                // Filtramos las citas por su ID de médico
-                $citas = Cita::where('medico_id', $medico->id)->get();
-            } else {
-                $citas = collect(); // Si no tiene perfil médico creado
-            }
+            $citas = $medico 
+                ? $query->where('medico_id', $medico->id)
+                        ->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get() 
+                : collect();
         }
-
-        // 3. LÓGICA PARA EL PACIENTE (Ya la tienes funcionando)
+        // 3. LÓGICA PARA EL PACIENTE
         elseif ($user->rol_id == 3) {
             $paciente = Paciente::where('usuario_id', $user->id)->first();
-
-            if ($paciente) {
-                $citas = Cita::where('paciente_id', $paciente->id)->get();
-            } else {
-                $citas = collect();
-            }
+            $citas = $paciente 
+                ? $query->where('paciente_id', $paciente->id)
+                        ->orderBy('fecha', 'desc')
+                        ->orderBy('hora', 'desc')
+                        ->get() 
+                : collect();
         }
 
         return view('cita.index', compact('citas'));
@@ -177,6 +187,7 @@ class CitaController extends Controller
                 $nuevoPaciente = Paciente::create([
                     'usuario_id' => $usuario->id,
                     'cedula' => $request->cedula_buscada,
+                    'fecha_nacimiento' => null,
                     'tipo_sangre' => 'No definido',
                 ]);
 
@@ -237,48 +248,48 @@ class CitaController extends Controller
      */
     public function update(CitaRequest $request, $id): RedirectResponse
     {
-        // 1. Buscamos la cita existente por ID para evitar duplicados
+        // 1. Buscamos la cita existente
         $cita = Cita::findOrFail($id);
 
-        // 2. Llenamos con los datos del formulario y guardamos
-        // Esto actualizará la fila actual en la base de datos
-        $cita->update($request->all());
+        // 2. Solo validamos horarios si la cita NO se está cancelando
+        if ($request->estado !== 'cancelada') {
+            $fecha = \Carbon\Carbon::parse($request->fecha);
+            $hora = $request->hora;
+            $diaSemana = $fecha->dayOfWeek;
 
-        $fecha = \Carbon\Carbon::parse($request->fecha);
-        $hora = $request->hora;
-        $diaSemana = $fecha->dayOfWeek;
-
-        // VALIDACIONES DE HORARIO SINCRONIZADAS
-        if ($diaSemana == \Carbon\Carbon::SATURDAY) {
-            return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
-        }
-        if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
-            if ($hora < "13:29" || $hora > "17:30") {
-                return back()->withErrors(['hora' => 'Atención de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+            // VALIDACIONES DE HORARIO
+            if ($diaSemana == \Carbon\Carbon::SATURDAY) {
+                return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
+            }
+            if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
+                if ($hora < "13:29" || $hora > "17:30") {
+                    return back()->withErrors(['hora' => 'Atención de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+                }
+            }
+            if ($diaSemana == \Carbon\Carbon::SUNDAY) {
+                if ($hora < "08:00" || $hora > "11:30") {
+                    return back()->withErrors(['hora' => 'Atención de Domingos: 08:00 AM - 12:00 AM.'])->withInput();
+                }
             }
         }
-        if ($diaSemana == \Carbon\Carbon::SUNDAY) {
-            if ($hora < "08:00" || $hora > "11:30") {
-                return back()->withErrors(['hora' => 'Atención de Domingos: 08:00 AM - 12:00 AM.'])->withInput();
-            }
-        }
 
+        // 3. Proceso de Guardado (Ahora fuera del IF para que siempre se ejecute)
         try {
-            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
-                // BUSCAR COLISIÓN IGNORANDO ESTA CITA ($id)
-                $yaExiste = \App\Models\Cita::where('medico_id', $request->medico_id)
-                    ->where('fecha', $request->fecha)
-                    ->where('hora', $request->hora)
-                    ->where('id', '!=', $id) // <--- CRÍTICO: Ignora la cita que estás editando
-                    ->exists();
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $cita) {
+                // Solo buscamos colisiones si la cita sigue activa
+                if ($request->estado !== 'cancelada') {
+                    $yaExiste = \App\Models\Cita::where('medico_id', $request->medico_id)
+                        ->where('fecha', $request->fecha)
+                        ->where('hora', $request->hora)
+                        ->where('id', '!=', $cita->id)
+                        ->exists();
 
-                if ($yaExiste) {
-                    throw new \Exception("El médico ya tiene otra cita programada a esa hora.");
+                    if ($yaExiste) {
+                        throw new \Exception("El médico ya tiene otra cita programada a esa hora.");
+                    }
                 }
 
-                $cita = \App\Models\Cita::findOrFail($id);
                 $cita->update($request->all());
-
                 return redirect()->route('cita.index')->with('success', 'Cita Actualizada Exitosamente.');
             });
         } catch (\Exception $e) {
@@ -287,15 +298,15 @@ class CitaController extends Controller
     }
 
     public function destroy($id)
-{
-    // Bloqueo de seguridad: Si NO es administrador, no puede borrar
-    if (auth()->user()->rol_id !== 1) {
-        abort(403, 'No tienes permiso para eliminar citas.');
+    {
+        // Bloqueo de seguridad: Si NO es administrador, no puede borrar
+        if (auth()->user()->rol_id !== 1) {
+            abort(403, 'No tienes permiso para eliminar citas.');
+        }
+
+        $cita = \App\Models\Cita::find($id)->delete();
+
+        return redirect()->route('cita.index')
+            ->with('success', 'Cita eliminada exitosamente');
     }
-
-    $cita = \App\Models\Cita::find($id)->delete();
-
-    return redirect()->route('cita.index')
-        ->with('success', 'Cita eliminada exitosamente');
-}
 }
