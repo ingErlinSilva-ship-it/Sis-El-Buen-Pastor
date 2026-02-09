@@ -82,65 +82,135 @@
     </div>
 @stop
 
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        // Alerta de confirmación para eliminar
+        $('.form-eliminar').submit(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "El rol se eliminará permanentemente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-secondary px-4 mx-2',
+                    popup: 'rounded-lg'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+        // Alerta de Éxito (Captura el 'success' del controlador)
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-lg' }
+            });
+        @endif
+    });
+</script>
+@endpush
+
 @push('css')
-<style>
-    .text-purple-custom { color: #8e44ad !important; }
+    <style>
+        .text-purple-custom {
+            color: #8e44ad !important;
+        }
 
-    /* Estilos Base de Inversión */
-    .btn-invert-blue, .btn-invert-purple, .btn-invert-success, .btn-invert-danger {
-        background-color: #ffffff !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease-in-out !important;
-        border-width: 2px !important;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
+        /* Estilos Base de Inversión */
+        .btn-invert-blue,
+        .btn-invert-purple,
+        .btn-invert-success,
+        .btn-invert-danger {
+            background-color: #ffffff !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease-in-out !important;
+            border-width: 2px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* Inversión Añadir */
-    .btn-invert-blue { border: 2px solid #007bff !important; color: #007bff !important; border-radius: 50px !important; }
-    .btn-invert-blue:hover { background-color: #007bff !important; color: #ffffff !important; }
+        /* Inversión Añadir */
+        .btn-invert-blue {
+            border: 2px solid #007bff !important;
+            color: #007bff !important;
+            border-radius: 50px !important;
+        }
 
-    /* Inversión Ver */
-    .btn-invert-purple { 
-        border: 2px solid #8e44ad !important; 
-        color: #8e44ad !important; 
-    }
-    .btn-invert-purple:hover { 
-        background-color: #8e44ad !important; 
-        color: #ffffff !important; 
-    }
+        .btn-invert-blue:hover {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
 
-    /* Inversión Editar */
-    .btn-invert-success { 
-        border: 2px solid #28a745 !important; 
-        color: #28a745 !important; 
-    }
+        /* Inversión Ver */
+        .btn-invert-purple {
+            border: 2px solid #8e44ad !important;
+            color: #8e44ad !important;
+        }
 
-    .btn-invert-success:hover {
-        background-color: #28a745 !important; 
-        color: #ffffff !important; 
-    }
+        .btn-invert-purple:hover {
+            background-color: #8e44ad !important;
+            color: #ffffff !important;
+        }
 
-    /* Inversión Eliminar */
-    .btn-invert-danger { 
-        border: 2px solid #dc3545 !important; 
-        color: #dc3545 !important; 
-    }
+        /* Inversión Editar */
+        .btn-invert-success {
+            border: 2px solid #28a745 !important;
+            color: #28a745 !important;
+        }
 
-    .btn-invert-danger:hover { 
-        background-color: #dc3545 !important; 
-        color: #ffffff !important; 
-    }
+        .btn-invert-success:hover {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+        }
 
-    .btn:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important; 
-        text-decoration: none !important;
-    }
-    .btn:hover i { 
-        color: #ffffff !important; 
-    }
-</style>
+        /* Inversión Eliminar */
+        .btn-invert-danger {
+            border: 2px solid #dc3545 !important;
+            color: #dc3545 !important;
+        }
+
+        .btn-invert-danger:hover {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+        }
+
+        /* Efecto de resaltado al pasar el mouse por la fila */
+        .table-hover tbody tr:hover {
+            background-color: #f1f7ff !important;
+            transition: background-color 0.2s ease;
+        }
+
+        .table-hover tbody tr:hover td {
+            box-shadow: inset 0 0 0 9999px rgba(0, 123, 255, 0.02);
+        }
+
+        .shadow-xs {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+    </style>
 @endpush

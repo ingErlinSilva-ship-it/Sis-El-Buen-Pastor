@@ -58,7 +58,7 @@ class PacienteController extends Controller
             'tipo_sangre',
         ]));
 
-        // 🔗 GUARDAR PIVOT
+        // GUARDAR PIVOT
         if ($request->has('alergias')) {
             $paciente->alergias()->sync($request->alergias);
         }
@@ -84,6 +84,16 @@ class PacienteController extends Controller
         'enfermedades', 
         'consultas.medico.usuario' // Trae la consulta -> el médico -> y su nombre de usuario
     ])->findOrFail($id);
+
+    $user = auth()->user();
+
+    // FILTRO DE PRIVACIDAD:
+    // Si el usuario es un Paciente (rol_id 3), verificamos que el expediente sea el SUYO
+    if ($user->rol_id == 3) {
+        if ($paciente->usuario_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver este expediente clínico.');
+        }
+    }
 
     return view('paciente.show', compact('paciente'));
 

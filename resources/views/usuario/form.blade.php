@@ -1,8 +1,8 @@
 @php
-    $esEdicion = isset($usuario->id);
-    $temaColor = $esEdicion ? '#28a745' : '#007bff';
-    $temaFondoIcono = $esEdicion ? '#e8f5e9' : '#e7f1ff';
-    $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)';
+$esEdicion = isset($usuario->id);
+$temaColor = $esEdicion ? '#28a745' : '#007bff';
+$temaFondoIcono = $esEdicion ? '#e8f5e9' : '#e7f1ff';
+$sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)';
 @endphp
 
 <div class="container-fluid pt-4">
@@ -27,12 +27,13 @@
                 
                 <div class="card-body p-4">
                     <div class="row">
+                        
                         {{-- Sección de Foto con Previsualización --}}
                         <div class="col-md-4 text-center border-right pr-4">
                             <label class="text-dark font-weight-bold mb-3 d-block"><i class="fas fa-camera mr-1 text-muted"></i> Foto de Perfil</label>
                             <div class="position-relative d-inline-block">
                                 <img id="preview" 
-                                     src="{{ $usuario->foto ? asset('storage/'.$usuario->foto) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" 
+                                     src="{{ $usuario->foto ? asset('storage/' . $usuario->foto) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" 
                                      class="rounded-circle shadow-sm border" 
                                      style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff !important;">
                                 <label for="foto" class="btn btn-sm btn-primary position-absolute shadow" 
@@ -41,7 +42,7 @@
                                 </label>
                             </div>
                             <input type="file" name="foto" id="foto" class="d-none" accept="image/*">
-                            <small class="text-muted d-block mt-2">Formatos permitidos: JPG, PNG. Máx 2MB.</small>
+                            <small class="text-muted d-block mt-2">Formatos permitidos: JPG, PNG.</small>
                             @error('foto') <span class="text-danger small">{{ $message }}</span> @enderror
                             <button type="button" class="btn btn-link btn-sm text-danger mt-1" id="clearPhoto">
                             <i class="fas fa-trash-alt"></i> Usar foto por defecto
@@ -61,16 +62,19 @@
                         {{-- Datos Personales --}}
                         <div class="col-md-8 pl-4">
                             <div class="row">
+
                                 {{-- Nombre --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="nombre" class="font-weight-bold small text-muted">NOMBRE</label>
                                     <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" value="{{ old('nombre', $usuario?->nombre) }}" required placeholder="Juan Carlos">
                                 </div>
+
                                 {{-- Apellido --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="apellido" class="font-weight-bold small text-muted">APELLIDO</label>
                                     <input type="text" name="apellido" id="apellido" class="form-control @error('apellido') is-invalid @enderror" value="{{ old('apellido', $usuario?->apellido) }}" required placeholder="Pérez Reyes">
                                 </div>
+
                                 {{-- Email --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="email" class="font-weight-bold small text-muted">EMAIL</label>
@@ -81,6 +85,7 @@
                                         <input type="email" name="email" id="email" class="form-control border-left-0 @error('email') is-invalid @enderror" value="{{ old('email', $usuario?->email) }}" required placeholder="ejemplo@pastor.com">
                                     </div>
                                 </div>
+
                                 {{-- Celular --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="celular" class="font-weight-bold small text-muted">CELULAR</label>
@@ -91,6 +96,7 @@
                                         <input type="text" name="celular" id="celular" class="form-control border-left-0 @error('celular') is-invalid @enderror" value="{{ old('celular', $usuario?->celular) }}" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="88888888">
                                     </div>
                                 </div>
+
                                 {{-- Rol --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="rol_id" class="font-weight-bold small text-muted">ROL DE ACCESO</label>
@@ -101,27 +107,48 @@
                                         @endforeach
                                     </select>
                                 </div>
+
                                 {{-- Password --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="password" class="font-weight-bold small text-muted">CONTRASEÑA</label>
                                     <div class="input-group">
-                                        <input type="password" name="password" id="password" class="form-control border-right-0 @error('password') is-invalid @enderror" placeholder="{{ $esEdicion ? 'Dejar en blanco para no cambiar' : 'Mín. 8 caracteres' }}">
+                                        <input type="password" name="password" id="password"
+                                            class="form-control border-right-0 @error('password') is-invalid @enderror"
+                                            placeholder="{{ $esEdicion ? 'Dejar en blanco para no cambiar' : 'Mín. 8 caracteres' }}">
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary border-left-0 bg-white" type="button" id="togglePassword">
-                                                <i class="fa fa-eye" id="eyeIcon text-muted"></i>
+
+                                            {{-- clase btn-eye-password --}}
+                                            <button class="btn btn-outline-secondary border-left-0 bg-white btn-eye-password" type="button"
+                                                id="togglePassword">
+                                                <i class="fa fa-eye text-muted" id="eyeIcon"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
+
                                 {{-- Estado --}}
                                 <div class="col-12 mt-2">
-                                    <label class="font-weight-bold small text-muted d-block">ESTADO DE CUENTA</label>
+                                    <label class="font-weight-bold small text-muted d-block text-uppercase">Estado de cuenta</label>
                                     <div class="btn-group btn-group-toggle shadow-sm" data-toggle="buttons">
-                                        <label class="btn btn-outline-success border-right-0 {{ old('estado', $usuario->estado) == 1 ? 'active' : '' }}" style="border-radius: 8px 0 0 8px;">
-                                            <input type="radio" name="estado" value="1" {{ old('estado', $usuario->estado) == 1 ? 'checked' : '' }}> <i class="fas fa-check-circle mr-1"></i> Activo
+                                
+                                        @php
+                                            // Si el estado es null (registro nuevo), le asignamos 1 (Activo) por defecto.
+                                            // Si no es null, respetamos el valor de la sesión.
+                                            $valorEstado = old('estado', $usuario->estado ?? 1);
+                                        @endphp
+                                
+                                        {{-- Opción Activo --}}
+                                        <label class="btn btn-outline-success border-right-0 {{ $valorEstado == 1 ? 'active' : '' }}"
+                                            style="border-radius: 8px 0 0 8px;">
+                                            <input type="radio" name="estado" value="1" {{ $valorEstado == 1 ? 'checked' : '' }} required>
+                                            <i class="fas fa-check-circle mr-1"></i> {{ __('Activo') }}
                                         </label>
-                                        <label class="btn btn-outline-danger {{ old('estado', $usuario->estado) == 0 ? 'active' : '' }}" style="border-radius: 0 8px 8px 0;">
-                                            <input type="radio" name="estado" value="0" {{ old('estado', $usuario->estado) == 0 ? 'checked' : '' }}> <i class="fas fa-times-circle mr-1"></i> Inactivo
+                                
+                                        {{-- Opción Inactivo --}}
+                                        <label class="btn btn-outline-danger {{ $valorEstado == 0 ? 'active' : '' }}"
+                                            style="border-radius: 0 8px 8px 0;">
+                                            <input type="radio" name="estado" value="0" {{ $valorEstado == 0 ? 'checked' : '' }} required>
+                                            <i class="fas fa-times-circle mr-1"></i> {{ __('Inactivo') }}
                                         </label>
                                     </div>
                                 </div>
@@ -132,13 +159,18 @@
 
                 {{-- Footer --}}
                 <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 12px 12px;">
-                    <a href="{{ route('usuario.index') }}" class="btn btn-outline-secondary mr-3 px-4 shadow-sm" style="border-radius: 8px;">
-                        <i class="fas fa-times-circle mr-2"></i> Cancelar
+                    {{-- Botón Cancelar --}}
+                    <a href="{{ route('usuario.index') }}" class="btn btn-invert mr-3 px-4 shadow-sm">
+                        <i class="fas fa-times-circle mr-2"></i> {{ __('Cancelar') }}
                     </a>
-                    <button type="submit" class="btn {{ $esEdicion ? 'btn-success' : 'btn-primary' }} px-5 shadow-sm" style="border-radius: 8px; font-weight: 600;">
-                        <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i> {{ $esEdicion ? 'Actualizar Usuario' : 'Guardar Usuario' }}
+                
+                    {{-- Botón Guardar/Actualizar --}}
+                    <button type="submit" class="btn {{ $esEdicion ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm">
+                        <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
+                        {{ $esEdicion ? __('Actualizar Usuario') : __('Guardar Usuario') }}
                     </button>
                 </div>
+                
                 {{-- Modal para ajustar y centrar la foto --}}
                 <div class="modal fade" id="modalCrop" tabindex="-1" role="dialog" data-backdrop="static">
                     <div class="modal-dialog modal-md">
@@ -196,4 +228,92 @@
         color: #fff !important;
     }
 </style>
+@endpush
+
+@push('css')
+    <style>
+        /* Estilos base para botones de inversión */
+        .btn-invert,
+        .btn-primary-invert,
+        .btn-success-invert {
+            background-color: #ffffff !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease-in-out !important;
+            border-width: 2px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Cancelar */
+        .btn-invert {
+            border: 2px solid #343a40 !important;
+            color: #343a40 !important;
+        }
+
+        .btn-invert:hover {
+            background-color: #343a40 !important;
+            color: #ffffff !important;
+        }
+
+        /* Guardar */
+        .btn-primary-invert {
+            border: 2px solid #007bff !important;
+            color: #007bff !important;
+        }
+
+        .btn-primary-invert:hover {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
+
+        /* Actualizar */
+        .btn-success-invert {
+            border: 2px solid #28a745 !important;
+            color: #28a745 !important;
+        }
+
+        .btn-success-invert:hover {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+        }
+
+        /* Foco Dinámico y Efecto Elevación */
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem
+                {{ $sombraFocus }}
+                !important;
+            border-color:
+                {{ $temaColor }}
+                !important;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .btn:hover i {
+            color: #ffffff !important;
+        }
+    </style>
+
+    <style>
+        /* botón del ojo de la contraseña*/
+        .btn-eye-password:hover {
+            background-color: #f8f9fa !important;
+            border-color: #ced4da !important;
+            color: #6c757d !important;
+        }
+
+        .btn-eye-password:hover i {
+            color: #495057 !important;
+        }
+
+        .btn-eye-password:focus {
+            box-shadow: none !important;
+            background-color: #ffffff !important;
+        }
+    </style>
 @endpush

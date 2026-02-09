@@ -1,8 +1,7 @@
 @extends('adminlte::page')
 
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
 
 {{-- 1. Limpiamos el encabezado para evitar textos duplicados --}}

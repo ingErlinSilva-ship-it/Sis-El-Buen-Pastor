@@ -14,7 +14,7 @@
         </div>
         <div class="col-6 text-right">
             <a href="{{ route('alergia.create') }}" class="btn btn-invert-blue shadow-sm px-4">
-                <i class="fas fa-plus mr-1"></i> {{ __('Nueva Alergia') }}
+                <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nueva Alergia') }}
             </a>
         </div>
     </div>
@@ -57,12 +57,12 @@
                                                 @method('DELETE')
                                                 <div class="d-flex justify-content-end">
                                                     {{-- Ver: Púrpura --}}
-                                                    <a class="btn btn-sm btn-invert-purple mr-2"
+                                                    <a class="btn btn-sm btn-invert-purple mr-1"
                                                         href="{{ route('alergia.show', $alergia->id) }}" title="Ver">
                                                         <i class="fa fa-eye"></i>
                                                     </a>
                                                     {{-- Editar: Verde --}}
-                                                    <a class="btn btn-sm btn-invert-success mr-2"
+                                                    <a class="btn btn-sm btn-invert-success mr-1"
                                                         href="{{ route('alergia.edit', $alergia->id) }}" title="Editar">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
@@ -147,8 +147,6 @@
             font-weight: 600 !important;
             transition: all 0.3s ease-in-out !important;
             border-width: 2px !important;
-            width: 38px;
-            height: 38px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -196,18 +194,23 @@
             color: #fff !important;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .btn:hover i {
-            color: #ffffff !important;
-        }
-
+        /* Efecto de resaltado al pasar el mouse por la fila */
         .table-hover tbody tr:hover {
-            background-color: #fcfaff;
+            background-color: #f1f7ff !important;
             transition: background-color 0.2s ease;
+        }
+
+        .table-hover tbody tr:hover td {
+            box-shadow: inset 0 0 0 9999px rgba(0, 123, 255, 0.02);
+        }
+
+        .shadow-xs {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge {
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
     </style>
 @endpush
