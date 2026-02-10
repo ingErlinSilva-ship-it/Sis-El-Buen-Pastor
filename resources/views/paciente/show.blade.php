@@ -1,25 +1,32 @@
 @extends('adminlte::page')
 
-@section('title', 'Expediente | ' . $paciente->usuario->nombre)
+@section('title')
+{{ config('adminlte.title') }}
+@stop
 
 @section('content')
 <div class="container-fluid pt-4">
-    {{-- BOTÓN REGRESAR POR ENCIMA DE LA CARD --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="text-dark font-weight-bold">Expediente Clínico Digital</h3>
-        <a class="btn btn-primary shadow-sm" href="{{ route('paciente.index') }}" style="border-radius: 50px;">
-            <i class="fas fa-arrow-left mr-1"></i> Regresar a la lista
+    {{-- BARRA SUPERIOR UNIFICADA --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-dark font-weight-bold mb-0">
+                <i class="fas fa-user-injured rounded-circle p-2 mr-3" style="background-color: #f3e5f5;" text-purple-custom mr-2"></i>Expediente Clínico Digital
+            </h3>
+        </div>
+        {{-- Botón Regresar --}}
+        <a class="btn btn-invert px-4 shadow-sm" href="{{ route('paciente.index') }}">
+            <i class="fas fa-arrow-left mr-2"></i> Regresar a la lista
         </a>
     </div>
 
     <div class="row">
         {{-- COLUMNA IZQUIERDA: FICHA DEL PACIENTE --}}
         <div class="col-md-4">
-            <div class="card card-primary card-outline shadow-sm" style="border-radius: 15px;">
+            <div class="card shadow-sm border-0" style="border-radius: 15px; border-top: 5px solid #8e44ad !important;">
                 <div class="card-body box-profile">
                     <div class="text-center">
                         <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center bg-light mb-3 shadow-sm" 
-                             style="width: 100px; height: 100px; overflow: hidden; border: 3px solid #3c8dbc;">
+                             style="width: 100px; height: 100px; overflow: hidden; border: 3px solid #f3e5f5;">
                             @if($paciente->usuario->foto)
                                 <img src="{{ asset('storage/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                             @else
@@ -64,10 +71,10 @@
                         </li>
                     </ul>
 
-                    {{-- SECCIÓN DINÁMICA DEL RESPONSABLE --}}
+                    {{-- SECCIÓN DEL RESPONSABLE (Morado suave) --}}
                     @if($paciente->es_menor)
-                        <div class="p-3 mb-3" style="background-color: #f0f7ff; border-radius: 12px; border: 1px solid #d1e9ff;">
-                            <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                        <div class="p-3 mb-3" style="background-color: #f8f4ff; border-radius: 12px; border: 1px solid #ebdaff;">
+                            <h6 class="font-weight-bold text-purple-custom mb-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">
                                 <i class="fas fa-user-shield mr-1"></i> DATOS DEL RESPONSABLE
                             </h6>
                             <p class="mb-1 small"><b>Nombre:</b> {{ $paciente->tutor_nombre }} {{ $paciente->tutor_apellido }}</p>
@@ -77,11 +84,11 @@
                         </div>
                     @endif
 
-                    {{-- BOTÓN RESUMEN IA (MAQUETA) --}}
-                    <div class="bg-light p-3 rounded mb-2 border border-primary shadow-sm" style="border-style: dashed !important;">
+                    {{-- BOTÓN RESUMEN IA (Inversión Morada) --}}
+                    <div class="bg-light p-3 rounded mb-2 border-purple-dashed shadow-sm">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="font-weight-bold text-primary mb-0"><i class="fas fa-robot mr-1"></i> Resumen IA</h6>
-                            <button id="btnGenerarIA" class="btn btn-primary btn-xs font-weight-bold shadow-sm" style="border-radius: 5px;">Generar</button>
+                            <h6 class="font-weight-bold text-purple-custom mb-0"><i class="fas fa-robot mr-1"></i> Resumen IA</h6>
+                            <button id="btnGenerarIA" class="btn btn-purple-invert btn-xs px-3 shadow-sm">Generar</button>
                         </div>
                         <div id="resumenIAContenido">
                             <p class="small text-muted mb-0 italic">"Haz clic en generar para obtener un resumen inteligente."</p>
@@ -90,8 +97,8 @@
                 </div>
             </div>
 
-            {{-- ALERGIAS Y ENFERMEDADES (MISMO ESTILO QUE DISEÑAMOS) --}}
-            <div class="card shadow-sm" style="border-radius: 15px;">
+            {{-- ALERGIAS Y ENFERMEDADES --}}
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
                 <div class="card-body p-3">
                     <h6 class="font-weight-bold text-danger mb-2"><i class="fas fa-allergies mr-1"></i> Alergias</h6>
                     @forelse($paciente->alergias as $alergia)
@@ -112,27 +119,28 @@
             </div>
         </div>
 
-        {{-- COLUMNA DERECHA: LÍNEA DE TIEMPO DINÁMICA --}}
+        {{-- COLUMNA DERECHA: HISTORIAL --}}
         <div class="col-md-8">
-            <div class="card shadow-sm" style="border-radius: 15px;">
-                <div class="card-header bg-white border-0">
-                    <h3 class="card-title font-weight-bold text-dark"><i class="fas fa-history mr-2 text-primary"></i>Historial de Atenciones Médicas</h3>
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h3 class="card-title font-weight-bold text-dark">
+                        <i class="fas fa-history mr-2 text-purple-custom"></i>Historial de Atenciones Médicas
+                    </h3>
                 </div>
                 <div class="card-body">
-                    {{-- SI TIENE CONSULTAS --}}
                     @if(isset($paciente->consultas) && $paciente->consultas->count() > 0)
                         <div class="timeline timeline-inverse">
                             @foreach($paciente->consultas as $consulta)
                                 <div class="time-label">
-                                    <span class="bg-primary px-3 shadow-sm" style="border-radius: 5px;">
+                                    <span class="bg-purple-custom px-3 shadow-sm text-white" style="border-radius: 5px;">
                                         {{ \Carbon\Carbon::parse($consulta->cita->fecha)->format('d/m/Y') }}
                                     </span>
                                 </div>
                                 <div>
-                                    <i class="fas fa-stethoscope bg-info shadow-sm"></i>
+                                    <i class="fas fa-stethoscope bg-purple-custom shadow-sm text-white"></i>
                                     <div class="timeline-item shadow-sm border" style="border-radius: 10px;">
                                         <span class="time text-muted"><i class="far fa-clock"></i> {{ \Carbon\Carbon::parse($consulta->cita->hora)->format('h:i A') }}</span>
-                                        <h3 class="timeline-header font-weight-bold text-primary">Diagnóstico: {{ $consulta->diagnostico }}</h3>
+                                        <h3 class="timeline-header font-weight-bold text-purple-custom">Diagnóstico: {{ $consulta->diagnostico }}</h3>
                                         <div class="timeline-body">
                                             <p class="mb-1 text-dark"><b>Tratamiento:</b> {{ $consulta->prescripcion }}</p>
                                             @if($consulta->observaciones)
@@ -141,9 +149,8 @@
                                         </div>
                                         <div class="timeline-footer p-2 bg-light rounded-bottom text-right">
                                             <small class="text-muted">Atendido por: 
-                                            <b class="text-uppercase">
-                                                Dr. {{ $consulta->medico->usuario->nombre }} {{ $consulta->medico->usuario->apellido }}
-                                            </b>
+                                                <b class="text-uppercase">Dr. {{ $consulta->medico->usuario->nombre }} {{ $consulta->medico->usuario->apellido }}</b>
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +158,6 @@
                             <div><i class="far fa-clock bg-gray"></i></div>
                         </div>
                     @else
-                        {{-- SI NO TIENE CONSULTAS --}}
                         <div class="text-center py-5">
                             <i class="fas fa-folder-open fa-4x text-light mb-3"></i>
                             <h5 class="text-muted font-weight-bold">Historial Vacío</h5>
@@ -164,20 +170,20 @@
     </div>
 </div>
 @stop
+
 @push('js')
 <script>
     $('#btnGenerarIA').click(function() {
         const btn = $(this);
         const contenedor = $('#resumenIAContenido');
         
-        btn.html('<i class="fas fa-spinner fa-spin"></i> Generando...').prop('disabled', true);
+        btn.html('<i class="fas fa-circle-notch fa-spin"></i> Analizando...').prop('disabled', true);
         contenedor.html('<p class="text-muted italic">Analizando historial clínico...</p>');
 
         $.ajax({
             url: "{{ route('paciente.resumen.ia', $paciente->id) }}",
             method: 'GET',
             success: function(response) {
-                // Formateamos el texto (puedes usar una librería de Markdown si quieres)
                 contenedor.html('<div class="small">' + response.resumen.replace(/\n/g, '<br>') + '</div>');
                 btn.html('Regenerar').prop('disabled', false);
             },
@@ -189,10 +195,46 @@
     });
 </script>
 @endpush
+
 @push('css')
 <style>
-    .timeline::before { border-radius: 0.25rem; background-color: #dee2e6; bottom: 0; content: ""; left: 31px; margin: 0; position: absolute; top: 0; width: 4px; }
-    .timeline > div > i { width: 30px; height: 30px; font-size: 15px; line-height: 30px; position: absolute; color: #fff; border-radius: 50%; text-align: center; left: 18px; top: 0; }
-    .timeline-item { margin-left: 60px; margin-right: 15px; margin-top: 0; position: relative; }
+    /* Colores Personalizados */
+    .text-purple-custom { color: #8e44ad !important; }
+    .bg-purple-custom { background-color: #8e44ad !important; }
+    .border-purple-dashed { border: 2px dashed #8e44ad !important; }
+
+    /* BOTÓN REGRESAR (Negro Invertido) */
+    .btn-invert { 
+        background-color: #ffffff !important;
+        border: 2px solid #343a40 !important; 
+        color: #343a40 !important; 
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease;
+    }
+    .btn-invert:hover { background-color: #343a40 !important; color: #ffffff !important; text-decoration: none !important;}
+
+    /* BOTÓN IA (Púrpura Invertido) */
+    .btn-purple-invert {
+        background-color: #ffffff !important;
+        border: 2px solid #8e44ad !important;
+        color: #8e44ad !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease-in-out !important;
+        text-decoration: none !important;
+    }
+    body .btn-purple-invert:hover {
+        background-color: #8e44ad !important;
+        color: #ffffff !important;
+    }
+    body .btn-purple-invert:hover i { color: #ffffff !important; }
+
+    /* Estética de Timeline */
+    .timeline::before { background-color: #f3e5f5 !important; width: 3px !important; }
+    .timeline > div > i { width: 30px; height: 30px; font-size: 14px; line-height: 30px; }
+    
+    .shadow-xs { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important; }
 </style>
 @endpush

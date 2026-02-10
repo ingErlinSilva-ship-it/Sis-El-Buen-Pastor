@@ -159,14 +159,18 @@
             </div>
 
             {{-- Botones --}}
-            <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 15px 15px;">
-                <a href="{{ route('paciente.index') }}" class="btn btn-outline-secondary mr-2 px-4 shadow-sm" style="border-radius: 8px;">
-                    <i class="fas fa-times mr-2"></i> Cancelar
-                </a>
-                <button type="submit" class="btn {{ $esEdicion ? 'btn-success' : 'btn-primary' }} px-4 shadow-sm" style="border-radius: 8px; font-weight: bold;">
-                    <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i> {{ $esEdicion ? 'Actualizar Paciente' : 'Guardar Paciente' }}
-                </button>
-            </div>
+<div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 15px 15px;">
+    {{-- Botón Cancelar (Nomenclatura Negra) --}}
+    <a href="{{ route('paciente.index') }}" class="btn btn-invert mr-3 px-4 shadow-sm">
+        <i class="fas fa-times mr-2"></i> {{ __('Cancelar') }}
+    </a>
+
+    {{-- Botón Guardar/Actualizar (Nomenclatura Dinámica con Inversión) --}}
+    <button type="submit" class="btn {{ $esEdicion ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm">
+        <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i> 
+        {{ $esEdicion ? __('Actualizar Paciente') : __('Guardar Paciente') }}
+    </button>
+</div>
         </div>
     </div>
 </div>
@@ -174,22 +178,45 @@
 
 @push('css')
 <style>
-    /* Resaltado shadow-lg para la card principal */
-    .shadow-lg {
-        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    /* 1. Estilos Base de Inversión */
+    .btn-invert, .btn-primary-invert, .btn-success-invert {
+        background-color: #ffffff !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease-in-out !important;
+        border-width: 2px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
-    /* Sombras leves para elementos internos */
-    .shadow-xs {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+    /* 2. Colores Específicos e Inversión */
+    /* Negro (Cancelar) */
+    .btn-invert { border: 2px solid #343a40 !important; color: #343a40 !important; }
+    .btn-invert:hover { background-color: #343a40 !important; color: #ffffff !important; }
+
+    /* Azul (Guardar) */
+    .btn-primary-invert { border: 2px solid #007bff !important; color: #007bff !important; }
+    body .btn-primary-invert:hover { background-color: #007bff !important; color: #ffffff !important; }
+
+    /* Verde (Actualizar) */
+    .btn-success-invert { border: 2px solid #28a745 !important; color: #28a745 !important; }
+    body .btn-success-invert:hover { background-color: #28a745 !important; color: #ffffff !important; }
+
+    /* 3. Efectos de Interacción */
+    .btn:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; 
     }
+    .btn:hover i { color: #ffffff !important; }
+
     .form-control:focus {
         box-shadow: 0 0 0 0.2rem {{ $sombraFocus }} !important;
         border-color: {{ $temaColor }} !important;
     }
-    .btn-group-toggle .btn.active {
-        box-shadow: none !important;
-        background-color: {{ $temaColor == '#28a745' ? '#28a745' : '#007bff' }};
-        color: #fff !important;
-    }
+
+    /* Sombras adicionales de tu diseño */
+    .shadow-lg { box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; }
+    .shadow-xs { box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 </style>
 @endpush

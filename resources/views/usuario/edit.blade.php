@@ -1,11 +1,9 @@
 @extends('adminlte::page')
 
 @section('title')
-    {{ config('adminlte.title') }}
-    @hasSection('subtitle') | @yield('subtitle') @endif
+{{ config('adminlte.title') }}
 @stop
 
-{{-- 1. Limpiamos el encabezado superior para evitar duplicados visuales --}}
 @section('content_header')
 @stop
 
@@ -62,7 +60,7 @@
         const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
         canvas.toBlob(function (blob) {
             const url = URL.createObjectURL(blob);
-            preview.src = url; // Actualiza la miniatura que tú ya tienes
+            preview.src = url; // Actualiza la miniatura
 
             // Reemplaza el archivo en el input para que el controlador lo reciba
             const file = new File([blob], "perfil.jpg", { type: "image/jpeg" });
@@ -81,7 +79,7 @@
     // 2. Limpiamos el input file por si había algo cargado
     document.getElementById('foto').value = ""; 
     
-    // 3. ¡IMPORTANTE! Marcamos que se debe eliminar la foto en la DB
+    // 3. Marcamos que se debe eliminar la foto en la DB
     document.getElementById('remove_photo').value = "1"; 
     });
 </script>

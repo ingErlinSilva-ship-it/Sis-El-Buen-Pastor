@@ -21,24 +21,29 @@ class AuthServiceProvider extends ServiceProvider
      * Register any authentication / authorization services.
      */
     public function boot(): void
-    {
-        // Si el usuario es rol_id 1 (Admin), tiene permiso para TODO,
-        Gate::before(function ($user, $ability) {
-            if ($user->rol_id == 1) {
-                return true;
-            }
-        });
+{
+    // Tu lógica de Gate::before está excelente para el Admin
+    Gate::before(function ($user, $ability) {
+        if ($user->rol_id == 1) {
+            return true;
+        }
+    });
 
-        Gate::define('administrador', function ($user) {
-            return $user->rol_id == 1;
-        });
+    Gate::define('administrador', function ($user) {
+        return $user->rol_id == 1;
+    });
 
-        Gate::define('doctor', function ($user) {
-            return $user->rol_id == 2;
-        });
+    Gate::define('doctor', function ($user) {
+        return $user->rol_id == 2;
+    });
 
-        Gate::define('paciente', function ($user) {
-            return $user->rol_id == 3;
-        });
+    Gate::define('paciente', function ($user) {
+        return $user->rol_id == 3;
+    });
+
+    // AGREGA ESTO: Es la llave que abre el grupo compartido en web.php
+    Gate::define('doctor-o-administrador', function ($user) {
+        return $user->rol_id == 1 || $user->rol_id == 2;
+    });
     }
 }

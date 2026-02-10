@@ -14,7 +14,7 @@
         </div>
         <div class="col-6 text-right">
             <a href="{{ route('enfermedade.create') }}" class="btn btn-invert-blue shadow-sm px-4">
-                <i class="fas fa-plus mr-1"></i> {{ __('Nueva Enfermedad') }}
+                <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nueva Enfermedad') }}
             </a>
         </div>
     </div>

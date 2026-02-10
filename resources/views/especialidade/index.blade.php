@@ -86,6 +86,52 @@
     </div>
 @stop
 
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        // Alerta de confirmación para eliminar
+        $('.form-eliminar').submit(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "El rol se eliminará permanentemente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-secondary px-4 mx-2',
+                    popup: 'rounded-lg'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+        // Alerta de Éxito (Captura el 'success' del controlador)
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                customClass: { popup: 'rounded-lg' }
+            });
+        @endif
+    });
+</script>
+@endpush
+
 @push('css')
 <style>
     /* Estilos Base de Inversión */
@@ -155,5 +201,25 @@
         background-color: #fcfaff;
         transition: background-color 0.2s ease;
     }
+
+    /* Efectos Generales */
+        .table-hover tbody tr:hover {
+            background-color: #f1f7ff !important;
+            transition: background-color 0.2s ease;
+        }
+
+        /* añade una sombra muy leve a la fila resaltada */
+        .table-hover tbody tr:hover td {
+            box-shadow: inset 0 0 0 9999px rgba(0, 123, 255, 0.02);
+        }
+
+        .shadow-xs {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
 </style>
 @endpush
