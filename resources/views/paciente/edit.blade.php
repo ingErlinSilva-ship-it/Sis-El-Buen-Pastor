@@ -19,11 +19,6 @@
     </div>
 @stop
 
-@section('footer')
-    <div class="float-right">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
 @push('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 <script>

@@ -132,11 +132,6 @@
 </section>
 @stop
 
-@section('footer')
-    <div class="float-right text-muted">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
 @push('css')
 <style>
     .shadow-xs { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; }

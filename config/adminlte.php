@@ -316,57 +316,65 @@ return [
             'text' => 'Roles',
             'route' => 'role.index',
             'icon' => 'fas fa-fw fa-key',
+            'can'  => 'administrador',
         ],
 
         [
             'text' => 'Usuarios',
             'route' => 'usuario.index',
             'icon' => 'fas fa-fw fa-users',
+            'can'  => 'administrador',
         ],
         
         [
             'text' => 'Pacientes',
             'route' => 'paciente.index',
             'icon' => 'fas fa-user-injured',
+            'can'  => 'doctor-o-administrador',
         ],
 
-    [
-        'text' => 'Especialidades Médicas',
-        'route' => 'especialidade.index',
-        'icon' => 'fas fa-fw fa-microscope',
-    ],
+        [
+            'text' => 'Especialidades Médicas',
+            'route' => 'especialidade.index',
+            'icon' => 'fas fa-fw fa-microscope',
+            'can' => 'doctor-o-administrador',
+        ],
 
-    [
-        'text' => 'Médicos',
-        'route' => 'medico.index',
-        'icon' => 'fas fa-fw fa-stethoscope',
-    ],
+        [
+            'text' => 'Médicos',
+            'route' => 'medico.index',
+            'icon' => 'fas fa-fw fa-stethoscope',
+            'can' => 'doctor-o-administrador',
+        ],
 
-    [
-        'text' => 'Alergias',
-        'route' => 'alergia.index',
-        'icon' => 'fas fa-fw fa-allergies',
-    ],
+        [
+            'text' => 'Alergias',
+            'route' => 'alergia.index',
+            'icon' => 'fas fa-fw fa-allergies',
+            'can' => 'doctor-o-administrador',
+        ],
 
-    [
-        'text' => 'Enfermedades',
-        'route' => 'enfermedade.index',
-        'icon' => 'fas fa-fw fa-virus',
-    ],
-    [
-        'text' => 'Agendar Citas',
-        'route' => 'cita.index',
-        'icon' => 'fas fa-fw fa-calendar-alt',
-    ],
+        [
+            'text' => 'Enfermedades',
+            'route' => 'enfermedade.index',
+            'icon' => 'fas fa-fw fa-virus',
+            'can' => 'doctor-o-administrador',
+        ],
+        
+        [
+            'text' => 'Agendar Citas',
+            'route' => 'cita.index',
+            'icon' => 'fas fa-fw fa-calendar-alt',
+        ],
 
-    [
-        'text' => 'Historial De Consulta',
-        'route' => 'consulta.index',
-        'icon' => 'fas fa-file-medical-alt',
+        [
+            'text' => 'Historial De Consulta',
+            'route' => 'consulta.index',
+            'icon' => 'fas fa-file-medical-alt',
+            'can' => 'doctor-o-administrador',
+        ],
+        
     ],
-
-
-],
 
     /*
     |--------------------------------------------------------------------------
