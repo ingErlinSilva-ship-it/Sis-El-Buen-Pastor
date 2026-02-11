@@ -53,7 +53,7 @@
 
                     <ul>
                         <li><a href="#hero">Inico</a></li>
-                        <li><a href="#featured-departments">Nuestros Servicos</a></li>
+                        <li><a href="#featured-departments">Nuestros Servicios</a></li>
                         <li><a href="#find-a-doctor">Doctor</a></li>
                         <li><a href="#find-contact">Contáctanos</a></li>
                         {{-- INICIO DE LÓGICA DE LOGIN --}}

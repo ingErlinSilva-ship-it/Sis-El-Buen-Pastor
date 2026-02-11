@@ -190,13 +190,6 @@
 </style>
 @endpush
 
-{{-- Create a common footer --}}
-
-@section('footer')
-    <div class="float-right text-muted">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
-
 {{-- Add common Javascript/Jquery code --}}
 
 @push('js')
