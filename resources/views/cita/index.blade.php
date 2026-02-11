@@ -193,6 +193,21 @@ $(document).ready(function() {
             if (result.isConfirmed) { this.submit(); }
         });
     });
+
+            // Notificación de éxito SweetAlert2
+        @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Operación Exitosa!',
+                    text: '{{ session("success") }}',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'rounded-lg'
+                    }
+                });
+            @endif
 });
 </script>
 @endpush
