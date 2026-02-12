@@ -73,7 +73,9 @@
 
 @push('css')
 <style>
-    .btn-invert, .btn-primary-invert, .btn-success-invert {
+    .btn-invert, 
+    .btn-primary-invert, 
+    .btn-success-invert {
         background-color: #ffffff !important;
         border-radius: 8px !important;
         font-weight: 600 !important;

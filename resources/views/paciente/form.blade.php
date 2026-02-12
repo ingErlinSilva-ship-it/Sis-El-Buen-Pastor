@@ -31,28 +31,36 @@
                         <i class="fas fa-id-badge mr-1"></i> 1. Cuenta de Acceso
                     </h6>
                     <div class="form-group mb-0 p-3 bg-light shadow-xs" style="border-radius: 10px; border-left: 4px solid #3498db;">
-                        <label for="usuario_id" class="small font-weight-bold">Paciente vinculado al sistema</label> 
-                        <select name="usuario_id" id="usuario_id" class="form-control select2 @error('usuario_id') is-invalid @enderror">
-                            <option value="">Seleccione un usuario...</option>
-                            @foreach ($usuarios as $id => $nombre)
-                                <option value="{{ $id }}" {{ old('usuario_id', $paciente?->usuario_id) == $id ? 'selected' : '' }}>
-                                    {{ $nombre }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('usuario_id') <div class="invalid-feedback"><strong>{{ $message }}</strong></div> @enderror
-                    </div>
+                        <label for="usuario_id" class="small font-weight-bold">Paciente vinculado al sistema</label>
+                        <select name="usuario_id" id="usuario_id" class="form-control select2 @error('usuario_id') is-invalid @enderror"
+                        {{ Auth::user()->rol_id == 3 ? 'disabled' : '' }}>
+                        <option value="">Seleccione un usuario...</option>
+                        @foreach ($usuarios as $id => $nombre)
+                        <option value="{{ $id }}" {{ old('usuario_id', $paciente?->usuario_id) == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
+                        </option>
+                        @endforeach
+                    </select>
+                    
+                    {{-- Campo oculto para asegurar que el ID llegue al controlador si está disabled --}}
+                    @if(Auth::user()->rol_id == 3)
+                    <input type="hidden" name="usuario_id" value="{{ $paciente->usuario_id }}">
+                    @endif
                 </div>
+            </div>
 
                 {{-- Bloque 2: Condición Especial --}}
                 <div class="mb-4 p-3 d-flex align-items-center shadow-xs" style="background-color: #f0f7ff; border-radius: 10px;">
                     <div class="custom-control custom-switch">
-                        <input type="checkbox" name="es_menor" class="custom-control-input" id="es_menor" value="1" {{ old('es_menor', $paciente->es_menor) == '1' ? 'checked' : ''}}>
-                        <label class="custom-control-label font-weight-bold text-primary" for="es_menor" style="cursor: pointer;">
-                            <i class="fas fa-child mr-1"></i> ¿El paciente es menor de edad o recién nacido?
-                        </label>
-                    </div>
+                        <input type="checkbox" name="es_menor" class="custom-control-input" id="es_menor" value="1" 
+                        {{ old('es_menor', $paciente->es_menor) == '1' ? 'checked' : ''}}
+                        {{ Auth::user()->rol_id == 3 ? 'onclick=return(false);' : '' }}>
+                        <label class="custom-control-label font-weight-bold text-primary" for="es_menor" 
+                        style="{{ Auth::user()->rol_id == 3 ? 'cursor: default;' : 'cursor: pointer;' }}">
+                        <i class="fas fa-child mr-1"></i> ¿El paciente es menor de edad o recién nacido?
+                    </label>
                 </div>
+            </div>
 
                 {{-- Bloque 3: Datos del Tutor (Dinámico) --}}
                 <div id="seccion_tutor" style="display: none; border-radius: 10px; border-left: 4px solid #6c757d;" class="p-3 mb-4 bg-light border shadow-xs">

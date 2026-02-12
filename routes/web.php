@@ -20,8 +20,11 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
-
+    
 // --- 1. RUTAS PARA TODOS LOS LOGUEADOS ---
+Route::resource('usuario', UsuarioController::class);
+Route::resource('medico', MedicoController::class);
+    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,36 +45,27 @@ Route::middleware('auth')->group(function () {
 // --- 2. SOLO ADMINISTRADOR (Y GESTIÓN GLOBAL) ---
 Route::middleware(['auth', 'can:administrador'])->group(function () {
     Route::resource('role', RoleController::class);
-    Route::resource('usuario', UsuarioController::class);
     Route::resource('especialidade', EspecialidadeController::class);
-    Route::resource('medico', MedicoController::class);
 });
 
-// --- 3. ACCESO COMPARTIDO (DOCTOR Y ADMINISTRADOR) ---
-// Para que el Admin vea lo del Doctor, usamos un Middleware que acepte a ambos
+// --- 3. ACCESO COMPARTIDO Y PACIENTE ---
 Route::middleware(['auth'])->group(function () {
-    
-    // Solo Doctores y Administradores pueden entrar aquí
+    // Rutas exclusivas para Doctores y Administradores
     Route::middleware(['can:doctor-o-administrador'])->group(function () {
         Route::resource('alergia', AlergiaController::class);
         Route::resource('enfermedade', EnfermedadeController::class);
-        
-        // El resource completo para los que gestionan
-        Route::resource('paciente', PacienteController::class)->except(['show']);
-        
         Route::resource('consulta', ConsultaController::class);
         Route::get('/consultas/atender/{cita_id}', [ConsultaController::class, 'atender'])->name('consultas.atender');
     });
 
-    // --- LA SOLUCIÓN AL PACIENTE ---
-    // Esta ruta queda disponible para TODOS los roles, pero el controlador 
-    // se encarga de que el paciente solo vea su propio ID.
-    Route::get('/paciente/{paciente}', [PacienteController::class, 'show'])->name('paciente.show');
+    // Esta ruta queda disponible para TODOS (incluyendo Pacientes)
+    // El controlador PacienteController@index se encarga de filtrar para que el 
+    // paciente solo se vea a sí mismo, y el Admin vea a todos.
+    Route::resource('paciente', PacienteController::class);
 });
-
+    
 // --- 4. GESTIÓN DE CITAS ---
 Route::middleware(['auth'])->group(function () {
     Route::resource('cita', CitaController::class);
 });
-
 require __DIR__.'/auth.php';

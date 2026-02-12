@@ -43,14 +43,10 @@
                 <div class="row">
                     {{-- Usuario del Sistema --}}
                     <div class="form-group col-md-12">
-                        <label for="usuario_id" class="text-muted small uppercase font-weight-bold">
-                            <i
-                                class="fas fa-user-circle mr-1 {{ isset($medico->id) ? 'text-success' : 'text-primary' }}"></i>
-                            {{ __('Usuario del Sistema') }}
-                        </label>
                         <select name="usuario_id" id="usuario_id"
                             class="form-control shadow-sm @error('usuario_id') is-invalid @enderror"
-                            style="border-radius: 10px;">
+                            style="border-radius: 10px;"
+                            {{ Auth::user()->rol_id == 2 ? 'disabled' : '' }}> {{-- BLOQUEO --}}
                             <option value="">Selecciona un Usuario...</option>
                             @foreach ($usuarios as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('usuario_id', $medico?->usuario_id) == $id ? 'selected' : '' }}>
@@ -58,21 +54,17 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('usuario_id')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                        @enderror
+                        @if(Auth::user()->rol_id == 2)
+                            <input type="hidden" name="usuario_id" value="{{ $medico->usuario_id }}">
+                        @endif
                     </div>
 
                     {{-- Especialidad --}}
                     <div class="form-group col-md-6">
-                        <label for="especialidad_id" class="text-muted small uppercase font-weight-bold">
-                            <i
-                                class="fas fa-stethoscope mr-1 {{ isset($medico->id) ? 'text-success' : 'text-primary' }}"></i>
-                            {{ __('Especialidad') }}
-                        </label>
                         <select name="especialidad_id" id="especialidad_id"
                             class="form-control shadow-sm @error('especialidad_id') is-invalid @enderror"
-                            style="border-radius: 10px;">
+                            style="border-radius: 10px;"
+                                {{ Auth::user()->rol_id == 2 ? 'disabled' : '' }}> {{-- BLOQUEO --}}
                             <option value="">Selecciona Especialidad...</option>
                             @foreach ($especialidades as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('especialidad_id', $medico?->especialidad_id) == $id ? 'selected' : '' }}>
@@ -80,24 +72,27 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('especialidad_id')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                        @enderror
+                        @if(Auth::user()->rol_id == 2)
+                            <input type="hidden" name="especialidad_id" value="{{ $medico->especialidade_id }}">
+                        @endif
                     </div>
 
                     {{-- Código MINSA --}}
                     <div class="form-group col-md-6">
                         <label for="codigo_minsa" class="text-muted small uppercase font-weight-bold">
-                            <i
-                                class="fas fa-id-card mr-1 {{ isset($medico->id) ? 'text-success' : 'text-primary' }}"></i>
-                            {{ __('Código MINSA') }}
+                            <i class="fas fa-id-card mr-1 {{ isset($medico->id) ? 'text-success' : 'text-primary' }}"></i>
+                                {{ __('Código MINSA') }}
                         </label>
+
                         <input type="text" name="codigo_minsa" id="codigo_minsa"
                             class="form-control shadow-sm @error('codigo_minsa') is-invalid @enderror"
                             value="{{ old('codigo_minsa', $medico?->codigo_minsa) }}" maxlength="6"
-                            style="border-radius: 10px; font-family: monospace; font-weight: bold;">
+                            style="border-radius: 10px; font-family: monospace; font-weight: bold;"
+                                {{ Auth::user()->rol_id == 2 ? 'readonly' : '' }}> {{-- BLOQUEO --}}
                         @error('codigo_minsa')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
                         @enderror
                     </div>
 
@@ -195,4 +190,20 @@
                 !important;
         }
     </style>
+
+    <style>
+    /* Estilo para campos que el doctor no puede editar */
+    .form-control[disabled], .form-control[readonly] {
+        background-color: #f8f9fa !important;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+    
+    /* Evita que el select2 se vea activo si está disabled */
+    select[disabled] + .select2-container {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+</style>
+
 @endpush

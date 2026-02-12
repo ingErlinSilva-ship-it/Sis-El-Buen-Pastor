@@ -44,9 +44,12 @@ class PacienteRequest extends FormRequest
         ],
         'tutor_telefono' => 'required_if:es_menor,1|nullable|numeric|digits:8',
         'tutor_parentesco' => 'required_if:es_menor,1|nullable|in:Padre,Madre,Tutor Legal',
-        
-        ];
 
+        'alergias' => 'nullable|array',
+        'alergias.*' => 'exists:alergias,id',
+        'enfermedades' => 'nullable|array',
+        'enfermedades.*' => 'exists:enfermedades,id',
+        ];
     }
 
 

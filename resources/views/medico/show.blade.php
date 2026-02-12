@@ -13,7 +13,7 @@
                             <i class="fas fa-id-card-alt text-purple-custom"></i>
                         </div>
                         <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
-                            {{ __('Expediente del Médico') }}
+                            {{ Auth::user()->rol_id == 2 ? __('Mi Expediente Médico') : __('Expediente del Médico') }}
                         </h3>
                     </div>
                 </div>
@@ -70,7 +70,8 @@
                         <i class="fas fa-arrow-left mr-2"></i> {{ __('Regresar') }}
                     </a>
                     <a href="{{ route('medico.edit', $medico->id) }}" class="btn btn-purple-invert px-5 shadow-sm">
-                        <i class="fas fa-user-edit mr-2"></i> {{ __('Editar Perfil') }}
+                        <i class="fas fa-user-edit mr-2"></i>
+                        {{ Auth::user()->rol_id == 2 ? __('Editar Mi Perfil') : __('Editar Perfil') }}
                     </a>
                 </div>
             </div>

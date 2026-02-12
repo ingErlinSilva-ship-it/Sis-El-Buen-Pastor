@@ -38,6 +38,14 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request): RedirectResponse
     {
+
+        $request->validate([
+            'nombre' => 'required|unique:roles,nombre',
+        ], 
+        [
+            'nombre.unique' => 'Ese rol ya existe',
+        ]);
+
         Role::create($request->validated());
 
         return Redirect::route('role.index')
