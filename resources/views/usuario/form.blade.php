@@ -41,9 +41,9 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
                             <label class="text-dark font-weight-bold mb-3 d-block"><i class="fas fa-camera mr-1 text-muted"></i> Foto de Perfil</label>
                             <div class="position-relative d-inline-block">
                                 <img id="preview" 
-                                     src="{{ $usuario->foto ? asset('storage/' . $usuario->foto) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" 
-                                     class="rounded-circle shadow-sm border" 
-                                     style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff !important;">
+                                    src="{{ $usuario->foto ? asset('storage/fotos/' . $usuario->foto) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" 
+                                    class="rounded-circle shadow-sm border" 
+                                    style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff !important;">
                                 <label for="foto" class="btn btn-sm btn-primary position-absolute shadow" 
                                        style="bottom: 5px; right: 5px; border-radius: 50%; width: 35px; height: 35px; padding: 6px;">
                                     <i class="fas fa-pencil-alt"></i>

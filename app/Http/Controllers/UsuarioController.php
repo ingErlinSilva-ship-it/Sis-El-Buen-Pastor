@@ -95,10 +95,19 @@ class UsuarioController extends Controller
 
         // 2. Nueva Foto
         if ($request->hasFile('foto')) {
-            if ($usuario->foto) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($usuario->foto);
+            // Eliminar foto vieja si existe (opcional, pero recomendado)
+            if ($usuario->foto && file_exists(public_path('storage/fotos/' . $usuario->foto))) {
+                unlink(public_path('storage/fotos/' . $usuario->foto));
             }
-            $data['foto'] = $request->file('foto')->store('usuarios', 'public');
+
+            $file = $request->file('foto');
+            $nombreFoto = time() . '_' . $file->getClientOriginalName();
+            
+            // LA CLAVE: Mover directamente a public/storage/fotos
+            $file->move(public_path('storage/fotos'), $nombreFoto);
+            
+            // Guardamos solo el nombre del archivo en el array de datos
+            $data['foto'] = $nombreFoto;
         }
         
         // 3. Manejo de Contraseña
