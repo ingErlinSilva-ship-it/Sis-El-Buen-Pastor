@@ -56,21 +56,25 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <div class="d-flex justify-content-end">
+
                                                     {{-- Ver: Púrpura --}}
                                                     <a class="btn btn-sm btn-invert-purple mr-1"
                                                         href="{{ route('alergia.show', $alergia->id) }}" title="Ver">
                                                         <i class="fa fa-eye"></i>
                                                     </a>
-                                                    {{-- Editar: Verde --}}
-                                                    <a class="btn btn-sm btn-invert-success mr-1"
-                                                        href="{{ route('alergia.edit', $alergia->id) }}" title="Editar">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
-                                                    {{-- Eliminar: Rojo --}}
-                                                    <button type="submit" class="btn btn-sm btn-invert-danger"
-                                                        title="Eliminar">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
+                                                    @if(Auth::user()->rol_id == 1)
+                                                        {{-- Editar: Verde --}}
+                                                        <a class="btn btn-sm btn-invert-success mr-1"
+                                                            href="{{ route('alergia.edit', $alergia->id) }}" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+
+                                                        {{-- Eliminar: Rojo --}}
+                                                        <button type="submit" class="btn btn-sm btn-invert-danger"
+                                                            title="Eliminar">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </form>
                                         </td>

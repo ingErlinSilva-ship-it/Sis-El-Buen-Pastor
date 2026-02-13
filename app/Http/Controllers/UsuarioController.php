@@ -9,126 +9,118 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UsuarioRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Hash; // ¡IMPORTANTE para la contraseña!
+use Illuminate\Support\Facades\Hash;// ¡IMPORTANTE para la contraseña!
+use Illuminate\Support\Facades\Auth;// Necesario para Auth::user()
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): View
     {
-        
-        $usuarios = Usuario::with('role')->paginate();
+        $user = Auth::user();
+
+        // FILTRO: Si es Paciente (rol 3) O Doctor (rol 2), solo se ven a sí mismos
+        if ($user->rol_id == 3 || $user->rol_id == 2) {
+            $usuarios = Usuario::with('role')->where('id', $user->id)->paginate();
+        } else {
+            // Solo el Administrador (rol 1) ve a todos los usuarios
+            $usuarios = Usuario::with('role')->paginate();
+        }
 
         return view('usuario.index', compact('usuarios'))
             ->with('i', ($request->input('page', 1) - 1) * $usuarios->perPage());
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         $usuario = new Usuario();
-        $roles = Role::all(); // <-- 1. Cargar roles
-
-        // 2. Pasar $roles a la vista
+        $roles = Role::all();
         return view('usuario.create', compact('usuario', 'roles'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(UsuarioRequest $request): RedirectResponse
-{
-    // 1. Obtener datos validados (Contraseña en texto plano)
-    $data = $request->validated();
-
-    // 2. MANEJO DE LA FOTO
-    if ($request->hasFile('foto')) {
-        // Guarda la foto en 'public/usuarios' y obtiene la ruta relitava
-        $data['foto'] = $request->file('foto')->store('usuarios', 'public');
-    }
-    
-    // 3. HASHEAR la contraseña y REEMPLAZAR el valor en el array $data
-    // Utilizamos $request->input('password') para obtener el valor que viene del formulario.
-    $data['password'] = Hash::make($request->input('password'));
-    
-    // 4. Crear el Usuario con el array que ahora SÍ tiene el hash
-    Usuario::create($data); 
-
-    return Redirect::route('usuario.index')
-        ->with('success', '¡Listo! La nueva cuenta del usuario ha sido creada con éxito.');
-}
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $usuario = Usuario::find($id);
-
-        return view('usuario.show', compact('usuario'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id): View
-    {
-        $usuario = Usuario::find($id);
-        $roles = Role::all(); // <-- 1. Cargar roles para edición
-        
-        // 2. Pasar $roles a la vista
-        return view('usuario.edit', compact('usuario', 'roles'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UsuarioRequest $request, Usuario $usuario): RedirectResponse
     {
         $data = $request->validated();
 
-        // 1. ¿El usuario marcó "Quitar foto"?
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('usuarios', 'public');
+        }
+        
+        $data['password'] = Hash::make($request->input('password'));
+        
+        Usuario::create($data); 
+
+        return Redirect::route('usuario.index')
+            ->with('success', '¡Listo! La nueva cuenta del usuario ha sido creada con éxito.');
+    }
+    public function show($id): View
+    {
+        $usuario = Usuario::findOrFail($id);
+        
+        // SEGURIDAD: Pacientes y Doctores solo ven su propio "Show"
+        if (Auth::user()->rol_id != 1 && $usuario->id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('usuario.show', compact('usuario'));
+    }
+    public function edit($id): View
+    {
+        $usuario = Usuario::findOrFail($id);
+        
+        // SEGURIDAD: Si no es Admin, solo puede editarse a sí mismo
+        if (Auth::user()->rol_id != 1 && $usuario->id !== Auth::id()) {
+            abort(403, 'No tienes permiso para editar otros usuarios.');
+        }
+
+        $roles = Role::all();
+        return view('usuario.edit', compact('usuario', 'roles'));
+    }
+    public function update(UsuarioRequest $request, Usuario $usuario): RedirectResponse
+    {
+        $currentUser = Auth::user();
+
+        // SEGURIDAD: Si no es Admin, solo puede actualizar su propio ID
+        if ($currentUser->rol_id != 1 && $usuario->id !== $currentUser->id) {
+            abort(403);
+        }
+
+        $data = $request->validated();
+
+        // 1. Manejo de Quitar Foto
         if ($request->input('remove_photo') == '1') {
             if ($usuario->foto) {
-                // Borramos el archivo físico del disco
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($usuario->foto);
-                
-                // Ponemos el campo en null en la base de datos
                 $usuario->foto = null;
                 $usuario->save();
             }
         }
 
-        // 2. ¿El usuario subió una NUEVA foto (recortada)?
+        // 2. Nueva Foto
         if ($request->hasFile('foto')) {
-            // Si ya tenía una foto antes, la borramos para no acumular basura
             if ($usuario->foto) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($usuario->foto);
             }
-            
-            // Guardamos la nueva
             $data['foto'] = $request->file('foto')->store('usuarios', 'public');
         }
         
-        // 2. Manejo de la Contraseña (Opcional al editar)
-        if ($request->filled('password')) { // Si el campo 'password' tiene contenido
-            $data['password'] = Hash::make($data['password']); // Hashea y lo incluye en $data
+        // 3. Manejo de Contraseña
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($data['password']);
         } else {
-            unset($data['password']); // Si está vacío, ELIMINA el campo de $data
+            unset($data['password']);
+        }
+
+        // --- PROTECCIÓN EXTRA ---
+        // Si el usuario NO ES ADMINISTRADOR (Paciente o Doctor), bloqueamos Rol y Estado
+        if ($currentUser->rol_id != 1) {
+            unset($data['rol_id']);
+            unset($data['estado']);
         }
         
-        // 3. Actualizar el Usuario
-        $usuario->update($data); // Se actualizan todos los campos, EXCEPTO 'password' si fue eliminado
+        $usuario->update($data);
 
-        // Si el estado es 0 (Inactivo)
+        // Lógica de Logout forzado (si el admin lo desactiva o cambia rol)
         if ($usuario->estado == 0) { 
             \Illuminate\Support\Facades\Cache::put('force_logout_user_' . $usuario->id, 'desactivado', now()->addDay());
         } 
-        // Si cambió el rol pero sigue activo
         elseif ($usuario->wasChanged('rol_id')) {
             \Illuminate\Support\Facades\Cache::put('force_logout_user_' . $usuario->id, 'rol_cambiado', now()->addDay());
         }
@@ -138,10 +130,13 @@ class UsuarioController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        Usuario::find($id)->delete();
+        if (Auth::user()->rol_id !== 1) {
+            abort(403);
+        }
+
+        Usuario::findOrFail($id)->delete();
 
         return Redirect::route('usuario.index')
             ->with('success', '¡Listo! La cuenta del usuario se ha eliminado con éxito.');
     }
-
 }

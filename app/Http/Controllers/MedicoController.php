@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medico;
-use App\Models\Usuario; // modelo de usuario
-use App\Models\Especialidade; // modelo de especialidad
+use App\Models\Usuario;
+use App\Models\Especialidade;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\MedicoRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth; // Importante para los filtros
 
 class MedicoController extends Controller
 {
@@ -18,7 +19,14 @@ class MedicoController extends Controller
      */
     public function index(Request $request): View
     {
-        $medicos = Medico::paginate();
+        $user = Auth::user();
+
+        // FILTRO: Si es Doctor, solo se ve a sí mismo. Si es Admin, ve a todos.
+        if ($user->rol_id == 2) {
+            $medicos = Medico::where('usuario_id', $user->id)->paginate();
+        } else {
+            $medicos = Medico::paginate();
+        }
 
         return view('medico.index', compact('medicos'))
             ->with('i', ($request->input('page', 1) - 1) * $medicos->perPage());
@@ -29,15 +37,13 @@ class MedicoController extends Controller
      */
     public function create(): View
     {
-        $ID_ROL_DOCTOR = 2; // aca esta el Id del rol de doctor para que solo los que tienen ese rol se puedan seleccionar
+        $ID_ROL_DOCTOR = 2;
         $medico = new Medico();
         
-        // Obtener la lista de Usuarios que son Doctores Y NO son médicos
         $usuarios = Usuario::where('rol_id', $ID_ROL_DOCTOR)
-        ->whereDoesntHave('medico')
-        ->pluck('nombre', 'id');
+            ->whereDoesntHave('medico')
+            ->pluck('nombre', 'id');
         
-        // ... (El resto del código para especialidades es el mismo)
         $especialidades = Especialidade::pluck('nombre', 'id');
         return view('medico.create', compact('medico', 'usuarios', 'especialidades'));
     }
@@ -58,7 +64,13 @@ class MedicoController extends Controller
      */
     public function show($id): View
     {
-        $medico = Medico::find($id);
+        $medico = Medico::findOrFail($id);
+        $user = Auth::user();
+
+        // Seguridad: Un doctor no puede ver perfiles de otros médicos vía URL
+        if ($user->rol_id == 2 && $medico->usuario_id !== $user->id) {
+            abort(403);
+        }
 
         return view('medico.show', compact('medico'));
     }
@@ -68,19 +80,25 @@ class MedicoController extends Controller
      */
     public function edit($id): View
     {
-        $medico = Medico::find($id);
-        $ID_ROL_DOCTOR = 2;
+        $medico = Medico::findOrFail($id);
+        $user = Auth::user();
 
+        // Seguridad: Un doctor solo puede editar su propio perfil profesional
+        if ($user->rol_id == 2 && $medico->usuario_id !== $user->id) {
+            abort(403, 'No tienes permiso para editar este perfil médico.');
+        }
+
+        $ID_ROL_DOCTOR = 2;
         $usuarios = Usuario::where('rol_id', $ID_ROL_DOCTOR)
             ->where(function($query) use ($medico) {
                 $query->whereDoesntHave('medico')
                     ->orWhere('id', $medico->usuario_id);
             })
             ->pluck('nombre', 'id');
-        $especialidades = \App\Models\Especialidade::pluck('nombre', 'id');
+            
+        $especialidades = Especialidade::pluck('nombre', 'id');
 
         return view('medico.edit', compact('medico', 'usuarios', 'especialidades'));
-
     }
 
     /**
@@ -88,17 +106,38 @@ class MedicoController extends Controller
      */
     public function update(MedicoRequest $request, Medico $medico): RedirectResponse
     {
-        $medico->update($request->validated());
+        $user = Auth::user();
+
+        // Doble verificación en el update
+        if ($user->rol_id == 2 && $medico->usuario_id !== $user->id) {
+            abort(403);
+        }
+
+        $data = $request->validated();
+
+        // Protección de campos para el Médico:
+        // Si quieres que el médico NO pueda cambiar su especialidad ni su usuario vinculado:
+        if ($user->rol_id == 2) {
+            unset($data['usuario_id']);
+            unset($data['especialidad_id']); // Asumiendo que así se llama tu FK
+        }
+
+        $medico->update($data);
 
         return Redirect::route('medico.index')
-            ->with('success', '¡Listo! Los datos del Médico se ha actualizado con éxito.');
+            ->with('success', '¡Listo! Los datos se han actualizado con éxito.');
     }
 
     public function destroy($id): RedirectResponse
     {
-        Medico::find($id)->delete();
+        // Solo el Admin puede eliminar médicos
+        if (Auth::user()->rol_id !== 1) {
+            abort(403);
+        }
+
+        Medico::findOrFail($id)->delete();
 
         return Redirect::route('medico.index')
-            ->with('success', '¡Listo! La cuenta del Médico se ha eliminado con éxito.');
+            ->with('success', '¡Listo! La cuenta se ha eliminado con éxito.');
     }
 }

@@ -15,63 +15,71 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        $user = auth()->user();
-        $data = [];
-        $hoy = Carbon::today();
+public function index()
+{
+    $user = auth()->user();
+    $data = [];
+    $hoy = Carbon::today();
 
-        // --- 1. LÓGICA PARA ADMINISTRADOR ---
-        if ($user->rol_id == 1) { 
-            $data['totalPacientes'] = Paciente::count();
-            $data['totalCitas'] = Cita::whereDate('fecha', $hoy)->count();
-            $data['totalUsuarios'] = User::count();
-            $data['totalMedicos'] = Medico::count();
+    // --- 1. LÓGICA PARA ADMINISTRADOR ---
+    if ($user->rol_id == 1) { 
+        $data['totalPacientes'] = Paciente::count();
+        $data['totalCitas'] = Cita::whereDate('fecha', $hoy)->count();
+        $data['totalUsuarios'] = User::count();
+        $data['totalMedicos'] = Medico::count();
+        $data['totalRoles'] = Role::count();
+        $data['totalEspecialidades'] = Especialidade::count();
+        $data['totalAlergias'] = Alergia::count();
+        $data['totalEnfermedades'] = Enfermedade::count();
+        
+        return view('dashboard', $data);
+    }
 
-            $data['totalRoles'] = Role::count();
-            $data['totalEspecialidades'] = Especialidade::count();
-            $data['totalAlergias'] = Alergia::count();
-            $data['totalEnfermedades'] = Enfermedade::count();
+    // --- 2. LÓGICA PARA DOCTOR ---
+    elseif ($user->rol_id == 2) {
+        // Buscamos el registro de médico asociado a este usuario
+        $medico = Medico::where('usuario_id', $user->id)->first();
+
+            $data['miMedicoId'] = $medico->id ?? null;
+
+        if ($medico) {
+            // Citas de hoy para este doctor
+            $data['citasHoy'] = Cita::where('medico_id', $medico->id)
+                ->whereDate('fecha', $hoy)
+                ->where('estado', '!=', 'cancelada')
+                ->with('paciente.usuario') // Cargamos relaciones para evitar consultas lentas
+                ->orderBy('hora', 'asc')
+                ->get();
+
+            $data['totalCitasHoy'] = $data['citasHoy']->count();
             
-            return view('dashboard', $data);
+            // Total histórico de este médico
+            $data['totalHistorico'] = Cita::where('medico_id', $medico->id)->count();
+        } else {
+            $data['citasHoy'] = collect();
+            $data['totalCitasHoy'] = 0;
+            $data['totalHistorico'] = 0;
         }
 
-        // --- 2. LÓGICA PARA DOCTOR ---
-        elseif ($user->rol_id == 2) {
-            $medico = Medico::where('usuario_id', $user->id)->first();
-            $data['totalPacientes'] = Paciente::count();
+        return view('dashboard_doctor', $data);
+    }
 
-            if ($medico) {
-                $data['totalCitas'] = Cita::where('medico_id', $medico->id)
-                    ->whereDate('fecha', $hoy)
-                    ->count();
-            } else {
-                $data['totalCitas'] = 0;
-            }
-            
-            return view('dashboard', $data);
-        }
-
-        // --- 3. LÓGICA PARA PACIENTE ---
+    // --- 3. LÓGICA PARA PACIENTE ---
     elseif ($user->rol_id == 3) {
-        // Para el paciente, sus totales son "1" (él mismo) o sus citas propias
         $paciente = Paciente::where('usuario_id', $user->id)->first();
         
-        $data['totalPacientes'] = 1; // Él mismo
-        $data['totalCitas'] = Cita::where('paciente_id', $paciente->id ?? 0)
-                                   ->whereDate('fecha', $hoy)
-                                   ->count();
-        
-        // 0 para que la vista no falle al buscar las variables
-        $data['totalUsuarios'] = 0;
-        $data['totalMedicos'] = 0;
-        $data['totalRoles'] = 0;
-        $data['totalEspecialidades'] = 0;
-        $data['totalAlergias'] = 0;
-        $data['totalEnfermedades'] = 0;
-        
-        // Enviamos su ID para que pueda ir a su expediente desde el Home
+        // Obtenemos su próxima cita (si tiene)
+        $data['proximaCita'] = Cita::where('paciente_id', $paciente->id ?? 0)
+                                    ->where('fecha', '>=', $hoy)
+                                    ->where('estado', '!=', 'cancelada')
+                                    ->orderBy('fecha', 'asc')
+                                    ->first();
+
+        $data['totalCitas'] = Cita::where('paciente_id', $paciente->id ?? 0)->count();
         $data['miPacienteId'] = $paciente->id ?? null;
+
+        // Retornamos una vista especial para el paciente
+        return view('dashboard_paciente', $data);
     }
 
     return view('dashboard', $data);

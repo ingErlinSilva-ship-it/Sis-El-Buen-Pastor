@@ -113,7 +113,12 @@
 
                     {{-- Botón Editar --}}
                     <a href="{{ route('usuario.edit', $usuario->id) }}" class="btn btn-purple-invert px-4">
-                        <i class="fas fa-user-edit mr-2"></i> {{ __('Editar Información') }}
+                        <i class="fas fa-user-edit mr-2"></i>
+                        @if(Auth::user()->rol_id == 1)
+                        {{ __('Editar Información') }}
+                        @else
+                        {{ __('Editar Mi Información') }}
+                        @endif
                     </a>
                 </div>
             </div>

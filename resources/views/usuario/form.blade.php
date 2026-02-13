@@ -19,7 +19,15 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
                         </div>
                         <div>
                             <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
-                                {{ $esEdicion ? __('Actualizar Datos del Usuario') : __('Registro de Nuevo Usuario') }}
+                                @if($esEdicion)
+                                    @if(Auth::user()->rol_id == 1)
+                                        {{ __('Actualizar Datos del Usuario') }}
+                                    @else
+                                        {{ __('Actualizar Mis Datos') }}
+                                    @endif
+                                @else
+                                    {{ __('Registro de Nuevo Usuario') }}
+                                @endif
                             </h3>
                         </div>
                     </div>
@@ -83,6 +91,11 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
                                             <span class="input-group-text bg-white border-right-0"><i class="fas fa-envelope {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i></span>
                                         </div>
                                         <input type="email" name="email" id="email" class="form-control border-left-0 @error('email') is-invalid @enderror" value="{{ old('email', $usuario?->email) }}" required placeholder="ejemplo@pastor.com">
+                                        @error('email')
+                                            <span class="invalid-feedback" style="display: block;">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -100,12 +113,23 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
                                 {{-- Rol --}}
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="rol_id" class="font-weight-bold small text-muted">ROL DE ACCESO</label>
-                                    <select name="rol_id" id="rol_id" class="form-control select2 @error('rol_id') is-invalid @enderror">
+                                    <select name="rol_id" id="rol_id" class="form-control select2 @error('rol_id') is-invalid @enderror" {{ Auth::user()->rol_id != 1 ? 'disabled' : '' }}>
                                         <option value="">Seleccione un Rol</option>
                                         @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}" {{ old('rol_id', $usuario?->rol_id) == $role->id ? 'selected' : '' }}>{{ $role->nombre }}</option>
+                                            <option value="{{ $role->id }}" {{ old('rol_id', $usuario?->rol_id) == $role->id ? 'selected' : '' }}>
+                                                {{ $role->nombre }}
+                                            </option>
                                         @endforeach
                                     </select>
+                                    @error('rol_id')
+                                        <span class="invalid-feedback" role="alert" style="display: block;">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+
+                                    @if(Auth::user()->rol_id != 1)
+                                        <input type="hidden" name="rol_id" value="{{ $usuario->rol_id }}">
+                                    @endif
                                 </div>
 
                                 {{-- Password --}}
@@ -129,63 +153,84 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
                                 {{-- Estado --}}
                                 <div class="col-12 mt-2">
                                     <label class="font-weight-bold small text-muted d-block text-uppercase">Estado de cuenta</label>
-                                    <div class="btn-group btn-group-toggle shadow-sm" data-toggle="buttons">
-                                
-                                        @php
-                                            // Si el estado es null (registro nuevo), le asignamos 1 (Activo) por defecto.
-                                            // Si no es null, respetamos el valor de la sesión.
-                                            $valorEstado = old('estado', $usuario->estado ?? 1);
-                                        @endphp
-                                
-                                        {{-- Opción Activo --}}
-                                        <label class="btn btn-outline-success border-right-0 {{ $valorEstado == 1 ? 'active' : '' }}"
-                                            style="border-radius: 8px 0 0 8px;">
-                                            <input type="radio" name="estado" value="1" {{ $valorEstado == 1 ? 'checked' : '' }} required>
-                                            <i class="fas fa-check-circle mr-1"></i> {{ __('Activo') }}
-                                        </label>
-                                
-                                        {{-- Opción Inactivo --}}
-                                        <label class="btn btn-outline-danger {{ $valorEstado == 0 ? 'active' : '' }}"
-                                            style="border-radius: 0 8px 8px 0;">
-                                            <input type="radio" name="estado" value="0" {{ $valorEstado == 0 ? 'checked' : '' }} required>
-                                            <i class="fas fa-times-circle mr-1"></i> {{ __('Inactivo') }}
-                                        </label>
+    
+                                        {{-- Añadimos clases de Bootstrap para que se vea bloqueado si NO es administrador --}}
+                                        <div class="btn-group btn-group-toggle shadow-sm {{ Auth::user()->rol_id != 1 ? 'pe-none opacity-75' : '' }}" data-toggle="buttons">
+        
+                                            @php
+                                                // lógica de estado actual
+                                                $valorEstado = old('estado', $usuario->estado ?? 1);
+                                                $esAdmin = Auth::user()->rol_id == 1;
+                                            @endphp
+
+                                            {{-- Opción Activo --}}
+                                            <label class="btn btn-outline-success border-right-0 {{ $valorEstado == 1 ? 'active' : '' }}"
+                                                style="border-radius: 8px 0 0 8px; {{ !$esAdmin ? 'cursor: not-allowed;' : '' }}">
+                                                <input type="radio" name="estado" value="1" {{ $valorEstado == 1 ? 'checked' : '' }} required 
+                                                    {{ !$esAdmin ? 'disabled' : '' }}>
+                                                <i class="fas fa-check-circle mr-1"></i> {{ __('Activo') }}
+                                            </label>
+
+                                            {{-- Opción Inactivo --}}
+                                            <label class="btn btn-outline-danger {{ $valorEstado == 0 ? 'active' : '' }}"
+                                                style="border-radius: 0 8px 8px 0; {{ !$esAdmin ? 'cursor: not-allowed;' : '' }}">
+                                                <input type="radio" name="estado" value="0" {{ $valorEstado == 0 ? 'checked' : '' }} required 
+                                                    {{ !$esAdmin ? 'disabled' : '' }}>
+                                                <i class="fas fa-times-circle mr-1"></i> {{ __('Inactivo') }}
+                                            </label>
+                                        </div>
+
+                                        {{-- IMPORTANTE: Enviamos el valor oculto para que el formulario no falle al ser procesado --}}
+                                        @if(!$esAdmin)
+                                            <input type="hidden" name="estado" value="{{ $valorEstado }}">
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Footer --}}
-                <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 12px 12px;">
-                    {{-- Botón Cancelar --}}
-                    <a href="{{ route('usuario.index') }}" class="btn btn-invert mr-3 px-4 shadow-sm">
-                        <i class="fas fa-times-circle mr-2"></i> {{ __('Cancelar') }}
-                    </a>
+                    {{-- Footer --}}
+                    <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 12px 12px;">
+                        {{-- Botón Cancelar --}}
+                        <a href="{{ route('usuario.index') }}" class="btn btn-invert mr-3 px-4 shadow-sm">
+                            <i class="fas fa-times-circle mr-2"></i> {{ __('Cancelar') }}
+                        </a>
                 
-                    {{-- Botón Guardar/Actualizar --}}
-                    <button type="submit" class="btn {{ $esEdicion ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm">
-                        <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
-                        {{ $esEdicion ? __('Actualizar Usuario') : __('Guardar Usuario') }}
-                    </button>
-                </div>
+                        {{-- Botón Guardar/Actualizar --}}
+                        <button type="submit" class="btn {{ $esEdicion ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm">
+                            <i class="fas {{ $esEdicion ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
+                                @if($esEdicion)
+                                    {{-- Texto para Edición --}}
+                                @if(Auth::user()->rol_id == 1)
+                                    {{ __('Actualizar Usuario') }}
+                                @else
+                                    {{ __('Actualizar') }}
+                                @endif
+                                
+                                @else
+                                    {{-- Texto para Creación (solo Admin crea) --}}
+                                    {{ __('Guardar Usuario') }}
+                                @endif
+                        </button>
+                    </div>
                 
-                {{-- Modal para ajustar y centrar la foto --}}
-                <div class="modal fade" id="modalCrop" tabindex="-1" role="dialog" data-backdrop="static">
-                    <div class="modal-dialog modal-md">
-                        <div class="modal-content">
-                            <div class="modal-header bg-dark text-white">
-                                <h5 class="modal-title"><i class="fas fa-crop mr-2"></i>Ajustar Foto de Perfil</h5>
-                            </div>
-                            <div class="modal-body">
-                                <div class="img-container">
-                                    <img id="imageToCrop" src="" style="max-width: 100%;">
+                    {{-- Modal para ajustar y centrar la foto --}}
+                    <div class="modal fade" id="modalCrop" tabindex="-1" role="dialog" data-backdrop="static">
+                        <div class="modal-dialog modal-md">
+                            <div class="modal-content">
+                                <div class="modal-header bg-dark text-white">
+                                    <h5 class="modal-title"><i class="fas fa-crop mr-2"></i>Ajustar Foto de Perfil</h5>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary" id="saveCrop">Cortar y Aplicar</button>
+                                <div class="modal-body">
+                                    <div class="img-container">
+                                        <img id="imageToCrop" src="" style="max-width: 100%;">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="saveCrop">Cortar y Aplicar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,7 +238,6 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
             </div>
         </div>
     </div>
-</div>
 
 @push('js')
 <script>
@@ -316,4 +360,22 @@ $sombraFocus = $esEdicion ? 'rgba(40, 167, 69, 0.15)' : 'rgba(0, 123, 255, 0.15)
             background-color: #ffffff !important;
         }
     </style>
+
+    <style>
+    .disabled-group {
+        opacity: 0.65;
+        pointer-events: none; /* Evita que se pueda hacer clic */
+    }
+    
+    /* Si el paciente tiene readonly en algunos campos, les damos un fondo suave */
+    input[readonly] {
+        background-color: #f8f9fa !important;
+        cursor: not-allowed;
+    }
+    
+    /* Si el campo está disabled, el cursor debe indicarlo */
+    [disabled], .pe-none {
+        cursor: not-allowed !important;
+    }
+</style>
 @endpush
