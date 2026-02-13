@@ -303,7 +303,7 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar..',
         ],
 
         [
@@ -371,7 +371,6 @@ return [
             'text' => 'Historial De Consulta',
             'route' => 'consulta.index',
             'icon' => 'fas fa-file-medical-alt',
-            'can' => 'doctor-o-administrador',
         ],
         
     ],

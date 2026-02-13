@@ -22,10 +22,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
     
 // --- 1. RUTAS PARA TODOS LOS LOGUEADOS ---
-Route::resource('usuario', UsuarioController::class);
-Route::resource('medico', MedicoController::class);
     
 Route::middleware('auth')->group(function () {
+    
+    Route::resource('usuario', UsuarioController::class);
+    Route::resource('medico', MedicoController::class);
+    Route::resource('consulta', ConsultaController::class);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -38,8 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/paciente/{paciente}/resumen-ia', [PacienteController::class, 'generarResumenIA'])->name('paciente.resumen.ia');
     
     // Rutas para la generación de PDFs
-    Route::post('/consulta/{id}/descargar-receta', [ConsultaController::class, 'descargarReceta'])->name('consulta.descargar_receta');
-    Route::get('/consulta/{id}/pdf-completo', [ConsultaController::class, 'pdfCompleto'])->name('consulta.pdf_completo');
+   // Y cámbiala por esta:
+    Route::get('/consulta/{id}/descargar-receta', [ConsultaController::class, 'descargarReceta'])->name('consulta.descargar_receta');
+    Route::get('/consulta/{id}/pdf_receta', [ConsultaController::class, 'pdfCompleto'])->name('consulta.pdf_receta');
 });
 
 // --- 2. SOLO ADMINISTRADOR (Y GESTIÓN GLOBAL) ---
@@ -54,7 +58,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:doctor-o-administrador'])->group(function () {
         Route::resource('alergia', AlergiaController::class);
         Route::resource('enfermedade', EnfermedadeController::class);
-        Route::resource('consulta', ConsultaController::class);
         Route::get('/consultas/atender/{cita_id}', [ConsultaController::class, 'atender'])->name('consultas.atender');
     });
 

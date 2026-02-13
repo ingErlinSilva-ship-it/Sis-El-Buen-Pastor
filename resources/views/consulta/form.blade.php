@@ -1,14 +1,15 @@
 @php
     $esEdicion = isset($consulta->id);
-    $temaColor = $esEdicion ? '#28a745' : '#007bff';
-    $temaFondoIcono = $esEdicion ? '#e8f5e9' : '#e7f1ff';
+    // Cambiamos el color a naranja (atender) si no es edición, o verde si es edición
+    $temaColor = $esEdicion ? '#28a745' : '#fd7e14'; 
+    $temaFondoIcono = $esEdicion ? '#e8f5e9' : '#fff5eb';
 @endphp
 
 <div class="container-fluid pt-4">
     <div class="row justify-content-center">
         <div class="col-12">
             
-            {{-- TARJETA PRINCIPAL RESALTADA (EL ENVOLTORIO QUE DA EL EFECTO) --}}
+            {{-- TARJETA PRINCIPAL RESALTADA --}}
             <div class="card border-0 shadow-lg" style="border-radius: 15px;">
                 
                 {{-- ENCABEZADO UNIFICADO --}}
@@ -17,10 +18,10 @@
                     <div class="d-flex align-items-center">
                         <div class="rounded-circle p-2 mr-3 d-flex align-items-center justify-content-center" 
                              style="background-color: {{ $temaFondoIcono }}; width: 45px; height: 45px;">
-                            <i class="fas fa-user-md {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i>
+                            <i class="fas fa-user-md" style="color: {{ $temaColor }};"></i>
                         </div>
                         <div>
-                            <h3 class="card-title font-weight-bold text-dark mb-0" style="font-size: 1.2rem;">
+                            <h3 class="card-title font-weight text-dark mb-0" style="font-size: 1.2rem;">
                                 {{ $esEdicion ? __('Actualizar Atención Médica') : __('Registrar Nueva Atención Médica') }}
                             </h3>
                         </div>
@@ -33,7 +34,7 @@
                     <input type="hidden" name="medico_id" value="{{ $cita->medico_id ?? $consulta->medico_id }}">
                     <input type="hidden" name="cita_id" value="{{ $cita->id ?? $consulta->cita_id }}">
 
-                    {{-- BLOQUE 1: DATOS DE LA CITA (ESTILO FLAT) --}}
+                    {{-- BLOQUE 1: DATOS DE LA CITA --}}
                     <div class="mb-4 p-3 bg-light rounded" style="border-left: 5px solid {{ $temaColor }};">
                         <div class="row text-center text-md-left">
                             <div class="col-md-4 border-right">
@@ -45,7 +46,7 @@
                             </div>
                             <div class="col-md-4 border-right">
                                 <label class="small font-weight-bold text-muted text-uppercase mb-1 d-block">Motivo inicial</label>
-                                <span class="text-primary font-italic">"{{ $cita->motivo ?? $consulta->cita->motivo }}"</span>
+                                <span class="font-italic" style="color: {{ $temaColor }};">"{{ $cita->motivo ?? $consulta->cita->motivo }}"</span>
                             </div>
                             <div class="col-md-4">
                                 <label class="small font-weight-bold text-muted text-uppercase mb-1 d-block">Médico</label>
@@ -107,7 +108,7 @@
                         {{-- BLOQUE 4: EVALUACIÓN Y RECETA --}}
                        <div class="col-md-8">
                             <div class="bg-light p-3 rounded shadow-xs mb-4 border">
-                                <h6 class="font-weight-bold text-success border-bottom pb-2 mb-3">
+                                <h6 class="font-weight-bold border-bottom pb-2 mb-3" style="color: {{ $temaColor }};">
                                     <i class="fas fa-stethoscope"></i> Evaluación y Receta
                                 </h6>
                                 
@@ -132,7 +133,6 @@
                                     @error('prescripcion') <span class="invalid-feedback font-weight-bold">{{ $message }}</span> @enderror
                                 </div>
 
-                                {{-- OBSERVACIONES RESTAURADAS --}}
                                 <div class="form-group mb-0">
                                     <label class="small font-weight-bold">Observaciones adicionales</label>
                                     <textarea name="observaciones" class="form-control bg-white shadow-sm" 
@@ -145,10 +145,12 @@
 
                 {{-- PIE DE PÁGINA: ACCIONES --}}
                 <div class="card-footer bg-light border-top d-flex justify-content-end py-3 px-4" style="border-radius: 0 0 15px 15px;">
-                    <a href="{{ route('cita.index') }}" class="btn btn-outline-secondary mr-3 px-4 shadow-sm" style="border-radius: 8px;">
+                    {{-- Botón Cancelar con Inversión Negro --}}
+                    <a href="{{ route('cita.index') }}" class="btn btn-invert mr-3 px-4 shadow-sm">
                         <i class="fas fa-times-circle mr-2"></i> Cancelar
                     </a>
-                    <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 8px; font-weight: 700;">
+                    {{-- Botón Guardar con Inversión del Tema --}}
+                    <button type="submit" class="btn btn-tema-invert px-4 shadow-sm">
                         <i class="fas fa-save mr-2"></i> {{ $esEdicion ? 'Actualizar Consulta' : 'Guardar y Finalizar' }}
                     </button>
                 </div>
@@ -159,9 +161,43 @@
 
 <style>
     .shadow-xs { box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    
+    /* Enfoque dinámico de los campos */
     .form-control:focus {
-        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15) !important;
-        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.25rem {{ $temaColor }}25 !important;
+        border-color: {{ $temaColor }} !important;
     }
+    
+    /* Botón Cancelar (Inversión Negro) */
+    .btn-invert {
+        background-color: #ffffff !important;
+        border: 2px solid #343a40 !important;
+        color: #343a40 !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        transition: all 0.3s ease;
+    }
+    .btn-invert:hover {
+        background-color: #343a40 !important;
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+
+    /* Botón Guardar (Inversión Dinámica) */
+    .btn-tema-invert {
+        background-color: #ffffff !important;
+        border: 2px solid {{ $temaColor }} !important;
+        color: {{ $temaColor }} !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        transition: all 0.3s ease;
+    }
+    .btn-tema-invert:hover {
+        background-color: {{ $temaColor }} !important;
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+
+    .btn:hover i { color: #ffffff !important; }
     .invalid-feedback { font-size: 85%; }
 </style>

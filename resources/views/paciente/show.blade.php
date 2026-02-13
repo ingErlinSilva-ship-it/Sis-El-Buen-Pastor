@@ -10,7 +10,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="text-dark font-weight-bold mb-0">
-                <i class="fas fa-user-injured rounded-circle p-2 mr-3" style="background-color: #f3e5f5;" text-purple-custom mr-2"></i>Expediente Clínico Digital
+                <i class="fas fa-user-injured rounded-circle p-2 mr-3" style="background-color: #f3e5f5;" text-purple-custom mr-2></i>Expediente Clínico Digital
             </h3>
         </div>
         {{-- Botón Regresar --}}

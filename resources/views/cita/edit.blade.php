@@ -30,17 +30,22 @@
 
     <div class="modal fade" id="modalSeleccionPaciente" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="fas fa-users mr-2"></i>Pacientes Encontrados</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+                <div class="modal-header border-0 py-3" style="background-color: #28a745; color: white;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-users mr-2"></i>Pacientes Encontrados</h5>
+                    <button type="button" class="close text-white outline-none" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <p>Seleccione al paciente que asistirá a la consulta:</p>
-                    <div id="lista-pacientes" class="list-group">
-                        </div>
+
+                <div class="modal-body p-4">
+                    <p class="text-muted">Seleccione al paciente que asistirá a la consulta:</p>
+                    <div id="lista-pacientes" class="list-group shadow-sm">
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-invert px-4" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -250,5 +255,3 @@ $(document).ready(function() {
     .list-group-item-action:hover { background-color: #f8f9fa; }
 </style>
 @endpush
-
-
