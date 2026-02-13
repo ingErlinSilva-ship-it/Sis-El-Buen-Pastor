@@ -12,7 +12,7 @@ use App\Http\Requests\ConsultaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Support\Facades\Auth; // Necesario para identificar al paciente
 class ConsultaController extends Controller
 {
     /**
@@ -20,7 +20,15 @@ class ConsultaController extends Controller
      */
     public function index(Request $request): View
     {
-        $consultas = Consulta::with(['paciente.usuario', 'medico.usuario'])->paginate();
+        $query = Consulta::with(['paciente.usuario', 'medico.usuario']);
+
+        if (Auth::user()->rol_id == 3) {
+            $query->whereHas('paciente', function ($q) {
+                $q->where('usuario_id', Auth::id());
+            });
+        }
+
+        $consultas = $query->paginate();
 
         return view('consulta.index', compact('consultas'))
             ->with('i', ($request->input('page', 1) - 1) * $consultas->perPage());
@@ -44,12 +52,12 @@ class ConsultaController extends Controller
         // 1. Validación de los datos (ajusta según tus necesidades)
         $request->validate([
             'paciente_id' => 'required',
-            'medico_id'   => 'required',
-            'cita_id'     => 'required',
-            'sintomas'    => 'required',
+            'medico_id' => 'required',
+            'cita_id' => 'required',
+            'sintomas' => 'required',
             'diagnostico' => 'required',
-            'prescripcion'=> 'required',
-            'peso'        => 'nullable|numeric',
+            'prescripcion' => 'required',
+            'peso' => 'nullable|numeric',
             'temperatura' => 'nullable|numeric',
         ]);
 
@@ -64,7 +72,7 @@ class ConsultaController extends Controller
             $cita->save();
         }
 
-        // 4. Redireccionar con un mensaje de éxito (Levi podrá ponerle SweetAlert2 aquí)
+        // 4. Redireccionar con un mensaje de éxito
         return redirect()->route('cita.index')
             ->with('success', 'La consulta ha sido guardada y la cita se marcó como finalizada.');
     }
@@ -75,6 +83,9 @@ class ConsultaController extends Controller
     public function show($id): View
     {
         $consulta = Consulta::with(['paciente.usuario', 'medico.usuario', 'cita'])->findOrFail($id);
+        if (Auth::user()->rol_id == 3 && $consulta->paciente->usuario_id != Auth::id()) {
+            abort(403, 'No tienes permiso para acceder a este historial clínico.');
+        }
 
         return view('consulta.show', compact('consulta'));
     }
@@ -86,13 +97,13 @@ class ConsultaController extends Controller
     {
         // Buscamos la consulta con todas sus relaciones
         $consulta = Consulta::with(['paciente.usuario', 'medico.usuario', 'cita'])->findOrFail($id);
-        
+
         // Recuperamos la cita específica para llenar el encabezado de "Datos de la Atención"
         $cita = $consulta->cita;
 
         // Traemos los antecedentes para las alertas de colores
-        $enfermedades = $cita->paciente->enfermedades; 
-        $alergias = $cita->paciente->alergias; 
+        $enfermedades = $cita->paciente->enfermedades;
+        $alergias = $cita->paciente->alergias;
 
         return view('consulta.edit', compact('consulta', 'cita', 'enfermedades', 'alergias'));
     }
@@ -104,9 +115,9 @@ class ConsultaController extends Controller
     {
         // 1. Validamos los datos
         $request->validate([
-            'sintomas'    => 'required',
+            'sintomas' => 'required',
             'diagnostico' => 'required',
-            'prescripcion'=> 'required',
+            'prescripcion' => 'required',
         ]);
 
         // 2. Buscamos la consulta manualmente por el ID para asegurar que editamos la misma
@@ -125,7 +136,7 @@ class ConsultaController extends Controller
         Consulta::find($id)->delete();
 
         return Redirect::route('consulta.index')
-            ->with('success', 'Consulta deleted successfully');
+            ->with('success', 'La Consulta ha sido eliminada correctamente');
     }
 
     public function atender($cita_id)
@@ -135,36 +146,49 @@ class ConsultaController extends Controller
 
         // 2. Traemos las enfermedades y alergias para que el médico las vea de inmediato
         // Esto es vital para el diseño de expediente que quieres
-        $enfermedades = $cita->paciente->enfermedades; 
-        $alergias = $cita->paciente->alergias; 
+        $enfermedades = $cita->paciente->enfermedades;
+        $alergias = $cita->paciente->alergias;
 
         // 3. Creamos una instancia vacía de Consulta para el formulario
         $consulta = new \App\Models\Consulta();
 
         // 4. Retornamos la vista 'create' enviando toda la información
-        return view('consulta.create', compact('cita', 'enfermedades', 'alergias','consulta'));
+        return view('consulta.create', compact('cita', 'enfermedades', 'alergias', 'consulta'));
     }
 
     public function descargarReceta(Request $request, $id)
     {
         $consulta = Consulta::with(['paciente.usuario', 'medico.usuario'])->findOrFail($id);
-        
-        // Capturamos el texto que el médico editó en el modal
-        $prescripcion_final = $request->input('prescripcion_final');
 
+        // Si el médico envió una prescripción editada desde el modal, la usamos; 
+        // si no, usamos la que ya tiene la consulta.
+        $prescripcion_final = $request->input('prescripcion_final') ?? $consulta->prescripcion;
+
+        // LLAMADA USANDO EL NAMESPACE COMPLETO PARA EVITAR ERRORES
         $pdf = Pdf::loadView('consulta.pdf_receta', compact('consulta', 'prescripcion_final'))
-                ->setPaper('letter');
+            ->setPaper('letter');
 
-        return $pdf->download('Receta_'.$consulta->paciente->usuario->apellido.'.pdf');
+            $pdf->setOptions([
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'logOutputFile' => storage_path('logs/dompdf.log.html'),
+        'isPhpEnabled' => true,
+    ]);
+
+    $pdf->setPaper('letter');
+
+    return $pdf->download('Ficha_Medica_'.$consulta->paciente->usuario->apellido.'.pdf');
     }
 
+    
     public function pdfCompleto($id)
     {
         $consulta = Consulta::with(['paciente.usuario', 'medico.usuario', 'cita'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('consulta.pdf_completo', compact('consulta'))
-                ->setPaper('letter');
+        // LLAMADA USANDO EL NAMESPACE COMPLETO
+        $pdf = Pdf::loadView('consulta.pdf_receta', compact('consulta'))
+            ->setPaper('letter');
 
-        return $pdf->download('Ficha_Medica_'.$consulta->paciente->usuario->apellido.'.pdf');
+        return $pdf->download('Ficha_Medica_' . $consulta->paciente->usuario->apellido . '.pdf');
     }
 }

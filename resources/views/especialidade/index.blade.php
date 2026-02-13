@@ -100,7 +100,7 @@
             e.preventDefault();
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: "El rol se eliminará permanentemente.",
+                text: "La especialidad se eliminará permanentemente.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
