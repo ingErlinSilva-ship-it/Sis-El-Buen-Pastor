@@ -24,11 +24,7 @@ class UsuarioRequest extends FormRequest
             'apellido' => ['required', 'string', 'max:50'], // Cambiado a required para ficha médica completa
             'celular'  => ['nullable', 'string', 'max:20', 'min:8'],
             
-            'email' => [
-                'required', 
-                'string', 
-                'email', 
-                'max:100', 
+            'email' => ['required','string','email','max:100', 
                 Rule::unique('usuarios', 'email')->ignore($usuarioId)
             ],
             
@@ -51,6 +47,7 @@ class UsuarioRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'email.unique' => 'Este correo electrónico ya se encuentra vinculado a otra cuenta.',
             'foto.image' => 'El archivo seleccionado debe ser una imagen.',
             'foto.mimes' => 'La foto debe estar en formato: jpeg, png o jpg.',
             'foto.max'   => 'La foto no debe pesar más de 2MB.',

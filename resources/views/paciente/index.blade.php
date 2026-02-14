@@ -7,14 +7,14 @@
 @section('content_header')
     <div class="container-fluid pt-2">
         
-        {{-- BARRA DE BÚSQUEDA Y FILTROS --}}
+        {{-- BARRA DE BÚSQUEDA Y FILTROS (Solo Admin/Doctor) --}}
+        @if(Auth::user()->rol_id != 3)
         <div class="row mb-4">
             <div class="col-md-8">
                 <div class="input-group search-group shadow-xs">
                     <input type="text" id="search_nombre" class="form-control border-right-0"
                         placeholder="Escriba el nombre del paciente para buscar..."
                         style="border-radius: 10px 0 0 10px; height: 45px; border-width: 2px;">
-                    </input>
                     
                     <div class="input-group-append">
                         <span class="input-group-text bg-white border-left-0"
@@ -31,19 +31,24 @@
                 </button>
             </div>
         </div>
+        @endif
 
         <div class="row align-items-center">
             <div class="col-6 text-left">
                 <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
-                    <i class="fas fa-user-injured text-primary mr-2"></i> {{ __('Pacientes') }}
+                    <i class="fas fa-user-injured text-primary mr-2"></i> 
+                    {{ Auth::user()->rol_id == 3 ? __('Mi Perfil de Paciente') : __('Pacientes') }}
                 </h1>
             </div>
 
+            {{-- El botón Crear solo lo ve el Admin o Doctor --}}
+            @if(Auth::user()->rol_id != 3)
             <div class="col-6 text-right">
                 <a href="{{ route('paciente.create') }}" class="btn btn-invert-blue shadow-sm">
                     <i class="fas fa-plus mr-1"></i> {{ __('Crear Nuevo Paciente') }}
                 </a>
             </div>
+            @endif
         </div>
     </div>
 @stop
@@ -68,8 +73,7 @@
                     <tbody>
                         @foreach ($pacientes as $paciente)
                         @php 
-                        $esIncompleto = !$paciente->fecha_nacimiento || !$paciente->tipo_sangre
-        || !$paciente->direccion || (!$paciente->es_menor && !$paciente->cedula);
+                        $esIncompleto = !$paciente->fecha_nacimiento || !$paciente->tipo_sangre || !$paciente->direccion || (!$paciente->es_menor && !$paciente->cedula);
                         @endphp
                         
                         {{-- FILA ÚNICA CORREGIDA --}}
@@ -127,32 +131,30 @@
                                 <i class="fas fa-map-marker-alt mr-1 {{ $paciente->direccion ? 'text-primary' : 'text-warning' }}"></i>
                                 {{ Str::limit($paciente->direccion ?? 'Sin dirección', 35) }}
                             </td>
-                            
                             <td class="text-right align-middle px-4">
                                 <form action="{{ route('paciente.destroy', $paciente->id) }}" method="POST" class="mb-0 form-eliminar">
                                     @csrf @method('DELETE')
                                     <div class="d-flex justify-content-end">
-
-                                        {{-- Ver --}}
-                                        <a class="btn btn-sm btn-invert-purple mx-1" href="{{ route('paciente.show', $paciente->id) }}"
-                                            title="Ver Expediente">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
                                         
-                                        {{-- Editar --}}
-                                        @can('doctor')
-                                        <a class="btn btn-sm btn-invert-success mx-1" href="{{ route('paciente.edit', $paciente->id) }}"
-                                            title="Editar">
-                                            <i class="fa fa-edit"></i>
+                                        {{-- Ver: Todos lo ven --}}
+                                        <a class="btn btn-sm btn-invert-purple mx-1" href="{{ route('paciente.show', $paciente->id) }}"
+                                            title="Ver Expediente"><i class="fas fa-eye"></i>
                                         </a>
-                                        @endcan
+            
+                                        {{-- Editar: Doctores, Admin y el propio Paciente --}}
+                                        @if(Auth::user()->rol_id != 3 || $paciente->usuario_id == Auth::id())
+                                            <a class="btn btn-sm btn-invert-success mx-1" href="{{ route('paciente.edit', $paciente->id) }}"
+                                                title="Editar Datos Personales">
+                                                    <i class="fa fa-edit"></i>
+                                            </a>
+                                        @endif
 
-                                        {{-- Eliminar --}}
-                                        @can('administrador')
-                                        <button type="submit" class="btn btn-sm btn-invert-danger mx-1" title="Eliminar">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                        @endcan
+                                        {{-- Eliminar: SOLO Administrador --}}
+                                        @if(Auth::user()->rol_id == 1)
+                                            <button type="submit" class="btn btn-sm btn-invert-danger mx-1" title="Eliminar">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </form>
                             </td>

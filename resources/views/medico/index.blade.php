@@ -9,14 +9,17 @@
     <div class="row align-items-center">
         <div class="col-6 text-left">
             <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
-                <i class="fas fa-fw fa-stethoscope text-primary mr-2"></i> {{ __('Médicos') }}
+                <i class="fas fa-fw fa-stethoscope text-primary mr-2"></i>
+                {{ Auth::user()->rol_id == 2 ? __('Médico') : __('Médicos') }}
             </h1>
         </div>
         <div class="col-6 text-right">
             {{-- Botón Añadir: Mantiene el AZUL de creación --}}
-            <a href="{{ route('medico.create') }}" class="btn btn-invert-blue shadow-sm px-4">
-                <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nuevo Médico') }}
-            </a>
+            @if(Auth::user()->rol_id == 1)
+                <a href="{{ route('medico.create') }}" class="btn btn-invert-blue shadow-sm px-4">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nuevo Médico') }}
+                </a>
+            @endif
         </div>
     </div>
 </div>
@@ -98,18 +101,25 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <div class="btn-group">
+
                                                     {{-- Ver --}}
                                                     <a class="btn btn-sm btn-invert-purple mr-1" href="{{ route('medico.show', $medico->id) }}" title="Ver">
                                                         <i class="fa fa-eye"></i>
                                                     </a>
+
                                                     {{-- Editar --}}
-                                                    <a class="btn btn-sm btn-invert-success mr-1" href="{{ route('medico.edit', $medico->id) }}" title="Editar">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
+                                                    @if(Auth::user()->rol_id == 1 || (Auth::user()->rol_id == 2 && Auth::user()->id == $medico->usuario_id))
+                                                        <a class="btn btn-sm btn-invert-success mr-1" href="{{ route('medico.edit', $medico->id) }}" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                    @endif
+
                                                     {{-- Eliminar --}}
-                                                    <button type="submit" class="btn btn-sm btn-invert-danger" title="Eliminar">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
+                                                    @if(Auth::user()->rol_id == 1)
+                                                        <button type="submit" class="btn btn-sm btn-invert-danger" title="Eliminar">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </form>
                                         </td>

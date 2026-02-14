@@ -18,13 +18,26 @@ class PacienteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
-    {
-        $pacientes = Paciente::paginate();
+    public function index(Request $request)
+{
+    $user = auth()->user();
 
-        return view('paciente.index', compact('pacientes'))
-            ->with('i', ($request->input('page', 1) - 1) * $pacientes->perPage());
+    // 1. LÓGICA PARA ADMIN Y DOCTOR (Ven a todos)
+    if (in_array($user->rol_id, [1, 2])) {
+        $pacientes = Paciente::with('usuario')->paginate();
+    } 
+    // 2. LÓGICA PARA EL PACIENTE (Solo se ve a sí mismo)
+    else if ($user->rol_id == 3) {
+        $pacientes = Paciente::where('usuario_id', $user->id)
+            ->with('usuario')
+            ->paginate();
+    } else {
+        $pacientes = collect();
     }
+
+    return view('paciente.index', compact('pacientes'))
+        ->with('i', ($request->input('page', 1) - 1) * 10);
+}
 
     /**
      * Show the form for creating a new resource.
@@ -123,18 +136,42 @@ class PacienteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-        public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
-        {
-            $data = $request->validated();
+    public function update(PacienteRequest $request, Paciente $paciente): RedirectResponse
+{
+    $user = auth()->user();
 
-            $paciente->update($data);
+    // Seguridad: El paciente solo puede editar su propio perfil
+    if ($user->rol_id == 3 && $paciente->usuario_id !== $user->id) {
+        abort(403);
+    }
 
+    return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $paciente, $user) {
+        
+        // 1. Actualizamos la tabla 'pacientes' con lo que validó el Request
+        // Usamos fill y save para que solo cambie lo que es diferente
+        $paciente->fill($request->validated());
+        $paciente->save();
+
+        // 2. ACTUALIZACIÓN DEL USUARIO (Aquí estaba el error)
+        // Usamos array_filter para eliminar cualquier valor nulo o vacío del request
+        // Así, si solo enviaste 'direccion', el nombre y apellido no se tocan.
+        $datosUsuario = array_filter($request->only(['nombre', 'apellido', 'celular']));
+        
+        if (!empty($datosUsuario)) {
+            $paciente->usuario->update($datosUsuario);
+        }
+
+        // 3. Tu lógica valiosa de Alergias y Enfermedades
+        // Solo se ejecuta si el usuario NO es paciente (Admin o Doctor)
+        
             $paciente->alergias()->sync($request->alergias ?? []);
             $paciente->enfermedades()->sync($request->enfermedades ?? []);
+        
 
-            return Redirect::route('paciente.index')
-                ->with('success', '¡Listo! Los datos del Paciente se han Actualizado con éxito.');
-        }
+        return Redirect::route('paciente.index')
+            ->with('success', '¡Listo! Los datos se han actualizado con éxito.');
+    });
+}
 
     public function destroy($id)
     {

@@ -28,9 +28,11 @@
                 <input type="text" name="nombre"
                     class="form-control border-left-0 @error('nombre') is-invalid @enderror"
                     style="border-radius: 0 8px 8px 0; font-size: 1rem; background-color: #f8fbff;"
-                    value="{{ old('nombre', $alergia?->nombre) }}" required placeholder="Ej: Penicilina">
+                    value="{{ old('nombre', $alergia?->nombre) }}" required placeholder="Ej: conjuntivitis alérgica">
                 @error('nombre')
-                    <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                    <span class="invalid-feedback" role="alert" style="display: block;">
+                        <strong>{{ $message }}</strong>
+                    </span>
                 @enderror
             </div>
         </div>
@@ -57,11 +59,13 @@
             <i class="fas fa-times-circle mr-2"></i> {{ __('Cancelar') }}
         </a>
 
-        <button type="submit"
-            class="btn {{ isset($alergia->id) ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm d-flex align-items-center">
-            <i class="fas {{ isset($alergia->id) ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
-            {{ isset($alergia->id) ? __('Actualizar Registro') : __('Guardar Registro') }}
-        </button>
+        @if(Auth::user()->rol_id == 1 || (!isset($alergia->id) && Auth::user()->rol_id == 2))
+            <button type="submit"
+                class="btn {{ isset($alergia->id) ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm d-flex align-items-center">
+                <i class="fas {{ isset($alergia->id) ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
+                {{ isset($alergia->id) ? __('Actualizar Registro') : __('Guardar Registro') }}
+            </button>
+        @endif
     </div>
 </div>
 

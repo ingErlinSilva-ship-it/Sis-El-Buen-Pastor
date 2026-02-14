@@ -31,10 +31,16 @@
 
             // Botón Editar (Forzamos clase Púrpura y quitamos las de éxito/primaria)
             var btnEditar = $('.show-mode .btn-primary-invert, .show-mode .btn-success-invert');
-            btnEditar.attr('onclick', "window.location.href='{{ route('enfermedade.edit', $enfermedade->id) }}'");
-            btnEditar.attr('type', 'button');
-            btnEditar.html('<i class="fas fa-edit mr-2"></i> {{ __("Editar Registro") }}');
-            btnEditar.addClass('btn-purple-invert').removeClass('btn-primary-invert btn-success-invert');
+
+            @if(Auth::user()->rol_id == 1)
+                btnEditar.attr('onclick', "window.location.href='{{ route('enfermedade.edit', $enfermedade->id) }}'");
+                btnEditar.attr('type', 'button');
+                btnEditar.html('<i class="fas fa-edit mr-2"></i> {{ __("Editar Registro") }}');
+                btnEditar.addClass('btn-purple-invert').removeClass('btn-primary-invert btn-success-invert');
+            @else
+                // SI ES DOCTOR: Ocultamos el botón de acción por completo
+                btnEditar.hide();
+            @endif
         });
     </script>
 @endpush

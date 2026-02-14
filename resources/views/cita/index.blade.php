@@ -1,6 +1,8 @@
 @extends('adminlte::page')
 
-@section('title', 'Citas | ' . config('adminlte.title'))
+@section('title')
+{{ config('adminlte.title') }}
+@stop
 
 @section('content_header')
     <div class="container-fluid pt-2">
@@ -11,7 +13,8 @@
                 </h1>
             </div>
             <div class="col-6 text-right">
-                <a href="{{ route('cita.create') }}" class="btn btn-primary shadow-sm px-4" style="border-radius: 50px; font-weight: bold;">
+                {{-- Botón Crear con inversión estilo Pacientes --}}
+                <a href="{{ route('cita.create') }}" class="btn btn-invert-blue shadow-sm">
                     <i class="fas fa-plus mr-1"></i> {{ __('Crear Nueva Cita') }}
                 </a>
             </div>
@@ -23,27 +26,28 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                {{-- Card principal --}}
                 <div class="card border-0 shadow-sm" style="border-radius: 15px;">
                     
-                    {{-- Buscador por fechas --}}
-                    <div class="card-header bg-white border-bottom py-3 px-4" style="border-radius: 15px 15px 0 0;">
-                        <form id="formFiltroFechas" action="{{ route('cita.index') }}" method="GET" class="row align-items-end">
+                    {{-- Filtro de Fechas con estilo de buscador elevado --}}
+                    <div class="card-header bg-white border-bottom py-4 px-4" style="border-radius: 15px 15px 0 0;">
+                        <form id="formFiltroFechas" action="{{ route('cita.index') }}" method="GET" class="row align-items-end filter-group">
                             <div class="col-md-3">
                                 <label class="small font-weight-bold text-muted text-uppercase">Desde:</label>
-                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control shadow-sm" 
-                                       value="{{ request('fecha_inicio') }}" style="border-radius: 8px;">
+                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control shadow-xs" 
+                                       value="{{ request('fecha_inicio') }}" style="border-radius: 10px; border-width: 2px;">
                             </div>
                             <div class="col-md-3">
                                 <label class="small font-weight-bold text-muted text-uppercase">Hasta:</label>
-                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control shadow-sm" 
-                                       value="{{ request('fecha_fin') }}" style="border-radius: 8px;">
+                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control shadow-xs" 
+                                       value="{{ request('fecha_fin') }}" style="border-radius: 10px; border-width: 2px;">
                             </div>
                             <div class="col-md-6 text-right">
-                                <button type="submit" class="btn btn-info shadow-sm px-4" style="border-radius: 8px; font-weight: bold;">
-                                    <i class="fas fa-filter mr-1"></i> Filtrar
+                                {{-- Botón Filtrar con inversión Turquesa/Info --}}
+                                <button type="submit" class="btn btn-outline-clinica shadow-sm font-weight-bold px-4">
+                                    <i class="fas fa-filter mr-1"></i> Filtrar Citas
                                 </button>
-                                <a href="{{ route('cita.index') }}" class="btn btn-light border shadow-sm px-3" style="border-radius: 8px;">
+                                {{-- Botón Reiniciar con inversión Negro --}}
+                                <a href="{{ route('cita.index') }}" class="btn btn-invert-dark shadow-sm px-3 ml-1" title="Limpiar Filtros">
                                     <i class="fas fa-undo"></i>
                                 </a>
                             </div>
@@ -53,19 +57,19 @@
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light text-muted">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th class="border-0 px-4 py-3" style="width: 50px;">No</th>
-                                        <th class="border-0 py-3">Paciente / Motivo</th>
-                                        <th class="border-0 py-3 text-center">Médico</th>
-                                        <th class="border-0 py-3 text-center">Fecha y Hora</th>
-                                        <th class="border-0 py-3 text-center">Estado</th>
-                                        <th class="border-0 py-3 text-right px-4">Acciones</th>
+                                        <th class="border-0 px-4 py-3 text-muted" style="width: 50px;">No</th>
+                                        <th class="border-0 py-3 text-muted">Paciente / Motivo</th>
+                                        <th class="border-0 py-3 text-muted text-center">Médico</th>
+                                        <th class="border-0 py-3 text-muted text-center">Fecha y Hora</th>
+                                        <th class="border-0 py-3 text-muted text-center">Estado</th>
+                                        <th class="border-0 py-3 text-right px-4 text-muted">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($citas as $cita)
-                                        <tr>
+                                        <tr class="fila-cita">
                                             <td class="px-4 font-weight-bold text-muted align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">
                                                 <div class="d-flex align-items-center">
@@ -108,15 +112,29 @@
                                             </td>
                                             <td class="text-right align-middle px-4">
                                                 <form action="{{ route('cita.destroy', $cita->id) }}" method="POST" class="mb-0 form-eliminar">
-                                                    <div class="btn-group">
-                                                        <a class="btn btn-sm btn-light text-primary shadow-sm mr-1" href="{{ route('cita.show', $cita->id) }}" style="border-radius: 8px;"><i class="fa fa-eye"></i></a>
+                                                    <div class="d-flex justify-content-end">
+                                                        {{-- Acciones con inversión de colores estilo Pacientes --}}
+                                                        <a class="btn btn-sm btn-invert-purple mx-1" href="{{ route('cita.show', $cita->id) }}" title="Ver Detalle">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                        
                                                         @can('doctor')
-                                                            <a class="btn btn-sm btn-light text-success shadow-sm mr-1" href="{{ route('cita.edit', $cita->id) }}" style="border-radius: 8px;"><i class="fa fa-edit"></i></a>
-                                                            <a class="btn btn-sm btn-light text-info shadow-sm mr-1" href="{{ route('consultas.atender', $cita->id) }}" style="border-radius: 8px;"><i class="fa fa-stethoscope"></i></a>
+                                                            <a class="btn btn-sm btn-invert-success mx-1" href="{{ route('cita.edit', $cita->id) }}" title="Editar">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                                
+                                                            @if($cita->estado != 'asistida')
+                                                                <a class="btn btn-sm btn-invert-warning mx-1" href="{{ route('consultas.atender', $cita->id) }}" title="Atender">
+                                                                    <i class="fa fa-stethoscope"></i>
+                                                                </a>
+                                                            @endif
                                                         @endcan
+                                                        
                                                         @can('administrador')
                                                             @csrf @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 8px;"><i class="fa fa-trash"></i></button>
+                                                            <button type="submit" class="btn btn-sm btn-invert-danger mx-1" title="Eliminar">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
                                                         @endcan
                                                     </div>
                                                 </form>
@@ -139,98 +157,124 @@
     </div>
 @stop
 
-@section('footer')
-    <div class="float-right text-muted">Version: {{ config('app.version', '1.0.0') }}</div>
-    <strong>© 2025 - Consultorio El Buen Pastor. Desarrollado por Levi Ruiz y Erlin Silva.</strong>
-@stop
+@push('css')
+<style>
+    /* 1. ESTILOS DE INVERSIÓN (Basados en tu referencia de Pacientes) */
+    .btn-invert-blue, .btn-invert-purple, .btn-invert-success, .btn-invert-danger, .btn-invert-warning, .btn-invert-dark, .btn-outline-clinica {
+        background-color: #ffffff !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease-in-out !important;
+        border-width: 2px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Botón Crear (Azul) */
+    .btn-invert-blue { border: 2px solid #007bff !important; color: #007bff !important; border-radius: 50px !important; padding: 6px 20px !important; }
+    .btn-invert-blue:hover { background-color: #007bff !important; color: #ffffff !important; }
+
+    /* Botón Filtro (Turquesa) */
+    .btn-outline-clinica { border: 2px solid #14b2c6 !important; color: #14b2c6 !important; }
+    .btn-outline-clinica:hover { background-color: #14b2c6 !important; color: #ffffff !important; }
+
+    /* Botón Reiniciar (Negro) */
+    .btn-invert-dark { border: 2px solid #343a40 !important; color: #343a40 !important; }
+    .btn-invert-dark:hover { background-color: #343a40 !important; color: #ffffff !important; }
+
+    /* Botones de Tabla */
+    .btn-invert-purple { border: 2px solid #6f42c1 !important; color: #6f42c1 !important; }
+    .btn-invert-purple:hover { background-color: #6f42c1 !important; color: #ffffff !important; }
+
+    .btn-invert-success { border: 2px solid #28a745 !important; color: #28a745 !important; }
+    .btn-invert-success:hover { background-color: #28a745 !important; color: #ffffff !important; }
+
+    .btn-invert-warning { border: 2px solid #fd7e14 !important; color: #fd7e14 !important; }
+    .btn-invert-warning:hover { background-color: #fd7e14 !important; color: #ffffff !important; }
+
+    .btn-invert-danger { border: 2px solid #dc3545 !important; color: #dc3545 !important; }
+    .btn-invert-danger:hover { background-color: #dc3545 !important; color: #ffffff !important; }
+
+    /* 2. EFECTOS DE FILA Y ELEVACIÓN */
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; }
+    .btn:hover i { color: #ffffff !important; }
+
+    .table-hover tbody tr:hover { background-color: #f1f7ff !important; transition: all 0.2s ease; }
+    
+    /* Estilo para los inputs de fecha al enfocar (Igual que buscador de Pacientes) */
+    .filter-group input:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 123, 255, 0.1) !important;
+        border-color: #007bff !important;
+    }
+
+    .shadow-xs { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+    .badge { font-weight: 600; letter-spacing: 0.3px; }
+</style>
+@endpush
 
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-    // Validación de filtros por fecha
+    // Lógica de filtros
     $('#formFiltroFechas').on('submit', function(e) {
-        let fechaInicio = $('input[name="fecha_inicio"]').val();
-        let fechaFin = $('input[name="fecha_fin"]').val();
-
+        let fechaInicio = $('#fecha_inicio').val();
+        let fechaFin = $('#fecha_fin').val();
         if (fechaInicio === "" && fechaFin === "") {
             e.preventDefault();
             Swal.fire({
                 icon: 'info',
                 title: 'Rango requerido',
                 text: 'Seleccione al menos una fecha para filtrar.',
-                confirmButtonColor: '#17a2b8',
+                confirmButtonColor: '#14b2c6',
                 borderRadius: '15px'
             });
             return false;
         }
-
-        if (fechaInicio !== "" && fechaFin !== "" && fechaFin < fechaInicio) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'warning',
-                title: 'Rango Inválido',
-                text: 'La fecha "Hasta" no puede ser anterior a la "Desde".',
-                confirmButtonColor: '#ffc107'
-            });
-            return false;
-        }
     });
 
-    // Confirmación de eliminación
-    $('.form-eliminar').submit(function(e) {
-        e.preventDefault();
-        Swal.fire({
-            title: '¿Eliminar Cita?',
-            text: "Esta acción no se puede deshacer.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) { this.submit(); }
-        });
-    });
+    // Confirmación eliminación (estilo Pacientes)
+    $('.form-eliminar').submit(function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: '¿Eliminar Cita?',
+                        text: "Esta acción es irreversible y afectará el historial clínico.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'btn btn-danger px-4 mx-2',
+                            cancelButton: 'btn btn-secondary px-4 mx-2',
+                            popup: 'rounded-lg'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });     
+
+                @if(session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Operación Exitosa!',
+                        text: '{{ session("success") }}',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
+                @endif
+
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
 });
 </script>
-@endpush
-
-
-@push('css')
-<style>
-    .table-hover tbody tr:hover {
-        background-color: #f8fbff;
-        transition: background-color 0.2s ease;
-    }
-    .shadow-xs {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .badge {
-        font-weight: 600;
-        letter-spacing: 0.3px;
-    }
-
-    /* Efecto de resaltado al pasar el mouse por la fila */
-    .table-hover tbody tr:hover {
-        background-color: #f1f7ff !important; /* Azul muy suave */
-        transition: background-color 0.2s ease;
-        cursor: pointer;
-    }
-
-    /* Opcional: añade una sombra muy leve a la fila resaltada */
-    .table-hover tbody tr:hover td {
-        box-shadow: inset 0 0 0 9999px rgba(0, 123, 255, 0.02);
-    }
-
-    .shadow-xs {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    
-    .badge {
-        font-weight: 600;
-        letter-spacing: 0.3px;
-    }
-</style>
 @endpush

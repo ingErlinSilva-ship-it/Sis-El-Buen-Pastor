@@ -303,7 +303,7 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar..',
         ],
 
         [
@@ -330,21 +330,21 @@ return [
             'text' => 'Pacientes',
             'route' => 'paciente.index',
             'icon' => 'fas fa-user-injured',
-            'can'  => 'doctor-o-administrador',
+            'can' => 'doctor-o-administrador',
         ],
 
         [
             'text' => 'Especialidades Médicas',
             'route' => 'especialidade.index',
             'icon' => 'fas fa-fw fa-microscope',
-            'can' => 'doctor-o-administrador',
+            'can' => 'administrador',
         ],
 
         [
             'text' => 'Médicos',
             'route' => 'medico.index',
             'icon' => 'fas fa-fw fa-stethoscope',
-            'can' => 'doctor-o-administrador',
+            'can' => 'administrador',
         ],
 
         [
@@ -371,7 +371,6 @@ return [
             'text' => 'Historial De Consulta',
             'route' => 'consulta.index',
             'icon' => 'fas fa-file-medical-alt',
-            'can' => 'doctor-o-administrador',
         ],
         
     ],

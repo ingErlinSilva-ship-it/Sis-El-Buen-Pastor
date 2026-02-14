@@ -4,7 +4,6 @@
 {{ config('adminlte.title') }}
 @stop
 
-{{-- 1. Limpiamos el encabezado para evitar textos duplicados --}}
 @section('content_header')
 @stop
 
@@ -73,6 +72,10 @@
 @push('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 <style>
-    .img-container { min-height: 300px; max-height: 500px; width: 100%; }
+    .img-container { 
+        min-height: 300px; 
+        max-height: 500px; 
+        width: 100%; 
+        }
 </style>
 @endpush

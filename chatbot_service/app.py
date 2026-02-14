@@ -309,10 +309,13 @@ def crear_usuario(nombre, apellido, email, celular):
         if not celular.isdigit() or len(celular) != 8:
             return None
 
-        password_hash = bcrypt.hashpw(
-            celular.encode('utf-8'),
-            bcrypt.gensalt()
-        ).decode('utf-8')
+        salt = bcrypt.gensalt(rounds=12)
+        hash_bytes = bcrypt.hashpw(celular.encode('utf-8'), salt)
+
+        password_hash = hash_bytes.decode('utf-8')
+
+        # 🔥 Forzar compatibilidad Laravel
+        password_hash = password_hash.replace("$2b$", "$2y$")
 
         query = """
             INSERT INTO usuarios 
@@ -774,10 +777,11 @@ def chat():
         if sesiones[session_id].get("usuario_nuevo"):
 
             mensaje_final += (
-                "🔐 Se creó tu usuario en nuestro sistema:\n\n"
-                f"Usuario: {sesiones[session_id]['email_registrado']}\n"
-                f"Contraseña: {sesiones[session_id]['celular_registrado']}\n\n"
-                "Puedes ingresar desde la plataforma web de la clínica.\n\n"
+                "🔐 **Tu cuenta ha sido creada exitosamente en nuestro sistema.**\n\n"
+                f"**Usuario:** {sesiones[session_id]['email_registrado']}\n\n"
+                "Se ha generado una contraseña temporal basada en el número de celular registrado.\n"
+                "Por seguridad, te recomendamos cambiar tu contraseña al ingresar al sistema.\n\n"
+                "Puedes acceder desde la plataforma web de la Clínica El Buen Pastor.\n\n"
             )
 
             sesiones[session_id]["usuario_nuevo"] = False

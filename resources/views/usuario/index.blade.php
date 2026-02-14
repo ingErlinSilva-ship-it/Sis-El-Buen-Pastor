@@ -10,14 +10,24 @@
     <div class="row align-items-center">
         <div class="col-6 text-left">
             <h1 class="m-0 text-dark font-weight-bold" style="font-size: 1.6rem;">
-                <i class="fas fa-users text-primary mr-2"></i> {{ __('Usuarios') }}
+                
+                @if(Auth::user()->rol_id == 1)
+                <i class="fas fa-users text-primary mr-2"></i>
+                {{ __('Usuarios') }}
+                @else
+                <i class="fas fa-user text-primary mr-2"></i>
+                {{ __('Usuario') }}
+                @endif
             </h1>
         </div>
-        <div class="col-6 text-right">
-            <a href="{{ route('usuario.create') }}" class="btn btn-invert-blue shadow-sm">
-                <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nuevo Usuario') }}
-            </a>
-        </div>
+        {{-- FILTRO: Solo Admin ve el botón de añadir --}}
+        @if(Auth::user()->rol_id == 1)
+            <div class="col-6 text-right">
+                <a href="{{ route('usuario.create') }}" class="btn btn-invert-blue shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> {{ __('Añadir Nuevo Usuario') }}
+                </a>
+            </div>
+        @endif
     </div>
 </div>
 @stop
@@ -51,7 +61,7 @@
                                                     {{-- Foto circular con manejo de almacenamiento --}}
                                                     <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
                                                         @if($usuario->foto)
-                                                            <img src="{{ asset('storage/' . $usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                                            <img src="{{ asset('storage/fotos/' . $usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                                         @else
                                                             <i class="fas fa-user text-muted"></i>
                                                         @endif
@@ -96,23 +106,25 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="d-flex justify-content-end">
-
-                                                        {{-- Ver: Púrpura --}}
+                                                        
+                                                        {{-- Ver --}}
                                                         <a class="btn btn-sm btn-invert-purple mx-1" 
                                                         href="{{ route('usuario.show', $usuario->id) }}" title="Ver Perfil">
                                                         <i class="fa fa-eye"></i>
                                                     </a>
-
-                                                    {{-- Editar: Verde --}}
+                                                    
+                                                    {{-- Editar --}}
                                                     <a class="btn btn-sm btn-invert-success mx-1" 
                                                     href="{{ route('usuario.edit', $usuario->id) }}" title="Editar">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-
-                                                {{-- Eliminar: Rojo --}}
+            
+                                                {{-- FILTRO: Solo Administradores (rol 1) pueden eliminar --}}
+                                                @if(Auth::user()->rol_id == 1)
                                                 <button type="submit" class="btn btn-sm btn-invert-danger mx-1" title="Eliminar Usuario">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
+                                                @endif
                                             </div>
                                         </form>
                                     </td>

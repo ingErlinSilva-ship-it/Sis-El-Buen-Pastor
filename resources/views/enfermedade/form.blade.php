@@ -68,18 +68,22 @@
             <i class="fas fa-times-circle mr-2"></i> {{ __('Cancelar') }}
         </a>
 
-        <button type="submit"
-            class="btn {{ isset($enfermedade->id) ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm d-flex align-items-center">
-            <i class="fas {{ isset($enfermedade->id) ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
-            {{ isset($enfermedade->id) ? __('Actualizar Registro') : __('Guardar Registro') }}
-        </button>
+        @if(Auth::user()->rol_id == 1 || (!isset($alergia->id) && Auth::user()->rol_id == 2))
+    <button type="submit"
+        class="btn {{ isset($alergia->id) ? 'btn-success-invert' : 'btn-primary-invert' }} px-5 shadow-sm d-flex align-items-center">
+        <i class="fas {{ isset($alergia->id) ? 'fa-sync-alt' : 'fa-save' }} mr-2"></i>
+        {{ isset($alergia->id) ? __('Actualizar Registro') : __('Guardar Registro') }}
+    </button>
+@endif
     </div>
 </div>
 
 @push('css')
 <style>
     /* Estilos Base de Inversión */
-    .btn-invert, .btn-primary-invert, .btn-success-invert {
+    .btn-invert, 
+    .btn-primary-invert, 
+    .btn-success-invert {
         background-color: #ffffff !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
