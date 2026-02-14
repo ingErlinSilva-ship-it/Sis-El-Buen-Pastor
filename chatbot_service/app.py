@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from google import genai
+import google.generativeai as genai
 import unicodedata
 import mysql.connector
 from mysql.connector import Error
@@ -16,8 +16,8 @@ import bcrypt
 app = Flask(__name__)
 CORS(app)
 
-# 🔐 API KEY (luego pásala a variable de entorno)
-client = genai.Client(api_key="AIzaSyAvW4AjKXrPBgKYYUED7sKwQQWHqIJqTzQ")
+# 🔐
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 MODEL_NAME = "gemini-2.5-flash"
 
@@ -818,5 +818,6 @@ def chat():
 # 8. RUN
 # ==============================
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
