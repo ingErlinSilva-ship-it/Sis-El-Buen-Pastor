@@ -10,8 +10,9 @@ class ChatbotController extends Controller
     public function consulta(Request $request)
     {
         try {
-            // Esto envía el mensaje al servidor de Flask que tienes corriendo
-            $response = Http::post('http://127.0.0.1:5000/chat', [
+        $url = env('CHATBOT_API_URL', 'http://127.0.0.1:5000/chat');
+
+        $response = Http::post($url, [
             'mensaje' => $request->mensaje,
             'session_id' => $request->session_id,
         ]);
