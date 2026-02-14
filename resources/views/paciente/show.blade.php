@@ -28,7 +28,7 @@
                         <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center bg-light mb-3 shadow-sm" 
                              style="width: 100px; height: 100px; overflow: hidden; border: 3px solid #f3e5f5;">
                             @if($paciente->usuario->foto)
-                                <img src="{{ asset('storage/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ asset('storage/fotos/'.$paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                             @else
                                 <i class="fas fa-user-injured fa-3x text-muted"></i>
                             @endif

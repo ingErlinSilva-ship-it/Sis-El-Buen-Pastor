@@ -9,7 +9,7 @@
                         {{-- Foto del médico con borde dinámico --}}
                         <div class="rounded-circle shadow-sm"
                             style="width: 130px; height: 130px; overflow: hidden; border: 5px solid {{ isset($medico->id) ? '#28a745' : '#007bff' }};">
-                            <img src="{{ asset('storage/' . $medico->usuario->foto) }}" alt="Foto del Médico"
+                            <img src="{{ asset('storage/fotos/' . $medico->usuario->foto) }}" alt="Foto del Médico"
                                 style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     @else

@@ -31,7 +31,7 @@
                         {{-- Foto Circular --}}
                         <div class="user-img-circle mr-2 border border-info shadow-sm" style="flex-shrink: 0;">
                             @if(Auth::user()->foto)
-                                <img src="{{ asset('storage/' . Auth::user()->foto) }}" alt="User Image"
+                                <img src="{{ asset('storage/fotos/' . Auth::user()->foto) }}" alt="User Image"
                                     class="rounded-circle" style="width: 35px; height: 35px; object-fit: cover;">
                             @else
                                 <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center"
