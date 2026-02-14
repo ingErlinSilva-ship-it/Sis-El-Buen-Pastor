@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import google.generativeai as genai
+from google import genai
 import unicodedata
 import mysql.connector
 from mysql.connector import Error
@@ -16,8 +16,8 @@ import bcrypt
 app = Flask(__name__)
 CORS(app)
 
-# 🔐
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# 🔐 API KEY (luego pásala a variable de entorno)
+client = genai.Client(api_key="AIzaSyAvW4AjKXrPBgKYYUED7sKwQQWHqIJqTzQ")
 
 MODEL_NAME = "gemini-2.5-flash"
 
