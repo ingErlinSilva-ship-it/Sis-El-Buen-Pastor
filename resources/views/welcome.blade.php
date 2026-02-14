@@ -281,7 +281,7 @@
                             <li><i class="far fa-clock"></i> Lunes a Viernes: 01:00 PM - 06:00 PM</li>
                             <li><i class="far fa-clock"></i> Domingo: 08:00 AM - 12:00 PM</li>
                         </ul>
-                        <a href="https://wa.me/87922112" class="btn btn-outline-success">
+                        <a href="https://wa.me/50587922112" class="btn btn-outline-success" target="_blank">
                             <i class="fab fa-whatsapp"></i> Para mayor Información
                         </a>
                     </div>
