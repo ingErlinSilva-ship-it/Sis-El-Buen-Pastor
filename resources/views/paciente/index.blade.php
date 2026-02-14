@@ -83,7 +83,7 @@
                                 <div class="d-flex align-items-center">
                                      <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
                                         @if($paciente->usuario?->foto)
-                                        <img src="{{ asset('storage/' . $paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="{{ asset('storage/fotos/' . $paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                          @else
                                          <i class="fas fa-user text-muted"></i>
                                          @endif

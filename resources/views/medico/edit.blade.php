@@ -35,7 +35,7 @@
                                     @if($medico->usuario && $medico->usuario->foto)
                                         <div class="rounded-circle shadow-sm"
                                             style="width: 140px; height: 140px; overflow: hidden; border: 5px solid #28a745;">
-                                            <img src="{{ asset('storage/' . $medico->usuario->foto) }}" alt="Foto"
+                                            <img src="{{ asset('storage/fotos/' . $medico->usuario->foto) }}" alt="Foto"
                                                 style="width: 100%; height: 100%; object-fit: cover;">
                                         </div>
                                     @else

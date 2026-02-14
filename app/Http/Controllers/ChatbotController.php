@@ -21,7 +21,8 @@ class ChatbotController extends Controller
             return $response->json();
         } catch (\Exception $e) {
             // Si Python está apagado, avisamos al usuario
-            return response()->json(['respuesta' => 'El servidor de IA no responde. Asegúrate de que app.py esté corriendo.']);
+            return response()->json(['¡Hola! Un gusto saludarte. Mi sistema de IA se está activando. 
+            Por favor, danos 30 segundos y vuelve a intentarlo. ¡Tu salud es nuestra prioridad!']);
         }
     }
 }

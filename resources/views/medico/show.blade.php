@@ -25,7 +25,7 @@
                                 <div class="mb-4 d-flex justify-content-center">
                                     @if($medico->usuario && $medico->usuario->foto)
                                         <div class="rounded-circle shadow-sm" style="width: 150px; height: 150px; overflow: hidden; border: 5px solid #8e44ad;">
-                                            <img src="{{ asset('storage/' . $medico->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="{{ asset('storage/fotos/' . $medico->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                         </div>
                                     @else
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-sm"

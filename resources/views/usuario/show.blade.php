@@ -31,7 +31,7 @@
                         <div class="col-md-4 text-center border-right">
                             <div class="mb-3">
                                 @if($usuario->foto)
-                                    <img src="{{ asset('storage/' . $usuario->foto) }}" class="img-thumbnail shadow-sm"
+                                    <img src="{{ asset('storage/fotos/' . $usuario->foto) }}" class="img-thumbnail shadow-sm"
                                         style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%; border: 3px solid #8e44ad;">
                                 @else
                                     <div class="bg-light d-flex align-items-center justify-content-center m-auto shadow-sm"

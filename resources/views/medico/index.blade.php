@@ -52,7 +52,7 @@
                                                 <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center bg-light border shadow-sm"
                                                     style="width: 45px; height: 45px; overflow: hidden;">
                                                     @if($medico->usuario && $medico->usuario->foto)
-                                                        <img src="{{ asset('storage/' . $medico->usuario->foto) }}" alt="Foto"
+                                                        <img src="{{ asset('storage/fotos/' . $medico->usuario->foto) }}" alt="Foto"
                                                             style="width: 100%; height: 100%; object-fit: cover;">
                                                     @else
                                                         <i class="fas fa-user-md text-muted"></i>

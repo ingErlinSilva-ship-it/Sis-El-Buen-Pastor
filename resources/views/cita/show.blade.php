@@ -59,7 +59,7 @@
                                 <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-light border shadow-sm" 
                                     style="width: 120px; height: 120px; overflow: hidden;">
                                     @if($cita->paciente->usuario?->foto)
-                                        <img src="{{ asset('storage/'.$cita->paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="{{ asset('storage/fotos/'.$cita->paciente->usuario->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                     @else
                                         <i class="fas fa-user fa-3x text-muted"></i>
                                     @endif
