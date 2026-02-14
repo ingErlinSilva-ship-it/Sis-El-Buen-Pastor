@@ -21,7 +21,7 @@ class User extends Authenticatable
     protected $table = 'usuarios';
 
     protected $fillable = [
-        'nombre', 
+        'nombre',
         'apellido', // Agregado
         'email',
         'password',
@@ -55,7 +55,13 @@ class User extends Authenticatable
     public function role()
     {
         // Asegúrate que el modelo Rol exista en App\Models\Rol
-        return $this->belongsTo(Role::class, 'rol_id'); 
+        return $this->belongsTo(Role::class, 'rol_id');
+    }
+
+    public function paciente()
+    {
+        // Esto conecta el id del usuario con el user_id de la tabla pacientes
+        return $this->hasOne(Paciente::class, 'user_id');
     }
 
 }

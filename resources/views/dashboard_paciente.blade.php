@@ -44,16 +44,34 @@
     
     <div class="row">
         {{-- Mi Expediente --}}
-        <div class="col-lg-6 col-md-6 col-12">
-            <div class="info-box shadow-sm border-0" style="border-radius: 15px;">
-                <span class="info-box-icon bg-primary elevation-1" style="border-radius: 12px;"><i class="fas fa-file-medical"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text text-muted font-weight-bold">Mi Expediente</span>
-                    <span class="info-box-number h5 mb-0">Consultar datos médicos</span>
-                    <a href="{{ route('paciente.show', $miPacienteId) }}" class="small text-primary font-weight-bold">Ver mi información <i class="fas fa-chevron-right ml-1"></i></a>
-                </div>
-            </div>
+{{-- Mi Expediente --}}
+<div class="col-lg-6 col-md-6 col-12">
+    <div class="info-box shadow-sm border-0" style="border-radius: 15px;">
+        <span class="info-box-icon bg-primary elevation-1" style="border-radius: 12px;">
+            <i class="fas fa-file-medical"></i>
+        </span>
+        <div class="info-box-content">
+            <span class="info-box-text text-muted font-weight-bold">Mi Expediente</span>
+
+            @if(Auth::user()->paciente)
+                {{-- Caso 1: Tiene cuenta de paciente vinculada --}}
+                <span class="info-box-number h5 mb-0">Consultar datos médicos</span>
+                <a href="{{ route('paciente.show', Auth::user()->paciente->id) }}" class="small text-primary font-weight-bold">
+                    Ver mi información <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+            @else
+                {{-- Caso 2: El mensaje que querías si no tiene cuenta de paciente --}}
+                <span class="info-box-number h6 mb-0 text-danger font-weight-bold">
+                    <i class="fas fa-exclamation-circle mr-1"></i> Sin cuenta de paciente
+                </span>
+                <p class="small text-muted mb-1">Aún no se le ha creado una cuenta de paciente vinculada.</p>
+                <a href="{{ route('usuario.edit', Auth::user()->id) }}" class="small text-secondary font-weight-bold">
+                    Ver mi perfil de usuario <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+            @endif
         </div>
+    </div>
+</div>
 
         {{-- Mis Citas --}}
         <div class="col-lg-6 col-md-6 col-12">

@@ -62,7 +62,6 @@ class PacienteController extends Controller
      */
     public function store(PacienteRequest $request): RedirectResponse
     {
-
         $paciente = Paciente::create($request->only([
             'usuario_id',
             'fecha_nacimiento',
@@ -152,7 +151,7 @@ class PacienteController extends Controller
         $paciente->fill($request->validated());
         $paciente->save();
 
-        // 2. ACTUALIZACIÓN DEL USUARIO (Aquí estaba el error)
+        // 2. ACTUALIZACIÓN DEL USUARIO
         // Usamos array_filter para eliminar cualquier valor nulo o vacío del request
         // Así, si solo enviaste 'direccion', el nombre y apellido no se tocan.
         $datosUsuario = array_filter($request->only(['nombre', 'apellido', 'celular']));
@@ -161,7 +160,7 @@ class PacienteController extends Controller
             $paciente->usuario->update($datosUsuario);
         }
 
-        // 3. Tu lógica valiosa de Alergias y Enfermedades
+        // 3. lógica de Alergias y Enfermedades
         // Solo se ejecuta si el usuario NO es paciente (Admin o Doctor)
         
             $paciente->alergias()->sync($request->alergias ?? []);
@@ -206,7 +205,7 @@ class PacienteController extends Controller
             $historialTexto .= "Fecha: {$fecha}, Diagnóstico: {$c->diagnostico}, Receta: {$c->prescripcion}. \n";
         }
 
-        // 4. Definición del PROMPT (Aquí es donde daba el error, ahora está definido justo antes de usarse)
+        // 4. Definición del PROMPT
         $prompt = "Eres un asistente médico experto de la Clínica El Buen Pastor. Analiza el historial del paciente {$paciente->usuario->nombre} y genera un resumen profesional con: Estado actual, patrones detectados y recomendaciones. \n\n Historial:\n" . $historialTexto;
 
         // 5. CONFIGURACIÓN SSL Y LLAMADA (Solución al error anterior de cURL 60)
