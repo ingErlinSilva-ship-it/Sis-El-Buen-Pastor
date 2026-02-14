@@ -10,7 +10,8 @@ use App\Http\Controllers\AlergiaController;
 use App\Http\Controllers\EnfermedadeController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\CitaController;
-use App\Http\Controllers\ConsultaController; 
+use App\Http\Controllers\ConsultaController;
+use App\Http\Controllers\ChatbotController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -71,4 +72,11 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('cita', CitaController::class);
 });
+<<<<<<< HEAD
+
+// Ruta para el Chatbot.
+Route::post('/chatbot/consulta', [ChatbotController::class, 'consulta'])->name('chatbot.consulta');
+
+=======
+>>>>>>> e85976d862e4ad7fb72cfd2873fb2676da523fe4
 require __DIR__.'/auth.php';

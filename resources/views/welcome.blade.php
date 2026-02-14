@@ -239,7 +239,7 @@
         <!-- tercera sección -->
         <section id="find-a-doctor" class="find-a-doctor section">
             <div class="container section-title" data-aos="fade-up">
-                <h2>Dotor Disponible</h2>
+                <h2>Doctor Disponible</h2>
                 <div class="container" data-aos="fade-up" data-aos-delay="100" style="text-align: left;">
                     <div class="doctors-grid" data-aos="fade-up" data-aos-delay="300">
                         <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="100">
@@ -305,7 +305,7 @@
 
     <!-- Preloader -->
     <div id="preloader"></div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Vendor JS Files -->
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/vendor/php-email-form/validate.js"></script>
@@ -320,6 +320,7 @@
     <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
     <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
-
+    
+    @include('components.Chatbot')
 </body>
 </html>
