@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 
 @section('title')
-{{ config('adminlte.title') }} | Dashboard Admin
+{{ config('adminlte.title') }}
 @stop
 
 @section('content')
