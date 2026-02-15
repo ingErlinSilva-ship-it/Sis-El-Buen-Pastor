@@ -1,6 +1,8 @@
 @extends('adminlte::page')
 
-@section('title', 'Panel Médico')
+@section('title')
+{{ config('adminlte.title') }}
+@stop
 
 @section('content')
 <div class="container-fluid pt-4">

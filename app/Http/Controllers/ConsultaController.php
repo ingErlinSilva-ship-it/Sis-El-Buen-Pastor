@@ -145,7 +145,6 @@ class ConsultaController extends Controller
         $cita = \App\Models\Cita::with(['paciente.usuario', 'medico.usuario'])->findOrFail($cita_id);
 
         // 2. Traemos las enfermedades y alergias para que el médico las vea de inmediato
-        // Esto es vital para el diseño de expediente que quieres
         $enfermedades = $cita->paciente->enfermedades;
         $alergias = $cita->paciente->alergias;
 

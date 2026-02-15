@@ -54,14 +54,23 @@
                         {{-- Nombre --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Nombre</label>
-                            <input type="text" name="nombre" value="{{ old('nombre') }}" required autofocus class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50">
+                            <input type="text" name="nombre" value="{{ old('nombre') }}" required autofocus
+                            pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" 
+                            {{-- Borra números si los pegan o escriben --}}
+                            oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                            title="El nombre solo debe contener letras" 
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50">
                             <x-input-error :messages="$errors->get('nombre')" class="mt-1" />
                         </div>
 
                         {{-- Apellido --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Apellido</label>
-                            <input type="text" name="apellido" value="{{ old('apellido') }}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50">
+                            <input type="text" name="apellido" value="{{ old('apellido') }}"
+                            pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" 
+                            oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                            title="El apellido solo debe contener letras"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50">
                             <x-input-error :messages="$errors->get('apellido')" class="mt-1" />
                         </div>
                     </div>
@@ -79,6 +88,7 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label>
                         <input type="email" name="email" value="{{ old('email') }}" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" placeholder="correo@ejemplo.com">
+                        <small id="email_error" class="text-red-500 hidden">Solo se permiten correos de Gmail, Outlook, Hotmail o Yahoo.</small>
                         <x-input-error :messages="$errors->get('email')" class="mt-1" />
                     </div>
 
