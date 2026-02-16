@@ -25,7 +25,7 @@
                         </div>
                         <div class="col-md-4 text-right d-none d-md-block">
                             @if(Auth::user()->foto)
-                                <img src="{{ asset('storage/' . Auth::user()->foto) }}" class="img-circle shadow-lg" alt="User Image" style="width: 110px; height: 110px; object-fit: cover; border: 4px solid rgba(255,255,255,0.4);">
+                                <img src="{{ asset('storage/fotos/' . Auth::user()->foto) }}" class="img-circle shadow-lg" alt="User Image" style="width: 110px; height: 110px; object-fit: cover; border: 4px solid rgba(255,255,255,0.4);">
                             @else
                                 <div class="bg-white img-circle d-inline-flex align-items-center justify-content-center shadow-lg" style="width: 100px; height: 100px;">
                                     <i class="fas fa-user-md fa-3x text-teal"></i>
