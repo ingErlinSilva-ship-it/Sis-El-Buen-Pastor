@@ -96,6 +96,49 @@
                     </div>
                     <input type="hidden" name="paciente_id" id="paciente_id_hidden" value="{{ $cita->paciente_id ?? '' }}">
 
+                    {{-- BLOQUE: REGISTRO RÁPIDO DE NUEVO PACIENTE (Aparece si no existe) --}}
+                    <div id="seccion_registro_nuevo" style="display: none; border-radius: 12px; border-left: 5px solid #28a745;" 
+                        class="p-4 mb-5 bg-white border shadow-sm animate__animated animate__fadeIn">
+                        
+                        <label class="font-weight-bold small mb-3 text-success">
+                            <i class="fas fa-user-plus mr-1"></i> REGISTRO RÁPIDO DE PACIENTE
+                        </label>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <small class="text-muted text-uppercase font-weight-bold">Nombre</small>
+                                <input type="text" name="nombre" id="nombre_paciente" class="form-control shadow-sm" style="border-radius: 8px;">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <small class="text-muted text-uppercase font-weight-bold">Apellido</small>
+                                <input type="text" name="apellido" id="apellido_paciente" class="form-control shadow-sm" style="border-radius: 8px;">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <small class="text-muted text-uppercase font-weight-bold">Celular</small>
+                                <input type="text" name="celular" id="celular_paciente" class="form-control shadow-sm" style="border-radius: 8px;" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="88888888">
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                    <label for="email" class="font-weight-bold small text-muted">EMAIL</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white border-right-0"><i class="fas fa-envelope {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i></span>
+                                        </div>
+                                        <input type="email" name="email" id="email_paciente" class="form-control border-left-0 @error('email') is-invalid @enderror" value="{{ old('email', $cita?->email) }}" required placeholder="ejemplo@gmail.com">
+                                        @error('email')
+                                            <span class="invalid-feedback" style="display: block;">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                            </div>
+                            <div class="col-md-12 text-right mt-2">
+                                <button type="button" id="btn_guardar_paciente_rapido" class="btn btn-success shadow-sm px-4">
+                                    <i class="fas fa-check-circle mr-1"></i> Validar Datos de Paciente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- SECCIÓN 2: DETALLES DE LA CONSULTA --}}
                     <div class="mb-2">
                         <h6 class="text-uppercase font-weight-bold mb-4" style="font-size: 0.75rem; color: {{ $temaColor }}; letter-spacing: 1px;">
