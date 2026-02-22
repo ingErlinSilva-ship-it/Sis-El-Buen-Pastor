@@ -188,36 +188,50 @@ class PacienteController extends Controller
     public function generarResumenIA($id) 
     {
         try {
-        // 1. Buscar al paciente y sus datos
-        $paciente = \App\Models\Paciente::with(['usuario', 'consultas.cita'])->findOrFail($id);
+            $paciente = \App\Models\Paciente::with(['usuario', 'consultas.cita', 'alergias', 'enfermedades'])->findOrFail($id);
 
-        // 2. Validación de datos (Lo que mencionaste: si está vacío, se detiene aquí)
-        if ($paciente->consultas->isEmpty()) {
-            return response()->json([
-                'resumen' => 'No hay datos clínicos suficientes. Para generar un resumen, el paciente debe tener al menos una consulta registrada.'
+            // Calculamos la edad dinámicamente
+            $edad = $paciente->fecha_nacimiento ? \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age . ' años' : 'No registrada';
+
+            // 1. Construimos una ficha técnica CRUDA (sin adornos)
+            $fichaCientifica = "INSTRUCCIÓN: Genera un resumen clínico ejecutivo. \n";
+            $fichaCientifica .= "DATOS PERSONALES: \n";
+            $fichaCientifica .= "- Nombre: {$paciente->usuario->nombre} {$paciente->usuario->apellido} \n";
+            $fichaCientifica .= "- Edad: {$edad} \n";
+            $fichaCientifica .= "- Cédula: {$paciente->cedula} \n";
+            $fichaCientifica .= "- Tipo de Sangre: {$paciente->tipo_sangre} \n\n";
+
+            $fichaCientifica .= "ANTECEDENTES: \n";
+            $fichaCientifica .= "- Alergias: " . ($paciente->alergias->pluck('nombre')->implode(', ') ?: 'Ninguna registrada') . " \n";
+            $fichaCientifica .= "- Enfermedades Crónicas: " . ($paciente->enfermedades->pluck('nombre')->implode(', ') ?: 'Ninguna registrada') . " \n\n";
+
+            $fichaCientifica .= "HISTORIAL DE CONSULTAS: \n";
+            if ($paciente->consultas->isEmpty()) {
+                $fichaCientifica .= "- Sin registros de consultas previas.";
+            } else {
+                foreach ($paciente->consultas as $c) {
+                    $fecha = $c->cita ? $c->cita->fecha : 'N/A';
+                    $fichaCientifica .= "* Fecha: {$fecha} | Dx: {$c->diagnostico} | Tto: {$c->prescripcion} \n";
+                }
+            }
+
+            // 2. Le pedimos que SEA BREVE Y MÉDICO
+            $instruccionFinal = "Analiza los datos anteriores. Si no hay consultas, enfócate en los antecedentes y datos personales. No saludes, no digas 'Soy el asistente virtual', solo entrega el resumen médico estructurado.";
+
+            // Enviar a Render
+            $response = \Illuminate\Support\Facades\Http::post(env('CHATBOT_API_URL'), [
+                'mensaje' => $fichaCientifica . "\n\n" . $instruccionFinal,
+                'session_id' => 'expediente_' . $id 
             ]);
+
+            if ($response->successful()) {
+                return response()->json(['resumen' => $response->json()['respuesta']]);
+            }
+
+            return response()->json(['resumen' => 'Servidor ocupado, reintente en breve.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // 3. Construcción del historial para la IA
-        $historialTexto = "";
-        foreach ($paciente->consultas as $c) {
-            $fecha = $c->cita ? $c->cita->fecha : 'N/A';
-            $historialTexto .= "Fecha: {$fecha}, Diagnóstico: {$c->diagnostico}, Receta: {$c->prescripcion}. \n";
-        }
-
-        // 4. Definición del PROMPT
-        $prompt = "Eres un asistente médico experto de la Clínica El Buen Pastor. Analiza el historial del paciente {$paciente->usuario->nombre} y genera un resumen profesional con: Estado actual, patrones detectados y recomendaciones. \n\n Historial:\n" . $historialTexto;
-
-        // 5. CONFIGURACIÓN SSL Y LLAMADA (Solución al error anterior de cURL 60)
-        // Usamos el cliente de Guzzle directamente para saltar la verificación SSL solo en local
-        $result = \Gemini\Laravel\Facades\Gemini::geminiPro()
-            ->generateContent($prompt);
-        
-        return response()->json(['resumen' => $result->text()]);
-
-    } catch (\Exception $e) {
-        // Si hay error de conexión o de API, aquí lo veremos
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 }

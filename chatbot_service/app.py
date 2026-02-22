@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 
 # 🔐 API KEY (luego pásala a variable de entorno)
-client = genai.Client(api_key="AIzaSyAvW4AjKXrPBgKYYUED7sKwQQWHqIJqTzQ")
+client = genai.Client(api_key="AIzaSyAdtTMmSKyAQ4x3LFkf5gP7rkhBXiGxBBY")
 
 MODEL_NAME = "gemini-2.5-flash"
 
@@ -411,15 +411,45 @@ def generar_respuesta(mensaje_usuario):
 def chat():
 
     data = request.get_json()
-
-    print("JSON DATA:", data)
-
     if not data:
         return jsonify({"respuesta": "Error recibiendo datos."})
 
+    # 1. EXTRAER Y NORMALIZAR
     session_id = data.get("session_id")
     mensaje = data.get("mensaje", "").strip()
     mensaje_normalizado = normalizar(mensaje)
+
+    # ==============================================================
+    # RESUMEN DE IA (EXPEDIENTES)
+    # ==============================================================
+    if "expediente" in str(session_id).lower() or "instruccion" in mensaje_normalizado.lower():
+        try:
+            # Usamos el CLIENTE y el MODEL_NAME que ya tienes definidos arriba
+            instruccion_prioritaria = (
+            "Actúa como un médico especialista de la Clínica El Buen Pastor. "
+            "Tu objetivo es redactar un 'Resumen Clínico Narrativo' que sea humano, fluido y altamente profesional. "
+            "Sigue estrictamente estas reglas de estilo: \n"
+            "1. ESTRUCTURA: Usa párrafos cortos y bien definidos. Comienza con una 'Presentación del Paciente', sigue con 'Antecedentes y Alergias', y termina con un 'Análisis del Historial'. \n"
+            "2. LENGUAJE: No uses asteriscos (**) ni viñetas. Escribe de forma redactada, por ejemplo: 'Se atiende a la paciente Marina Castillo, de 25 años de edad...'. \n"
+            "3. PERSONALIZACIÓN: Si el paciente tiene enfermedades como Diabetes o Hipertensión, relaciónalas brevemente con la importancia de su seguimiento. \n"
+            "4. AUSENCIA DE DATOS: Si no hay consultas, redacta: 'A la fecha, el sistema no registra intervenciones clínicas previas, manteniendo un expediente preventivo'. \n"
+            "5. PROHIBICIÓN: No saludes ni te presentes. Empieza directamente con el título: RESUMEN CLÍNICO - PACIENTE [NOMBRE]."
+        )
+            prompt_final = f"{instruccion_prioritaria}\n\n{mensaje}"
+            
+            # Así se llama a la nueva librería que instalaste:
+            response = client.models.generate_content(
+                model=MODEL_NAME, 
+                contents=prompt_final
+            )
+            
+            # Retornamos el texto y cortamos el flujo para evitar el saludo del bot
+            return jsonify({"respuesta": response.text})
+            
+        except Exception as e:
+            print(f"Error detallado en Gemini: {str(e)}")
+            return jsonify({"respuesta": f"Error al generar resumen clínico: {str(e)}"})
+    # ==============================================================
 
     if not session_id:
         return jsonify({"respuesta": "Error de sesión."})
@@ -432,7 +462,7 @@ def chat():
             "medico_id": None,
             "fecha": None
         }
-
+    print("JSON DATA:", data)
     estado = sesiones[session_id]["estado"]
 
     # ===== ESTADO INICIO =====

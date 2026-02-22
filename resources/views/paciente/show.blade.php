@@ -183,10 +183,19 @@
         $.ajax({
             url: "{{ route('paciente.resumen.ia', $paciente->id) }}",
             method: 'GET',
-            success: function(response) {
-                contenedor.html('<div class="small">' + response.resumen.replace(/\n/g, '<br>') + '</div>');
-                btn.html('Regenerar').prop('disabled', false);
-            },
+        success: function(response) {
+            // Limpiamos el texto de posibles asteriscos residuales que la IA pueda enviar
+            let textoLimpio = response.resumen.replace(/\*\*/g, ''); 
+            
+            contenedor.hide().html(
+                '<div class="medical-report" style="color: #333; line-height: 1.8; text-align: justify; font-family: sans-serif font-size: 0.65rem;">' + 
+                '<h6 class="text-purple-custom font-weight-bold mb-3"><i class="fas fa-file-medical-alt"></i> Informe Generado</h6>' +
+                textoLimpio.replace(/\n/g, '<br>') + 
+                '</div>'
+            ).fadeIn();
+            
+            btn.html('<i class="fas fa-sync-alt"></i> Regenerar').prop('disabled', false);
+        },
             error: function() {
                 contenedor.html('<p class="text-danger small">Error al conectar con Gemini. Intente más tarde.</p>');
                 btn.html('Generar').prop('disabled', false);

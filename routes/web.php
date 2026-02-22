@@ -42,7 +42,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/paciente/{paciente}/resumen-ia', [PacienteController::class, 'generarResumenIA'])->name('paciente.resumen.ia');
     
     // Rutas para la generación de PDFs
-   // Y cámbiala por esta:
     Route::get('/consulta/{id}/descargar-receta', [ConsultaController::class, 'descargarReceta'])->name('consulta.descargar_receta');
     Route::get('/consulta/{id}/pdf_receta', [ConsultaController::class, 'pdfCompleto'])->name('consulta.pdf_receta');
 });
