@@ -21,6 +21,11 @@ public function index()
     $data = [];
     $hoy = Carbon::today();
 
+    // app/Http/Controllers/DashboardController.php
+$data['notificaciones_count'] = \App\Models\Usuario::where('rol_id', 3)
+    ->whereDoesntHave('paciente') 
+    ->count();
+
     // --- 1. LÓGICA PARA ADMINISTRADOR ---
     if ($user->rol_id == 1) { 
         $data['totalPacientes'] = Paciente::count();

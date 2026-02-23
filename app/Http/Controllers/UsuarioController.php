@@ -19,16 +19,24 @@ class UsuarioController extends Controller
     {
         $user = Auth::user();
 
-        // FILTRO: Si es Paciente (rol 3) O Doctor (rol 2), solo se ven a sí mismos
-        if ($user->rol_id == 3 || $user->rol_id == 2) {
-            $usuarios = Usuario::with('role')->where('id', $user->id)->paginate();
-        } else {
-            // Solo el Administrador (rol 1) ve a todos los usuarios
-            $usuarios = Usuario::with('role')->paginate();
-        }
+    // LÓGICA PARA EL POP-UP: Si se solicita ver usuarios sin expediente
+    if ($request->has('sin_expediente') && $user->rol_id == 1) {
+        $usuarios = Usuario::with('role')
+            ->where('rol_id', 3)
+            ->whereDoesntHave('paciente') // Filtra usuarios que NO existen en la tabla pacientes
+            ->paginate();
+    } 
+    // FILTRO: Si es Paciente (rol 3) O Doctor (rol 2), solo se ven a sí mismos
+    elseif ($user->rol_id == 3 || $user->rol_id == 2) {
+        $usuarios = Usuario::with('role')->where('id', $user->id)->paginate();
+    } 
+    else {
+        // Solo el Administrador (rol 1) ve a todos los usuarios
+        $usuarios = Usuario::with('role')->paginate();
+    }
 
-        return view('usuario.index', compact('usuarios'))
-            ->with('i', ($request->input('page', 1) - 1) * $usuarios->perPage());
+    return view('usuario.index', compact('usuarios'))
+        ->with('i', ($request->input('page', 1) - 1) * $usuarios->perPage());
     }
     public function create(): View
     {
