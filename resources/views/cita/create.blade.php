@@ -71,6 +71,21 @@ $(document).ready(function() {
         });
     };
 
+    // Verificamos si ya existe un ID de paciente (esto pasará con el paciente logueado)
+    let pacienteIdExistente = $('#paciente_id_hidden').val();
+
+    if (pacienteIdExistente && pacienteIdExistente !== "") {
+        // Quitamos el atributo 'disabled' y la clase de fondo gris
+        $('.bloqueable').removeAttr('disabled').removeClass('bg-disabled');
+        
+        // Si tienes inputs de lectura que deban habilitarse, usa esto:
+        $('.bloqueable').prop('readonly', false);
+        
+        // Ejecutamos la validación de disponibilidad por si ya hay datos cargados
+        $('#fecha').trigger('change'); 
+    }
+
+
 // 2. LÓGICA DEL BUSCADOR DE CÉDULA
 $('#btn_consultar').on('click', function() {
     let $btn = $(this); // <--- DEFINIMOS LA VARIABLE AQUÍ
@@ -178,17 +193,23 @@ $('#btn_consultar').on('click', function() {
     });
 
     // 5. DISPONIBILIDAD DEL MÉDICO
-    $('#fecha, #hora, #medico_id_select').on('change', function() {
+    $('#fecha, #hora, #medico_id_select, #paciente_id').on('change', function() {
         let fecha = $('#fecha').val();
         let hora = $('#hora').val();
         let medico_id = $('#medico_id_select').val();
+        let paciente_id = $('#paciente_id_hidden').val(); // Asegúrate de tener este ID en tu form
 
         if (fecha && hora && medico_id) {
-            $.get('/citas/verificar-disponibilidad', { fecha, hora, medico_id })
+            $.get('/citas/verificar-disponibilidad', { fecha, hora, medico_id, paciente_id })
                 .done(function(response) {
                     if (!response.disponible) {
-                        toast('error', 'Médico Ocupado', 'El médico seleccionado ya tiene una cita a esa hora. Por favor, elija otro horario.');
-                        $('#hora').val('');
+                        let titulo = response.medico_ocupado ? 'Médico Ocupado' : 'Paciente Ocupado';
+                        let mensaje = response.medico_ocupado 
+                            ? 'El médico seleccionado ya tiene una cita a esa hora.' 
+                            : 'Usted ya tiene otra cita agendada para este mismo día y hora.';
+                        
+                        toast('error', titulo, mensaje);
+                        $('#hora').val(''); // Limpia el campo
                     }
                 });
         }

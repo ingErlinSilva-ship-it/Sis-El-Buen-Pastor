@@ -55,46 +55,67 @@
 
                 <div class="card-body p-4">
                     
-                    {{-- SECCIÓN 1: IDENTIFICACIÓN DEL PACIENTE --}}
-                    <div class="mb-5">
-                        <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.75rem; color: {{ $temaColor }}; letter-spacing: 1px;">
-                            <i class="fas fa-id-card-alt mr-1"></i> 1. Verificación del Paciente
-                        </h6>
-                        
-                        <div class="form-group mb-0 p-4 bg-light shadow-sm" style="border-radius: 12px; border-left: 5px solid {{ $temaColor }};">
-                            <label class="small font-weight-bold text-dark">Buscar por Cédula</label>
-                            <div class="input-group">
-                                <input type="text" id="buscar_cedula" class="form-control border-right-0 shadow-none @if($esVisualizacion || $esAtencion) bg-disabled @endif" placeholder="001-000000-0000A" style="border-radius: 8px 0 0 8px;" @if($esVisualizacion || $esAtencion) readonly @endif>
-                                <div class="input-group-append">
-                                    <button class="btn btn-info-invert px-4 shadow-sm" type="button" id="btn_consultar" @if($esVisualizacion || $esAtencion) disabled @endif style="border-radius: 0 8px 8px 0; font-weight: bold;">
-                                        <i class="fa fa-search mr-1"></i> Buscar
-                                    </button>
+                   {{-- SECCIÓN 1: IDENTIFICACIÓN DEL PACIENTE --}}
+                    @if(Auth::user()->rol_id == 3)
+                        {{-- VISTA PARA EL PACIENTE LOGUEADO: Solo ve sus datos, no puede buscar a otros --}}
+                        <div class="p-4 mb-5 bg-light border shadow-sm" style="border-radius: 12px; border-left: 5px solid {{ $temaColor }};">
+                            <label class="font-weight-bold small mb-3" style="color: {{ $temaColor }};">
+                                <i class="fas fa-user-check mr-1"></i> TUS DATOS PARA LA CITA
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted text-uppercase font-weight-bold">Nombre Completo</small>
+                                    <p class="h5 text-dark">{{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</p>
+                                </div>
+                                {{-- Input oculto con SU paciente_id --}}
+                                <input type="hidden" name="paciente_id" id="paciente_id_hidden" 
+                                    value="{{ \Illuminate\Support\Facades\DB::table('pacientes')->where('usuario_id', Auth::id())->value('id') }}">
+                            </div>
+                        </div>
+                    @else
+                        {{-- VISTA PARA ADMIN Y MÉDICO: Pueden buscar a cualquier paciente --}}
+                        <div class="mb-5">
+                            <h6 class="text-uppercase font-weight-bold mb-3" style="font-size: 0.75rem; color: {{ $temaColor }}; letter-spacing: 1px;">
+                                <i class="fas fa-id-card-alt mr-1"></i> 1. Verificación del Paciente
+                            </h6>
+                            
+                            <div class="form-group mb-0 p-4 bg-light shadow-sm" style="border-radius: 12px; border-left: 5px solid {{ $temaColor }};">
+                                <label class="small font-weight-bold text-dark">Buscar por Cédula</label>
+                                <div class="input-group">
+                                    <input type="text" id="buscar_cedula" class="form-control border-right-0 shadow-none @if($esVisualizacion || $esAtencion) bg-disabled @endif" placeholder="001-000000-0000A" style="border-radius: 8px 0 0 8px;" @if($esVisualizacion || $esAtencion) readonly @endif>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-info-invert px-4 shadow-sm" type="button" id="btn_consultar" @if($esVisualizacion || $esAtencion) disabled @endif style="border-radius: 0 8px 8px 0; font-weight: bold;">
+                                            <i class="fa fa-search mr-1"></i> Buscar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <input type="hidden" name="cedula_buscada" id="cedula_buscada">
+                        <input type="hidden" name="cedula_buscada" id="cedula_buscada">
 
-                    {{-- BLOQUE: PACIENTE ENCONTRADO --}}
-                    <div id="seccion_paciente_existente" style="display: none; border-radius: 12px; border-left: 5px solid {{ $temaColor }};" 
-                        class="p-4 mb-5 bg-light border shadow-sm animate__animated animate__fadeIn">
-                        <label class="font-weight-bold small mb-3" style="color: {{ $temaColor }};">
-                            <i class="fas fa-check-circle mr-1"></i> PACIENTE SELECCIONADO
-                        </label>
+                        {{-- BLOQUE: PACIENTE ENCONTRADO (Solo para Admin/Médico) --}}
+                        <div id="seccion_paciente_existente" style="display: none; border-radius: 12px; border-left: 5px solid {{ $temaColor }};" 
+                            class="p-4 mb-5 bg-light border shadow-sm animate__animated animate__fadeIn">
+                            <label class="font-weight-bold small mb-3" style="color: {{ $temaColor }};">
+                                <i class="fas fa-check-circle mr-1"></i> PACIENTE SELECCIONADO
+                            </label>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <small class="text-muted text-uppercase font-weight-bold">Nombre</small>
-                                <input type="text" id="nombre_paciente_ex" class="form-control shadow-sm font-weight text-dark" readonly style="border-radius: 8px;">
-                            </div>
-                            <div class="col-md-6">
-                                <small class="text-muted text-uppercase font-weight-bold">Apellido</small>
-                                <input type="text" id="apellido_paciente_ex" class="form-control shadow-sm font-weight text-dark" readonly style="border-radius: 8px;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted text-uppercase font-weight-bold">Nombre</small>
+                                    <input type="text" id="nombre_paciente_ex" class="form-control shadow-sm font-weight text-dark" readonly style="border-radius: 8px;">
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted text-uppercase font-weight-bold">Apellido</small>
+                                    <input type="text" id="apellido_paciente_ex" class="form-control shadow-sm font-weight text-dark" readonly style="border-radius: 8px;">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <input type="hidden" name="paciente_id" id="paciente_id_hidden" value="{{ $cita->paciente_id ?? '' }}">
+                        
+                        {{-- Input oculto para Admin/Médico --}}
+                        <input type="hidden" name="paciente_id" id="paciente_id_hidden" value="{{ $cita->paciente_id ?? '' }}">
+                    @endif
 
                     {{-- BLOQUE: REGISTRO RÁPIDO DE NUEVO PACIENTE (Aparece si no existe) --}}
                     <div id="seccion_registro_nuevo" style="display: none; border-radius: 12px; border-left: 5px solid #28a745;" 
@@ -172,8 +193,16 @@
 
                             <div class="col-md-4 form-group mb-4">
                                 <label class="small font-weight-bold text-muted text-uppercase">Hora</label>
-                                <input type="time" name="hora" id="hora" class="form-control shadow-sm bloqueable bg-disabled @error('hora') is-invalid @enderror" 
-                                value="{{ old('hora', $cita?->hora) }}" disabled style="border-radius: 8px;">
+                                <input type="time" name="hora" id="hora" 
+                                    class="form-control shadow-sm bloqueable bg-disabled @error('hora') is-invalid @enderror" 
+                                    value="{{ old('hora', $cita?->hora) }}" 
+                                    disabled 
+                                    style="border-radius: 8px;">
+                                @error('hora')
+                                    <div class="invalid-feedback d-block" style="font-size: 0.85rem;">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
                             </div>
 
                             <div class="col-md-4 form-group mb-4">
@@ -185,10 +214,15 @@
                             <div class="col-md-6 form-group mb-4">
                                 <label class="small font-weight-bold text-muted text-uppercase">Estado Inicial</label>
                                 <select name="estado" class="form-control shadow-sm bloqueable" disabled style="border-radius: 8px;">
-                                    <option value="pendiente" {{ old('estado', $cita?->estado) == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                    <option value="confirmada" {{ old('estado', $cita?->estado) == 'confirmada' ? 'selected' : '' }}>Confirmada</option>
-                                    <option value="asistida" {{ old('estado', $cita?->estado) == 'asistida' ? 'selected' : '' }}>Finalizada</option>
-                                    <option value="cancelada" {{ old('estado', $cita?->estado) == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
+                                    @if(Auth::user()->rol_id == 3) {{-- Si es Paciente --}}
+                                            <option value="1" {{ old('estado', $cita->estado) == 1 ? 'selected' : '' }}>Pendiente</option>
+                                            <option value="2" {{ old('estado', $cita->estado) == 2 ? 'selected' : '' }}>Confirmada</option>
+                                        @else {{-- Si es Admin (1) o Médico (2) --}}
+                                            <option value="1" {{ old('estado', $cita->estado) == 1 ? 'selected' : '' }}>Pendiente</option>
+                                            <option value="2" {{ old('estado', $cita->estado) == 2 ? 'selected' : '' }}>Confirmada</option>
+                                            <option value="3" {{ old('estado', $cita->estado) == 3 ? 'selected' : '' }}>Finalizada</option>
+                                            <option value="4" {{ old('estado', $cita->estado) == 4 ? 'selected' : '' }}>Cancelada</option>
+                                        @endif
                                 </select>
                             </div>
 
