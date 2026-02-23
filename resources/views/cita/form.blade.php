@@ -123,7 +123,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text bg-white border-right-0"><i class="fas fa-envelope {{ $esEdicion ? 'text-success' : 'text-primary' }}"></i></span>
                                         </div>
-                                        <input type="email" name="email" id="email_paciente" class="form-control border-left-0 @error('email') is-invalid @enderror" value="{{ old('email', $cita?->email) }}" required placeholder="ejemplo@gmail.com">
+                                        <input type="email" name="email" id="email_paciente" class="form-control border-left-0 @error('email') is-invalid @enderror" value="{{ old('email', $cita?->email) }}"  placeholder="ejemplo@gmail.com">
                                         @error('email')
                                             <span class="invalid-feedback" style="display: block;">
                                                 <strong>{{ $message }}</strong>
