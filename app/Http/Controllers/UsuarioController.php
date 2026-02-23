@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;// ¡IMPORTANTE para la contraseña!
 use Illuminate\Support\Facades\Auth;// Necesario para Auth::user()
 
+
 class UsuarioController extends Controller
 {
     public function index(Request $request): View

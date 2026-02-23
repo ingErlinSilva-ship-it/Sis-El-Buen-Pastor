@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne; // Importar la clase para la relación uno a uno
 
@@ -28,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne; // Importar la clase para la 
  */
 class Usuario extends Model
 {
-    
+    use Notifiable;
     protected $perPage = 20;
 
     /**

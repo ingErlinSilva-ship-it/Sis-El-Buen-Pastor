@@ -7,6 +7,7 @@ from mysql.connector import Error
 import os
 from datetime import datetime, timedelta
 import bcrypt
+from dotenv import load_dotenv
 
 
 # ==============================
@@ -15,9 +16,13 @@ import bcrypt
 
 app = Flask(__name__)
 CORS(app)
+# Carga las variables del archivo .env si existe (solo para local)
+load_dotenv()
 
-# 🔐 API KEY (luego pásala a variable de entorno)
-client = genai.Client(api_key="AIzaSyAdtTMmSKyAQ4x3LFkf5gP7rkhBXiGxBBY")
+# Lee la llave desde las variables de entorno del sistema
+API_KEY = os.environ.get("GEMINI_API_KEY")
+
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 MODEL_NAME = "gemini-2.5-flash"
 
