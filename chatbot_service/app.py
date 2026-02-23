@@ -31,10 +31,10 @@ MODEL_NAME = "gemini-2.5-flash"
 # ==============================
 
 db_config = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME'),
+    'host': os.getenv('DB_HOST', '127.0.0.1'),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD', ''),
+    'database': os.getenv('DB_NAME', 'clinicadb'),
     'port': 3306
 }
 
@@ -220,6 +220,21 @@ def consultar_medico_por_especialidad(nombre_especialidad):
     finally:
         if connection.is_connected():
             connection.close()
+
+def paciente_ya_tiene_cita(paciente_id, fecha, hora):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        # Buscamos cualquier cita para ese paciente en esa fecha y hora
+        query = "SELECT id FROM citas WHERE paciente_id = %s AND fecha = %s AND hora = %s LIMIT 1"
+        cursor.execute(query, (paciente_id, fecha, hora))
+        resultado = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return resultado is not None
+    except Error as e:
+        print(f"Error verificando disponibilidad del paciente: {e}")
+        return False
 
 
 def guardar_cita(paciente_id, medico_id, fecha, hora, motivo):
@@ -516,21 +531,24 @@ def chat():
 
         # 🔹 SI SOLO HAY UN PACIENTE (flujo normal actual)
         if len(resultado) == 1:
-
             paciente = resultado[0]
 
             sesiones[session_id]["paciente_id"] = paciente["paciente_id"]
             sesiones[session_id]["nombre_paciente"] = f"{paciente['nombre']} {paciente['apellido']}"
+            
+            # --- LA LÍNEA QUE FALTABA ---
+            especialidades = obtener_especialidades_con_medicos() 
+            # ----------------------------
+
+            sesiones[session_id]["lista_especialidades"] = especialidades 
             sesiones[session_id]["estado"] = "esperando_especialidad"
 
-            especialidades = obtener_especialidades_con_medicos()
-            lista = "\n• ".join(especialidades)
+            # Creamos la lista numerada con emojis
+            lista_num = "\n".join([f"{i+1}️⃣ {esp}" for i, esp in enumerate(especialidades)])
 
             return jsonify({
-                "respuesta": f"😊 Hola {paciente['nombre']} {paciente['apellido']}.\n\n"
-                            f"🩺 Estas son nuestras especialidades disponibles:\n"
-                            f"• {lista}\n\n"
-                            f"Por favor escribe una exactamente como aparece."
+                "respuesta": f"😊 Perfecto, agendaremos para {sesiones[session_id]['nombre_paciente']}.\n\n"
+                             f"🩺 Selecciona el **número** de la especialidad:\n{lista_num}"
             })
 
         # 🔹 SI HAY VARIOS PACIENTES (menores del tutor)
@@ -566,13 +584,13 @@ def chat():
         sesiones[session_id]["estado"] = "esperando_especialidad"
 
         especialidades = obtener_especialidades_con_medicos()
-        lista_especialidades = "\n• ".join(especialidades)
+        sesiones[session_id]["lista_especialidades"] = especialidades
+        
+        lista_num = "\n".join([f"{i+1}️⃣ {esp}" for i, esp in enumerate(especialidades)])
 
         return jsonify({
             "respuesta": f"😊 Perfecto, agendaremos para {paciente['nombre']} {paciente['apellido']}.\n\n"
-                f"🩺 Estas son nuestras especialidades disponibles:\n"
-                f"• {lista_especialidades}\n\n"
-                f"Por favor escribe una exactamente como aparece."
+                         f"🩺 Selecciona el **número** de la especialidad:\n{lista_num}"
         })
 
     # ===== PREGUNTAR PREREGISTRO =====
@@ -672,33 +690,31 @@ def chat():
 
     # ===== ESPERANDO ESPECIALIDAD =====
     if estado == "esperando_especialidad":
+            if not mensaje.isdigit():
+                return jsonify({"respuesta": "❌ Por favor, escribe solo el número de la opción."})
 
-        especialidades = obtener_especialidades_con_medicos()
+            indice = int(mensaje) - 1
+            lista = sesiones[session_id].get("lista_especialidades", [])
 
-        if mensaje not in especialidades:
-            lista = "\n• ".join(especialidades)
+            if indice < 0 or indice >= len(lista):
+                return jsonify({"respuesta": "❌ Número fuera de rango. Elige un número de la lista."})
+
+            especialidad_elegida = lista[indice]
+            sesiones[session_id]["especialidad"] = especialidad_elegida
+
+            medico = consultar_medico_por_especialidad(especialidad_elegida)
+            
+            if not medico:
+                return jsonify({"respuesta": "❌ No hay médico disponible para esa especialidad."})
+
+            sesiones[session_id]["medico_id"] = medico["medico_id"]
+            sesiones[session_id]["nombre_medico"] = medico["nombre_completo"]
+            sesiones[session_id]["estado"] = "esperando_fecha"
+
             return jsonify({
-                "respuesta": f"❌ Especialidad no válida.\n\n"
-                            f"Disponibles:\n• {lista}\n\n"
-                            f"Escribe una exactamente como aparece."
+                "respuesta": f"👨‍⚕️ Médico disponible: {medico['nombre_completo']}\n\n"
+                            f"📅 Indícame la fecha deseada (Dia-Mes-Año).\n(No Atendemos Sábados)"
             })
-
-        sesiones[session_id]["especialidad"] = mensaje
-
-        medico = consultar_medico_por_especialidad(mensaje)
-
-        if not medico:
-            return jsonify({"respuesta": "❌ No hay médico disponible para esa especialidad."})
-
-        sesiones[session_id]["medico_id"] = medico["medico_id"]
-        sesiones[session_id]["nombre_medico"] = medico["nombre_completo"]
-        sesiones[session_id]["estado"] = "esperando_fecha"
-
-        return jsonify({
-            "respuesta": f"👨‍⚕️ Médico disponible:\n{medico['nombre_completo']}\n\n"
-                        f"📅 Indícame la fecha deseada en formato Dia-Mes-Año.\n"
-                        f"(No Atendemos Sábados)"
-        })
 
 
     # ===== ESPERANDO FECHA =====
@@ -720,35 +736,44 @@ def chat():
         if not horarios:
             return jsonify({"respuesta": "❌ No hay horarios disponibles para esa fecha."})
         
+        # Guardamos los horarios en la sesión
         sesiones[session_id]["horarios_disponibles"] = horarios
         sesiones[session_id]["estado"] = "esperando_hora"
 
-        lista = "\n".join([f"• {formatear_hora_12h(h)}" for h in horarios])
-
+        # Generamos la lista numerada
+        lista_h = "\n".join([f"{i+1}️⃣ {formatear_hora_12h(h)}" for i, h in enumerate(horarios)])
 
         return jsonify({
-            "respuesta": f"🕒 Horarios disponibles:\n{lista}\n\nEscribe la hora exacta que deseas."
+            "respuesta": f"🕒 Selecciona el **número** del horario deseado:\n\n{lista_h}"
         })
     
     # ===== ESPERANDO HORA =====
     if estado == "esperando_hora":
+            if not mensaje.isdigit():
+                return jsonify({"respuesta": "❌ Escribe solo el número del horario."})
 
-        hora_normalizada = normalizar_hora_usuario(
-            mensaje,
-            sesiones[session_id]["fecha"]
-        )
+            indice = int(mensaje) - 1
+            lista_h = sesiones[session_id].get("horarios_disponibles", [])
 
+            if indice < 0 or indice >= len(lista_h):
+                return jsonify({"respuesta": "❌ Selección inválida. Elige un número de la lista."})
 
-        if not hora_normalizada:
-            return jsonify({"respuesta": "❌ Formato de hora inválido."})
+            hora_seleccionada = lista_h[indice]
+            paciente_id = sesiones[session_id]["paciente_id"]
+            fecha = sesiones[session_id]["fecha"]
 
-        if hora_normalizada not in sesiones[session_id]["horarios_disponibles"]:
-            return jsonify({"respuesta": "❌ Hora no disponible. Elige una de la lista."})
+            # --- NUEVA VALIDACIÓN ---
+            if paciente_ya_tiene_cita(paciente_id, fecha, hora_seleccionada):
+                return jsonify({
+                    "respuesta": "⚠️ Lo sentimos, ya tienes otra cita agendada para este mismo día y hora. "
+                                "Por favor, selecciona un horario diferente."
+                })
+            # ------------------------
 
-        sesiones[session_id]["hora"] = hora_normalizada
-        sesiones[session_id]["estado"] = "esperando_motivo"
-
-        return jsonify({"respuesta": "📝 Indícame el motivo de la cita."})
+            sesiones[session_id]["hora"] = hora_seleccionada
+            sesiones[session_id]["estado"] = "esperando_motivo"
+            return jsonify({"respuesta": "📝 Indícame el motivo de la cita."})
+        
 
     # ===== ESPERANDO MOTIVO =====
     if estado == "esperando_motivo":

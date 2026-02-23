@@ -141,8 +141,8 @@
                                             title="Ver Expediente"><i class="fas fa-eye"></i>
                                         </a>
             
-                                        {{-- Editar: Doctores, Admin y el propio Paciente --}}
-                                        @if(Auth::user()->rol_id != 3 || $paciente->usuario_id == Auth::id())
+                                        {{-- Editar: Doctores, Admin--}}
+                                        @if(Auth::user()->rol_id != 3 )
                                             <a class="btn btn-sm btn-invert-success mx-1" href="{{ route('paciente.edit', $paciente->id) }}"
                                                 title="Editar Datos Personales">
                                                     <i class="fa fa-edit"></i>

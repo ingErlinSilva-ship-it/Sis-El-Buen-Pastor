@@ -113,113 +113,143 @@ class CitaController extends Controller
 
     public function verificarDisponibilidad(Request $request)
     {
-        $query = Cita::where('medico_id', $request->medico_id)
+        // 1. Verificar si el MÉDICO está ocupado
+        $medicoOcupado = Cita::where('medico_id', $request->medico_id)
             ->where('fecha', $request->fecha)
-            ->where('hora', $request->hora);
+            ->where('hora', $request->hora)
+            ->when($request->cita_id, function($q) use ($request) {
+                return $q->where('id', '!=', $request->cita_id);
+            })
+            ->exists();
 
-        // Si recibimos un ID, lo excluimos de la búsqueda
-        if ($request->has('cita_id') && $request->cita_id != '') {
-            $query->where('id', '!=', $request->cita_id);
+        // 2. Verificar si el PACIENTE está ocupado
+        $pacienteOcupado = false;
+        if ($request->paciente_id) {
+            $pacienteOcupado = Cita::where('paciente_id', $request->paciente_id)
+                ->where('fecha', $request->fecha)
+                ->where('hora', $request->hora)
+                ->when($request->cita_id, function($q) use ($request) {
+                    return $q->where('id', '!=', $request->cita_id);
+                })
+                ->exists();
         }
 
-        $existe = $query->exists();
-        return response()->json(['disponible' => !$existe]);
+        return response()->json([
+            'medico_ocupado' => $medicoOcupado,
+            'paciente_ocupado' => $pacienteOcupado,
+            'disponible' => (!$medicoOcupado && !$pacienteOcupado)
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    // VALIDACIÓN DINÁMICA DEL EMAIL
-    $request->validate([
-        'email' => $request->paciente_id
-            ? 'nullable|email'
-            : 'required|email|unique:usuarios,email'
-    ]);
-
-    // 1. PRE-VALIDACIÓN DE HORARIOS
-    $fecha = \Carbon\Carbon::parse($request->fecha);
-    $hora = $request->hora;
-    $diaSemana = $fecha->dayOfWeek;
-
-    if ($diaSemana == \Carbon\Carbon::SATURDAY) {
-        return back()->withErrors(['fecha' => 'La clínica no atiende los días sábados.'])->withInput();
-    }
-
-    if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
-        if ($hora < "13:30" || $hora > "17:30") {
-            return back()->withErrors(['hora' => 'Horario de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
-        }
-    }
-
-    if ($diaSemana == \Carbon\Carbon::SUNDAY) {
-        if ($hora < "08:00" || $hora > "11:30") {
-            return back()->withErrors(['hora' => 'Los Domingos la atención es solo por la mañana (08:00 - 12:00).'])->withInput();
-        }
-    }
-
-    return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $hora) {
-
-        $citaOcupada = Cita::where('medico_id', $request->medico_id)
-            ->where('fecha', $request->fecha)
-            ->where('hora', $hora)
-            ->exists();
-
-        if ($citaOcupada) {
-            return back()
-                ->withErrors(['hora' => 'El médico ya tiene una cita programada a esa hora.'])
-                ->withInput();
-        }
-
-        $pacienteId = $request->paciente_id;
-
-        if (!$pacienteId) {
-            $usuario = Usuario::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'email' => $request->email,
-                'celular' => $request->celular,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->celular),
-                'rol_id' => 3,
-                'estado' => 1
-            ]);
-
-            $nuevoPaciente = Paciente::create([
-                'usuario_id' => $usuario->id,
-                'cedula' => $request->cedula_buscada,
-                'fecha_nacimiento' => null,
-                'tipo_sangre' => 'No definido',
-            ]);
-
-            $pacienteId = $nuevoPaciente->id;
-        }
-
-        $cita = Cita::create([
-            'paciente_id' => $pacienteId,
-            'medico_id' => $request->medico_id,
-            'fecha' => $request->fecha,
-            'hora' => $request->hora,
-            'duracion_minutos' => $request->duracion_minutos,
-            'motivo' => $request->motivo,
-            'estado' => $request->estado,
-            'origen' => $request->origen,
+    {
+        // VALIDACIÓN DINÁMICA DEL EMAIL
+        $request->validate([
+            'email' => $request->paciente_id
+                ? 'nullable|email'
+                : 'required|email|unique:usuarios,email'
         ]);
 
-        try {
-            $cita->paciente->usuario->notify(
-                new \App\Notifications\CitaConfirmada($cita)
-            );
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(
-                'Error enviando correo de cita: ' . $e->getMessage()
-            );
+        // 1. PRE-VALIDACIÓN DE HORARIOS
+        $fecha = \Carbon\Carbon::parse($request->fecha);
+        $hora = $request->hora;
+        $diaSemana = $fecha->dayOfWeek;
+
+        if ($diaSemana == \Carbon\Carbon::SATURDAY) {
+            return back()->withErrors(['fecha' => 'La clínica no atiende los días sábados.'])->withInput();
         }
 
-        return redirect()->route('cita.index')
-            ->with('success', 'Cita Agendada Exitosamente.');
-    });
-}
+        if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
+            if ($hora < "13:30" || $hora > "17:30") {
+                return back()->withErrors(['hora' => 'Horario de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+            }
+        }
+
+        if ($diaSemana == \Carbon\Carbon::SUNDAY) {
+            if ($hora < "08:00" || $hora > "11:30") {
+                return back()->withErrors(['hora' => 'Los Domingos la atención es solo por la mañana (08:00 - 12:00).'])->withInput();
+            }
+        }
+
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $hora) {
+
+            $citaOcupada = Cita::where('medico_id', $request->medico_id)
+                ->where('fecha', $request->fecha)
+                ->where('hora', $hora)
+                ->exists();
+
+            if ($citaOcupada) {
+                return back()
+                    ->withErrors(['hora' => 'El médico ya tiene una cita programada a esa hora.'])
+                    ->withInput();
+            }
+
+            // 3. VALIDAR DISPONIBILIDAD DEL PACIENTE
+            // Solo si el paciente ya existe en el sistema
+            if ($request->paciente_id) {
+                $pacienteOcupado = Cita::where('paciente_id', $request->paciente_id)
+                    ->where('fecha', $request->fecha)
+                    ->where('hora', $hora)
+                    ->exists();
+
+                if ($pacienteOcupado) {
+                    return back()
+                        ->withErrors(['hora' => 'Usted ya tiene otra cita agendada para este mismo día y hora.'])
+                        ->withInput();
+                }
+            }
+
+            $pacienteId = $request->paciente_id;
+
+            if (!$pacienteId) {
+                $usuario = Usuario::create([
+                    'nombre' => $request->nombre,
+                    'apellido' => $request->apellido,
+                    'email' => $request->email,
+                    'celular' => $request->celular,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->celular),
+                    'rol_id' => 3,
+                    'estado' => 1
+                ]);
+
+                $nuevoPaciente = Paciente::create([
+                    'usuario_id' => $usuario->id,
+                    'cedula' => $request->cedula_buscada,
+                    'fecha_nacimiento' => null,
+                    'tipo_sangre' => 'No definido',
+                ]);
+
+                $pacienteId = $nuevoPaciente->id;
+            }
+
+            $cita = Cita::create([
+                'paciente_id' => $pacienteId,
+                'medico_id' => $request->medico_id,
+                'fecha' => $request->fecha,
+                'hora' => $request->hora,
+                'duracion_minutos' => $request->duracion_minutos,
+                'motivo' => $request->motivo,
+                'estado' => $request->estado,
+                'origen' => $request->origen,
+            ]);
+
+            try {
+                $cita->paciente->usuario->notify(
+                    new \App\Notifications\CitaConfirmada($cita)
+                );
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error(
+                    'Error enviando correo de cita: ' . $e->getMessage()
+                );
+            }
+
+            return redirect()->route('cita.index')
+                ->with('success', 'Cita Agendada Exitosamente.');
+        });
+    }
 
 
     /**
