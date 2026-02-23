@@ -224,11 +224,11 @@
                                 <i class="bi bi-activity"></i>
                             </div>
                             <h4>Holter</h4>
-                            <p>examen médico no invasivo que registra de manera continua 
+                            <p>Examen médico no invasivo que registra de manera continua 
                                 la actividad eléctrica del corazón durante 24 a 48 horas. 
                                 Permite detectar arritmias, variaciones del ritmo cardíaco 
                                 y otros problemas que podrían no presentarse durante un 
-                                electrocardiograma convencional
+                                electrocardiograma convencional.
                             </p>
                         </div>
                     </div>
