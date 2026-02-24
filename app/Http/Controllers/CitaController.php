@@ -146,64 +146,59 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
-        // VALIDACIÓN DINÁMICA DEL EMAIL
-        $request->validate([
-            'email' => $request->paciente_id
-                ? 'nullable|email'
-                : 'required|email|unique:usuarios,email'
-        ]);
+        // 1. Detección de origen (Si viene del chatbot, los datos vienen en JSON)
+        $esChatbot = $request->origen === 'chatbot';
 
-        // 1. PRE-VALIDACIÓN DE HORARIOS
-        $fecha = \Carbon\Carbon::parse($request->fecha);
+        // 2. Validación (Solo validamos email si es manual, el chatbot ya lo validó en Python)
+        if (!$esChatbot) {
+            $request->validate([
+                'email' => $request->paciente_id
+                    ? 'nullable|email'
+                    : 'required|email|unique:usuarios,email'
+            ]);
+        }
+
+        // 3. Capturamos la hora (asegurando formato HH:mm)
         $hora = $request->hora;
-        $diaSemana = $fecha->dayOfWeek;
 
-        if ($diaSemana == \Carbon\Carbon::SATURDAY) {
-            return back()->withErrors(['fecha' => 'La clínica no atiende los días sábados.'])->withInput();
-        }
+        // 4. Validaciones de Horario (Las saltamos para el chatbot porque ya las validó Gemini)
+        if (!$esChatbot) {
+            $fecha = \Carbon\Carbon::parse($request->fecha);
+            $diaSemana = $fecha->dayOfWeek;
+            if ($diaSemana == \Carbon\Carbon::SATURDAY) {
+                return back()->withErrors(['fecha' => 'La clínica no atiende los sábados.'])->withInput();
+            }
 
-        if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
-            if ($hora < "13:30" || $hora > "17:30") {
-                return back()->withErrors(['hora' => 'Horario de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+            if ($diaSemana >= \Carbon\Carbon::MONDAY && $diaSemana <= \Carbon\Carbon::FRIDAY) {
+                if ($hora < "13:30" || $hora > "17:30") {
+                    return back()->withErrors(['hora' => 'Horario de Lunes a Viernes: 01:30 PM - 06:00 PM.'])->withInput();
+                }
+            }
+
+            if ($diaSemana == \Carbon\Carbon::SUNDAY) {
+                if ($hora < "08:00" || $hora > "11:30") {
+                    return back()->withErrors(['hora' => 'Los Domingos la atención es solo por la mañana (08:00 - 12:00).'])->withInput();
+                }
             }
         }
 
-        if ($diaSemana == \Carbon\Carbon::SUNDAY) {
-            if ($hora < "08:00" || $hora > "11:30") {
-                return back()->withErrors(['hora' => 'Los Domingos la atención es solo por la mañana (08:00 - 12:00).'])->withInput();
-            }
-        }
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $hora, $esChatbot) {
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $hora) {
-
+            // 5. Verificar colisiones (Médico y Paciente)
             $citaOcupada = Cita::where('medico_id', $request->medico_id)
                 ->where('fecha', $request->fecha)
                 ->where('hora', $hora)
                 ->exists();
 
             if ($citaOcupada) {
-                return back()
-                    ->withErrors(['hora' => 'El médico ya tiene una cita programada a esa hora.'])
-                    ->withInput();
-            }
-
-            // 3. VALIDAR DISPONIBILIDAD DEL PACIENTE
-            // Solo si el paciente ya existe en el sistema
-            if ($request->paciente_id) {
-                $pacienteOcupado = Cita::where('paciente_id', $request->paciente_id)
-                    ->where('fecha', $request->fecha)
-                    ->where('hora', $hora)
-                    ->exists();
-
-                if ($pacienteOcupado) {
-                    return back()
-                        ->withErrors(['hora' => 'Usted ya tiene otra cita agendada para este mismo día y hora.'])
-                        ->withInput();
-                }
+                return $esChatbot 
+                    ? response()->json(['status' => 'error', 'message' => 'Médico ocupado'], 422)
+                    : back()->withErrors(['hora' => 'El médico ya tiene una cita ocupada.'])->withInput();
             }
 
             $pacienteId = $request->paciente_id;
 
+            // 6. CREACIÓN DE USUARIO NUEVO (Aquí se dispara el correo de bienvenida)
             if (!$pacienteId) {
                 $usuario = Usuario::create([
                     'nombre' => $request->nombre,
@@ -223,34 +218,46 @@ class CitaController extends Controller
                 ]);
 
                 $pacienteId = $nuevoPaciente->id;
+
+                // NOTIFICACIÓN 1: BIENVENIDA (Debes crear esta clase después)
+                try {
+                    $usuario->notify(new \App\Notifications\NuevoUsuarioAcceso($usuario, $request->celular));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error correo bienvenida: ' . $e->getMessage());
+                }
             }
 
+            // 7. CREACIÓN DE LA CITA
             $cita = Cita::create([
                 'paciente_id' => $pacienteId,
                 'medico_id' => $request->medico_id,
                 'fecha' => $request->fecha,
                 'hora' => $request->hora,
-                'duracion_minutos' => $request->duracion_minutos,
+                'duracion_minutos' => $request->duracion_minutos ?? 30,
                 'motivo' => $request->motivo,
-                'estado' => $request->estado,
-                'origen' => $request->origen,
+                'estado' => $request->estado ?? 'confirmada',
+                'origen' => $request->origen ?? 'web',
             ]);
 
+            // NOTIFICACIÓN 2: RESUMEN DE CITA
             try {
-                $cita->paciente->usuario->notify(
-                    new \App\Notifications\CitaConfirmada($cita)
-                );
+                $cita->paciente->usuario->notify(new \App\Notifications\CitaConfirmada($cita));
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error(
-                    'Error enviando correo de cita: ' . $e->getMessage()
-                );
+                \Illuminate\Support\Facades\Log::error('Error correo cita: ' . $e->getMessage());
             }
 
-            return redirect()->route('cita.index')
-                ->with('success', 'Cita Agendada Exitosamente.');
+            // 8. RESPUESTA FINAL
+            if ($esChatbot) {
+                return response()->json([
+                    'status' => 'success', 
+                    'message' => 'Cita creada exitosamente',
+                    'paciente' => $cita->paciente->usuario->nombre
+                ]);
+            }
+
+            return redirect()->route('cita.index')->with('success', 'Cita Agendada Exitosamente.');
         });
     }
-
 
     /**
      * Display the specified resource.

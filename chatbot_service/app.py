@@ -8,6 +8,7 @@ import os
 from datetime import datetime, timedelta
 import bcrypt
 from dotenv import load_dotenv
+import requests
 
 
 # ==============================
@@ -18,14 +19,13 @@ app = Flask(__name__)
 CORS(app)
 # Carga las variables del archivo .env si existe (solo para local)
 load_dotenv()
-
+BASE_URL = os.getenv('API_BASE_URL', 'http://127.0.0.1:8001')
 # Lee la llave desde las variables de entorno del sistema
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 MODEL_NAME = "gemini-2.5-flash"
-
 # ==============================
 # 2. BASE DE DATOS
 # ==============================
@@ -237,25 +237,32 @@ def paciente_ya_tiene_cita(paciente_id, fecha, hora):
         return False
 
 
-def guardar_cita(paciente_id, medico_id, fecha, hora, motivo):
+def guardar_cita(paciente_id, medico_id, fecha, hora, motivo, session_id):
+    # Recuperamos datos extras de la sesión por si es usuario nuevo
+    sesion = sesiones.get(session_id, {})
+    
+    # URL de tu proyecto Laravel (Cámbiala cuando subas a producción)
+    url = f"{BASE_URL}/api/citas/chatbot"
+    
+    payload = {
+        "origen": "chatbot",
+        "paciente_id": paciente_id,
+        "medico_id": medico_id,
+        "fecha": str(fecha),
+        "hora": hora,
+        "motivo": motivo,
+        "nombre": sesion.get("preregistro_nombre"),
+        "apellido": sesion.get("preregistro_apellido"),
+        "email": sesion.get("preregistro_email"),
+        "celular": sesion.get("preregistro_celular"),
+        "cedula_buscada": sesion.get("cedula_buscada") 
+    }
+
     try:
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor()
-
-        query = """
-            INSERT INTO citas 
-            (paciente_id, medico_id, fecha, hora, duracion_minutos, motivo, estado, origen, created_at, updated_at)
-            VALUES (%s, %s, %s, %s, 30, %s, 'confirmada', 'chatbot', NOW(), NOW())
-        """
-
-        cursor.execute(query, (paciente_id, medico_id, fecha, hora, motivo))
-        connection.commit()
-        connection.close()
-
-        return True
-
-    except Error as e:
-        print("Error al guardar cita:", e)
+        response = requests.post(url, json=payload)
+        return response.status_code == 200
+    except Exception as e:
+        print(f"Error llamando a la API de Laravel: {e}")
         return False
 
 def validar_fecha(fecha_str):
@@ -822,36 +829,31 @@ def chat():
             })
 
 
-        guardar_cita(
+        exito = guardar_cita(
             sesiones[session_id]["paciente_id"],
             sesiones[session_id]["medico_id"],
             sesiones[session_id]["fecha"],
             sesiones[session_id]["hora"],
-            sesiones[session_id]["motivo"]
+            sesiones[session_id]["motivo"],
+            session_id
         )
 
-        sesiones[session_id]["estado"] = "post_confirmacion"
+        if exito:
+            sesiones[session_id]["estado"] = "post_confirmacion"
+            mensaje_final = "✅ Tu cita fue guardada exitosamente en el sistema.\n\n"
 
-        mensaje_final = "✅ Tu cita fue guardada exitosamente en el sistema.\n\n"
+            # 🔐 Si es usuario nuevo
+            if sesiones[session_id].get("usuario_nuevo"):
+                mensaje_final += (
+                    "🔐 **Tu cuenta ha sido creada exitosamente en nuestro sistema.**\n\n"
+                    f"**Usuario:** {sesiones[session_id]['email_registrado']}\n\n"
+                    "Hemos enviado un Correo con tus credenciales.\n"
+                )
+                sesiones[session_id]["usuario_nuevo"] = False
 
-        # 🔐 Si es usuario nuevo
-        if sesiones[session_id].get("usuario_nuevo"):
+            mensaje_final += "¿Puedo ayudarte en algo más? (Si / No)"
 
-            mensaje_final += (
-                "🔐 **Tu cuenta ha sido creada exitosamente en nuestro sistema.**\n\n"
-                f"**Usuario:** {sesiones[session_id]['email_registrado']}\n\n"
-                "Se ha generado una contraseña temporal basada en el número de celular registrado.\n"
-                "Por seguridad, te recomendamos cambiar tu contraseña al ingresar al sistema.\n\n"
-                "Puedes acceder desde la plataforma web de la Clínica El Buen Pastor.\n\n"
-            )
-
-            sesiones[session_id]["usuario_nuevo"] = False
-
-        mensaje_final += "¿Puedo ayudarte en algo más? (Si / No)"
-
-        return jsonify({"respuesta": mensaje_final})
-
-
+            return jsonify({"respuesta": mensaje_final})
 
     # ===== POST CONFIRMACION =====
     if estado == "post_confirmacion":
