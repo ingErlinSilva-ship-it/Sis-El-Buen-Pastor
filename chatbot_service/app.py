@@ -240,12 +240,11 @@ def paciente_ya_tiene_cita(paciente_id, fecha, hora):
 
 
 def guardar_cita(paciente_id, medico_id, fecha, hora, motivo, session_id):
-    # Recuperamos datos extras de la sesión por si es usuario nuevo
+
     sesion = sesiones.get(session_id, {})
-    
-    # URL de tu proyecto Laravel (Cámbiala cuando subas a producción)
+
     url = f"{BASE_URL}/api/citas/chatbot"
-    
+
     payload = {
         "origen": "chatbot",
         "paciente_id": paciente_id,
@@ -262,9 +261,14 @@ def guardar_cita(paciente_id, medico_id, fecha, hora, motivo, session_id):
 
     try:
         response = requests.post(url, json=payload)
-        return response.status_code == 200
+
+        print("STATUS LARAVEL:", response.status_code)
+        print("RESPUESTA LARAVEL:", response.text)
+
+        return response.status_code in [200, 201]
+
     except Exception as e:
-        print(f"Error llamando a la API de Laravel: {e}")
+        print("ERROR REQUEST:", e)
         return False
 
 def validar_fecha(fecha_str):
