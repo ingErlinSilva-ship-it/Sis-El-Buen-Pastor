@@ -20,11 +20,8 @@ CORS(app)
 # Carga las variables del archivo .env si existe (solo para local)
 load_dotenv()
 
-if os.environ.get('RENDER'):
-    BASE_URL = "https://consultoriobuenpastor.com"
-else:
-    BASE_URL = "http://127.0.0.1:8000"
-    
+BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:8000")
+
 # Lee la llave desde las variables de entorno del sistema
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
