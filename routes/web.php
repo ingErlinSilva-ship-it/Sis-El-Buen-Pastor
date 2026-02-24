@@ -74,6 +74,5 @@ Route::middleware(['auth'])->group(function () {
 
 // Ruta para el Chatbot.
 Route::post('/chatbot/consulta', [ChatbotController::class, 'consulta'])->name('chatbot.consulta');
-Route::post('/citas/chatbot', [CitaController::class, 'store']);
 
 require __DIR__.'/auth.php';
