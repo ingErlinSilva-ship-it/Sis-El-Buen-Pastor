@@ -19,7 +19,12 @@ app = Flask(__name__)
 CORS(app)
 # Carga las variables del archivo .env si existe (solo para local)
 load_dotenv()
-BASE_URL = os.getenv('API_BASE_URL', 'http://127.0.0.1:8001')
+
+if os.environ.get('RENDER'):
+    BASE_URL = "https://consultoriobuenpastor.com"
+else:
+    BASE_URL = "http://127.0.0.1:8000"
+    
 # Lee la llave desde las variables de entorno del sistema
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
