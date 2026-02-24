@@ -18,4 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/citas/chatbot', [CitaController::class, 'storeFromChatbot']);
+Route::post('/citas/chatbot', [CitaController::class, 'store']);
