@@ -689,16 +689,22 @@ def chat():
         sesiones[session_id]["paciente_id"] = paciente_id
         sesiones[session_id]["nombre_paciente"] = f"{sesiones[session_id]['preregistro_nombre']} {sesiones[session_id]['preregistro_apellido']}"
         sesiones[session_id]["estado"] = "esperando_especialidad"
+        
+        # 1. Obtenemos las especialidades
+        especialidades = obtener_especialidades_con_medicos() 
+            
+        # 2. IMPORTANTE: Guardar la lista en la sesión para que el índice funcione luego
+        sesiones[session_id]["lista_especialidades"] = especialidades 
 
-        especialidades = obtener_especialidades_con_medicos()
-        lista = "\n• ".join(especialidades)
+        # 3. Creamos la lista con números (1. Especialidad, 2. Especialidad...)
+        lista_numerada = "\n".join([f"{i+1}. {esp}" for i, esp in enumerate(especialidades)])
 
         return jsonify({
             "respuesta": f"✅ Registro exitoso.\n\n"
-                        f"🩺 Estas son nuestras especialidades disponibles:\n"
-                        f"• {lista}\n\n"
-                        f"Por favor escribe una exactamente como aparece."
-        })
+                        f"🩺 Selecciona el número de la especialidad:\n"
+                        f"{lista_numerada}\n\n"
+                        f"Por favor, escribe solo el número de la opción."
+            })
 
 
     # ===== ESPERANDO ESPECIALIDAD =====
